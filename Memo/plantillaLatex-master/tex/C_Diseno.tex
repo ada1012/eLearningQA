@@ -1,43 +1,5 @@
 \apendice{Especificación de diseño}
 
 \section{Introducción}
-En este apéndice se detalla en qué manera se pretende abordar el conjunto de objetivos y requisitos especificados en el apéndice \ref{apendice:B}. Se definen los datos que utiliza la aplicación, su arquitectura, y su diseño procedimental.
+
 \section{Diseño de datos}
-En la siguiente tabla se recogen las entidades asociadas a cada una de las consultas para determinar parte de las clases necesarias para el proyecto.
-\begin{table}[H]
-	\resizebox{\textwidth}{!}{%
-		\begin{tabular}{|l|l|}
-			\hline
-			\textbf{Consulta}                                                                                                                                        & \textbf{Entidades}        \\ \hline
-			Las opciones de progreso del estudiante están activadas                                                                                         & Curso            \\ \hline
-			Se proporcionan contenidos en diferentes formatos                                                                                               & Curso, Recurso            \\ \hline
-			El curso tiene grupos                                                                                                                           & Grupo, Curso     \\ \hline
-			El curso tiene actividades grupales                                                                                                             & Actividad, Curso \\ \hline
-			\begin{tabular}[c]{@{}l@{}}Los estudiantes pueden ver las condiciones\\ necesarias para completar una actividad\end{tabular}                    & Curso            \\ \hline
-			Todas las actividades tienen la misma nota máxima en el calificador                                                                             & Actividad, Curso            \\ \hline
-			Los recursos están actualizados                                                                                                                 & Curso, Recurso        \\ \hline
-			Fechas de apertura y cierre de tareas son correctas                                                                                             & Actividad, Curso \\ \hline
-			Se detallan los criterios de evaluación (rúbricas, ejemplos)                                                                                    & Curso            \\ \hline
-			El calificador no tiene demasiado anidamiento                                                                                                   & Curso            \\ \hline
-			Los alumnos están divididos en grupos                                                                                                           & Alumno, Grupo    \\ \hline
-			\begin{tabular}[c]{@{}l@{}}El profesor responde en los foros dentro del límite de\\ 48 horas lectivas desde que se plantea la duda\end{tabular} & Curso, Foro          \\ \hline
-			Se ofrece retroalimentación de las tareas                                                                                                       & Tarea, Curso     \\ \hline
-			Las tareas están calificadas                                                                                                                    & Tarea, Curso     \\ \hline
-			El calificador muestra cómo ponderan las diferentes tareas                                                                                      & Curso            \\ \hline
-			La mayoría de alumnos responden a los feedbacks                                                                                                 & Feedback, Curso  \\ \hline
-			Se utilizan encuestas de opinión                                                                                                                & Survey, Curso    \\ \hline
-		\end{tabular}%
-	}
-\end{table}
-La siguiente imagen muestra las relaciones entre entidades que utiliza la aplicación.
-\imagen{ModeloDatos.png}{Modelo de datos base}
-\section{Diseño procedimental}
-\imagen{BocetoInterfaz.png}{Boceto de la interfaz}
-El siguiente diagrama de secuencia muestra el proceso de generación de informe específico. La llamada ``descarga de datos'' es una simplificación de más de 10 llamadas que descargan la información necesaria sobre el curso. La llamada ``comprobaciones'' es también una simplificación de las 17 llamadas correspondientes a las comprobaciones.
-\imagen{DiagramaSecuencia.png}{Diagrama de secuencia de informe específico}
-\section{Diseño arquitectónico}
-\subsection{Patrón fachada}
-El patrón de diseño fachada consiste en utilizar una clase a modo de interfaz de acceso a un subsistema complejo. La principal ventaja que aprovecha la aplicación de este patrón de diseño es simplificar una serie de funciones del subsistema con un mismo fin en una sola llamada a la fachada. Aparte de esto, reduce el acoplamiento, permitiendo reutilizar partes del subsistema. Un subsistema puede tener varias fachadas con distintas funcionalidades y en caso de añadir un elemento nuevo al subsistema solo sería necesario modificar la fachada.
-\imagen{DiagramaFachada.png}{Diagrama de interacción con la fachada}
-Vamos a explicar la forma en la que el usuario accede a información por medio de la fachada:
-El usuario intenta acceder, por ejemplo, a la página de informe de la aplicación. La clase SpringController se encarga de devolver las respuestas a peticiones de este tipo, siendo en este caso un archivo jsp, pero, antes debe ser compilado y ejecutado para que la respuesta sea una página html. La ejecución del jsp en cuestión desencadena las llamadas necesarias a la fachada para hacer las comprobaciones definidas, que se realizan por medio de la clase WebServiceClient que accede a su vez al servidor de Moodle. Después de recibir los resultados de las comprobaciones, el jsp utiliza la fachada como clase de utilidad para procesar algunos de los resultados. Tras terminar la ejecución del jsp, la clase SpringController devuelve la página html generada al usuario.
