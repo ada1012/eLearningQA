@@ -639,5 +639,50 @@ public class WebServiceClient {
             return false;
         }
     }
+    
+    // Método para obtener los cuestionarios de un curso
+    public Map<Integer, Double> getQuizGrades(String token, long courseId, String host, int quizId) {
+        Map<Integer, Double> grades = new HashMap<>();
+        
+        List<User> usuarios = obtenerUsuarios(token, courseId, host);
+        
+        for (User usuario:usuarios) {
+            int userId = usuario.getId();
+            List<Attempt> attempts = getUserQuizAttempts(quizId, userId, host, token);
+            
+            for (Attempt attempt : attempts) {
+                int attemptId = (int) attempt.getId();
+                double grade = getQuizAttemptGrade(quizId, attemptId, host, token);
+                
+                grades.put(attemptId, grade);
+            }
+        }
+        
+        return grades;
+    }
+    
+    // Método para obtener los intentos de un usuario para un cuestionario
+    private List<Attempt> getUserQuizAttempts(int quizId, int userId, String host, String token) {
+        RestTemplate restTemplate = new RestTemplate();
+    	String url = host + "/webservice/rest/server.php?wsfunction=mod_quiz_get_user_attempts&moodlewsrestformat=json&wstoken="
+    			+ token + "&quizid=" + quizId + "&userid=" + userId;
+        
+    	AttemptList attemptList= restTemplate.getForObject(url, AttemptList.class);
+        if (attemptList==null){return new ArrayList<>();}
+        return attemptList.getAttempts();
+    }
+    
+    // Obtener la nota de un intento en un cuestionario
+    public Double getQuizAttemptGrade(int quizId, int attemptId, String host, String token) {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = host + "/webservice/rest/server.php?wsfunction=mod_quiz_get_attempt_review&moodlewsrestformat=json&wstoken="
+        		+ token + "&quizid=" + quizId + "&attemptid=" + attemptId;
+        
+        AttemptReviewList attemptReviewList= restTemplate.getForObject(url, AttemptReviewList.class);
+
+        Double grade = Double.parseDouble(attemptReviewList.getGrade());
+
+        return grade;
+    }
 
 }

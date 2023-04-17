@@ -90,7 +90,8 @@ public class ELearningQAFacade {
         if(isAnidamientoCalificadorAceptable(listaCalificadores, registro)){puntosComprobaciones[9]++;}
         if(isAlumnosEnGrupos(listaUsuarios, registro)){puntosComprobaciones[10]++;}
         if(isRespondeATiempo(listaUsuarios,listaPosts, registro)){puntosComprobaciones[11]++;}
-        if(isHayRetroalimentacion(listaCalificadores, registro)){puntosComprobaciones[12]++;}
+        
+        // if(isHayRetroalimentacion(listaCalificadores, registro)){puntosComprobaciones[12]++;}
         if(isEstaCorregidoATiempo(tareasConNotas,listaUsuarios, registro)){puntosComprobaciones[13]++;}
         if(isCalificadorMuestraPonderacion(listaCalificadores, registro)){puntosComprobaciones[14]++;}
         if(isRespondenFeedbacks(listaAnalisis,listaUsuarios, registro)){puntosComprobaciones[15]++;}

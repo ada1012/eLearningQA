@@ -1,0 +1,16 @@
+#Minimum number of different resource formats required
+format_num_threshold=5
+#Amount of nesting at which a grade table is considered to be hard to read
+excessive_nesting=3
+#Seconds since a student's doubt is posted on a forum before it is considered unanswered
+forum_response_time=172800
+#Minimum required ratio of student grades with comments on them
+min_comment_percentage=0.6
+#Seconds since an assignment's deadline before it is considered not graded on time
+assignment_grading_time=604800
+#Minimum required ratio of students filling feedback forms
+min_feedback_answer_percentage=0.8
+#Seconds after posting before a forum post is considered irrelevant for checks
+forum_relevance_period=5184000
+#Seconds after deadline before an assignment is considered irrelevant for checks
+assignment_relevance_period=5184000
