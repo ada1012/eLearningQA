@@ -50,6 +50,7 @@
                     <li><strong>El curso tiene actividades grupales:</strong> se comprueba que existan actividades con entrega grupal habilitada en el curso. <u>Responsable:</u> Diseñador <u>Involucrados:</u> Facilitador y Proveedor <u>Perspectivas:</u> Pedagógica</li>
                     <li><strong>Los estudiantes pueden ver las condiciones necesarias para completar una actividad:</strong> se comprueba que esté habilitada la opción de mostrar las condiciones para completar una actividad en el curso. <u>Responsable:</u> Diseñador <u>Involucrados:</u> Facilitador y Proveedor <u>Perspectivas:</u> Pedagógica</li>
                     <li><strong>Todas las actividades tienen la misma nota máxima en el calificador:</strong> se comprueba que exista una consistencia en las notas máximas de los items de calificación (tareas, entregas, cuestionarios) del curso. <u>Responsable:</u> Diseñador <u>Involucrados:</u> Facilitador y Proveedor <u>Perspectivas:</u> Pedagógica</li>
+                    <li><strong>El curso tiene al menos un cuestionario</strong> se comprueba que exista alguna forma de evaluación a través de un cuestionario del curso. <u>Responsable:</u> Diseñador <u>Involucrados:</u> Facilitador y Proveedor <u>Perspectivas:</u> Pedagógica</li>
                     </ul>
                     <p><strong>Implementación:</strong></p>
                     <ul>

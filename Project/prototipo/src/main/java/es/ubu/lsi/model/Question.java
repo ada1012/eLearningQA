@@ -10,12 +10,12 @@ public class Question {
 	private List<ResponseFileArea> responseFileAreas;
 	private int sequencecheck;
 	private int lastactiontime;
-	private int hasautosavedstep;
-	private int flagged;
+	private boolean hasautosavedstep;
+	private boolean flagged;
 	private int number;
 	private String state;
 	private String status;
-	private int blockedbyprevious;
+	private boolean blockedbyprevious;
 	private String mark;
 	private double maxmark;
 	private String settings;
@@ -77,21 +77,6 @@ public class Question {
 		this.lastactiontime = lastactiontime;
 	}
 	
-	public int getHasautosavedstep() {
-		return hasautosavedstep;
-	}
-	
-	public void setHasautosavedstep(int hasautosavedstep) {
-		this.hasautosavedstep = hasautosavedstep;
-	}
-	
-	public int getFlagged() {
-		return flagged;
-	}
-	
-	public void setFlagged(int flagged) {
-		this.flagged = flagged;
-	}
 	
 	public int getNumber() {
 		return number;
@@ -117,14 +102,30 @@ public class Question {
 		this.status = status;
 	}
 	
-	public int getBlockedbyprevious() {
+	public boolean isHasautosavedstep() {
+		return hasautosavedstep;
+	}
+
+	public void setHasautosavedstep(boolean hasautosavedstep) {
+		this.hasautosavedstep = hasautosavedstep;
+	}
+
+	public boolean isFlagged() {
+		return flagged;
+	}
+
+	public void setFlagged(boolean flagged) {
+		this.flagged = flagged;
+	}
+
+	public boolean isBlockedbyprevious() {
 		return blockedbyprevious;
 	}
-	
-	public void setBlockedbyprevious(int blockedbyprevious) {
+
+	public void setBlockedbyprevious(boolean blockedbyprevious) {
 		this.blockedbyprevious = blockedbyprevious;
 	}
-	
+
 	public String getMark() {
 		return mark;
 	}

@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class ELearningQAFacade {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final int CHECKS_DISENO =6;
+    private static final int CHECKS_DISENO =7;
     private static final int CHECKS_IMPLEMENTACION =5;
     private static final int CHECKS_REALIZACION =4;
     private static final int CHECKS_EVALUACION =2;
@@ -68,6 +68,8 @@ public class ELearningQAFacade {
         List<Group> listaGrupos=WebServiceClient.obtenerListaGrupos(token, courseid, config.getHost(), registro);
         List<Assignment> listaTareas=WebServiceClient.obtenerListaTareas(token, courseid, config.getHost());
         List<Table> listaCalificadores=WebServiceClient.obtenerCalificadores(token, courseid, config.getHost());
+        
+        // Obtener recursos no funciona para Pilgrimage
         List<Resource> listaRecursos=WebServiceClient.obtenerRecursos(token, courseid, config.getHost());
         List<CourseModule> listaModulosTareas=WebServiceClient.obtenerModulosTareas(token, listaTareas, config.getHost());
         List<Post> listaPosts=WebServiceClient.obtenerListaPosts(token, courseid, config.getHost());
@@ -77,43 +79,60 @@ public class ELearningQAFacade {
         List<Survey> listaSurveys=WebServiceClient.obtenerSurveys(token, courseid, config.getHost());
         List<es.ubu.lsi.model.Module> modulosMalFechados=WebServiceClient.obtenerModulosMalFechados(curso, listaModulos);
         List<Resource> recursosDesfasados=WebServiceClient.obtenerRecursosDesfasados(curso, listaRecursos);
-        int[] puntosComprobaciones = new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+        
+        // Cuestionarios
+        
+        // Primero vamos a ver si hay cuestionarios (diseño)
+        List<Quiz> quizzes = WebServiceClient.getQuizzes(courseid, config.getHost(), token);
+        for (Quiz quiz : quizzes) {
+        	System.out.println("Quiz id: " + quiz.getId());
+        	Map<Integer, Double> grades = WebServiceClient.getQuizGrades(token, courseid, config.getHost(), quiz.getId());
+        	System.out.println("Grades: " + grades.size());
+        	for (Integer key : grades.keySet()) {
+                Double value = grades.get(key);
+                
+                System.out.println("Key: " + key + ", Value: " + value);
+            }
+        }
+        
+        int[] puntosComprobaciones = new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
         if(isestaProgresoActivado(listaEstados, registro)){puntosComprobaciones[0]++;}
         if(isHayVariedadFormatos(listaModulos, registro)){puntosComprobaciones[1]++;}
         if(isTieneGrupos(listaGrupos, registro)){puntosComprobaciones[2]++;}
         if(isHayTareasGrupales(listaTareas, registro)){puntosComprobaciones[3]++;}
         if(isSonVisiblesCondiciones(curso, registro)){puntosComprobaciones[4]++;}
         if(isEsNotaMaxConsistente(listaCalificadores, registro)){puntosComprobaciones[5]++;}
-        if(isEstanActualizadosRecursos(recursosDesfasados, registro)){puntosComprobaciones[6]++;}
-        if(isSonFechasCorrectas(modulosMalFechados, registro)){puntosComprobaciones[7]++;}
-        if(isMuestraCriterios(listaModulosTareas, registro)){puntosComprobaciones[8]++;}
-        if(isAnidamientoCalificadorAceptable(listaCalificadores, registro)){puntosComprobaciones[9]++;}
-        if(isAlumnosEnGrupos(listaUsuarios, registro)){puntosComprobaciones[10]++;}
-        if(isRespondeATiempo(listaUsuarios,listaPosts, registro)){puntosComprobaciones[11]++;}
-        
-        // if(isHayRetroalimentacion(listaCalificadores, registro)){puntosComprobaciones[12]++;}
-        if(isEstaCorregidoATiempo(tareasConNotas,listaUsuarios, registro)){puntosComprobaciones[13]++;}
-        if(isCalificadorMuestraPonderacion(listaCalificadores, registro)){puntosComprobaciones[14]++;}
-        if(isRespondenFeedbacks(listaAnalisis,listaUsuarios, registro)){puntosComprobaciones[15]++;}
-        if(isUsaSurveys(listaSurveys, registro)){puntosComprobaciones[16]++;}
+        if(isHayCuestionarios(quizzes, registro)){puntosComprobaciones[6]++;}
+        if(isEstanActualizadosRecursos(recursosDesfasados, registro)){puntosComprobaciones[7]++;}
+        if(isSonFechasCorrectas(modulosMalFechados, registro)){puntosComprobaciones[8]++;}
+        if(isMuestraCriterios(listaModulosTareas, registro)){puntosComprobaciones[9]++;}
+        if(isAnidamientoCalificadorAceptable(listaCalificadores, registro)){puntosComprobaciones[10]++;}
+        if(isAlumnosEnGrupos(listaUsuarios, registro)){puntosComprobaciones[11]++;}
+        if(isRespondeATiempo(listaUsuarios,listaPosts, registro)){puntosComprobaciones[12]++;}
+        if(isHayRetroalimentacion(listaCalificadores, registro)){puntosComprobaciones[13]++;}
+        if(isEstaCorregidoATiempo(tareasConNotas,listaUsuarios, registro)){puntosComprobaciones[14]++;}
+        if(isCalificadorMuestraPonderacion(listaCalificadores, registro)){puntosComprobaciones[15]++;}
+        if(isRespondenFeedbacks(listaAnalisis,listaUsuarios, registro)){puntosComprobaciones[16]++;}
+        if(isUsaSurveys(listaSurveys, registro)){puntosComprobaciones[17]++;}
+        // El 17 comprueba si hay cuestionarios
         return puntosComprobaciones;
     }
 
     public String generarInformeFases(int[] puntos, int nroCursos) {
-        int contadorDiseno=puntos[0]+puntos[1]+puntos[2]+puntos[3]+puntos[4]+puntos[5];
-        int contadorImplementacion=puntos[6]+puntos[7]+puntos[8]+puntos[9]+puntos[10];
-        int contadorRealizacion=puntos[11]+puntos[12]+puntos[13]+puntos[14];
-        int contadorEvaluacion=puntos[15]+puntos[16];
+        int contadorDiseno=puntos[0]+puntos[1]+puntos[2]+puntos[3]+puntos[4]+puntos[5]+puntos[6];
+        int contadorImplementacion=puntos[7]+puntos[8]+puntos[9]+puntos[10]+puntos[11];
+        int contadorRealizacion=puntos[12]+puntos[13]+puntos[14]+puntos[15];
+        int contadorEvaluacion=puntos[16]+puntos[17];
         int contadorTotal=contadorDiseno+contadorImplementacion+contadorRealizacion+contadorEvaluacion;
         return camposInformeFases[0]+generarCampoRelativo((float)contadorTotal/nroCursos, CHECKS_TOTAL) +
                 camposInformeFases[1]+generarCampoRelativo((float)contadorDiseno/nroCursos, CHECKS_DISENO) +
-                generarFilas(new int[]{2, 0}, 6, puntos, nroCursos)+
-                camposInformeFases[8]+generarCampoRelativo((float)contadorImplementacion/nroCursos, CHECKS_IMPLEMENTACION) +
-                generarFilas(new int[]{9, 6}, 5, puntos, nroCursos)+
-                camposInformeFases[14]+generarCampoRelativo((float)contadorRealizacion/nroCursos, CHECKS_REALIZACION) +
-                generarFilas(new int[]{15, 11}, 4, puntos, nroCursos)+
-                camposInformeFases[19]+generarCampoRelativo((float)contadorEvaluacion/nroCursos, CHECKS_EVALUACION) +
-                generarFilas(new int[]{20, 15}, 2, puntos, nroCursos)+camposInformeFases[22];
+                generarFilas(new int[]{2, 0}, 7, puntos, nroCursos)+
+                camposInformeFases[9]+generarCampoRelativo((float)contadorImplementacion/nroCursos, CHECKS_IMPLEMENTACION) +
+                generarFilas(new int[]{10, 7}, 5, puntos, nroCursos)+
+                camposInformeFases[15]+generarCampoRelativo((float)contadorRealizacion/nroCursos, CHECKS_REALIZACION) +
+                generarFilas(new int[]{16, 12}, 4, puntos, nroCursos)+
+                camposInformeFases[20]+generarCampoRelativo((float)contadorEvaluacion/nroCursos, CHECKS_EVALUACION) +
+                generarFilas(new int[]{21, 16}, 2, puntos, nroCursos)+camposInformeFases[23];
     }
 
     private String generarFilas(int[] posiciones, int cantidad, int[] puntos, int nroCursos){
@@ -181,6 +200,10 @@ public class ELearningQAFacade {
         return WebServiceClient.esNotaMaxConsistente(listaCalificadores, registro);
     }
 
+    public boolean isHayCuestionarios(List<Quiz> quizzes, AlertLog registro) {
+        return WebServiceClient.hayCuestionarios(quizzes, registro);
+    }
+
     public boolean isEstanActualizadosRecursos(List<Resource> listaRecursosDesfasados, AlertLog registro) {
         return WebServiceClient.estanActualizadosRecursos(listaRecursosDesfasados, registro, config);
     }
@@ -246,6 +269,7 @@ public class ELearningQAFacade {
                 {1,3,1,1,3,1,0,0,0},
                 {1,3,1,1,3,1,0,0,0},
                 {1,3,1,1,3,1,0,0,0},
+                {1,1,3,1,1,3,1,1,3},
                 {1,1,3,1,1,3,1,1,3},
                 {1,1,3,1,1,3,1,1,3}
         };

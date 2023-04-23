@@ -433,6 +433,17 @@ public class WebServiceClient {
         return true;
     }
 
+    // Método que comprueba si el curso tiene cuestionarios
+    // En este método no se comprueba ningún dato más del cuestionario
+    public static boolean hayCuestionarios(List<Quiz> quizzes, AlertLog registro){
+    	System.out.println(quizzes.size());
+        if (quizzes != null && quizzes.isEmpty()){
+            registro.guardarAlerta("design consistentminquiz","No hay cuestionarios en el curso");
+            return false;
+        }
+        return true;
+    }
+
     public static List<Resource> obtenerRecursos(String token, long courseid, String host){
         RestTemplate restTemplate = new RestTemplate();
         String url = host + "/webservice/rest/server.php?wsfunction=mod_resource_get_resources_by_courses&moodlewsrestformat=json&wstoken=" +token+ COURSEIDS_0 +courseid;
@@ -450,7 +461,7 @@ public class WebServiceClient {
             for (Resource recurso:listaRecursosDesfasados) {
                 archivos=recurso.getContentfiles();
                 for (Contentfile archivo:archivos) {
-                    detalles.append(archivo.getFilename()).append(recurso.getVisible()==1?"":" <img src=\"eye-slash.png\" width=\"16\" height=\"16\" alt=\"No visible\"></td>").append("<br>");
+                    detalles.append(archivo.getFilename()).append(recurso.isVisible() ? "" : " <img src=\"eye-slash.png\" width=\"16\" height=\"16\" alt=\"No visible\"></td>").append("<br>");
                 }
             }
             registro.guardarAlertaDesplegable("implementation resourcesuptodate", "El curso contiene archivos desfasados", "Archivos desfasados <a href=\""+config.getHost()+"/course/resources.php?id="+registro.getCourseid()+"\">(recursos)</a>", detalles.toString());
@@ -641,12 +652,24 @@ public class WebServiceClient {
     }
     
     // Método para obtener los cuestionarios de un curso
-    public Map<Integer, Double> getQuizGrades(String token, long courseId, String host, int quizId) {
+    public static List<Quiz> getQuizzes(long courseId, String host, String token) {
+    	RestTemplate restTemplate = new RestTemplate();
+        String url= host + "/webservice/rest/server.php?wsfunction=mod_quiz_get_quizzes_by_courses&moodlewsrestformat=json&wstoken="
+        		+token+ COURSEIDS_0 +courseId;
+    	System.out.println("url: "+url);
+        QuizList listaCuestionarios= restTemplate.getForObject(url, QuizList.class);
+        if (listaCuestionarios==null){return new ArrayList<>();}
+        return listaCuestionarios.getQuizzes();
+    }
+    
+    // Método para obtener las notas de un cuertionario
+    public static Map<Integer, Double> getQuizGrades(String token, long courseId, String host, int quizId) {
         Map<Integer, Double> grades = new HashMap<>();
         
         List<User> usuarios = obtenerUsuarios(token, courseId, host);
         
         for (User usuario:usuarios) {
+        	 System.out.println("Usuario: " + usuario);
             int userId = usuario.getId();
             List<Attempt> attempts = getUserQuizAttempts(quizId, userId, host, token);
             
@@ -662,10 +685,11 @@ public class WebServiceClient {
     }
     
     // Método para obtener los intentos de un usuario para un cuestionario
-    private List<Attempt> getUserQuizAttempts(int quizId, int userId, String host, String token) {
+    private static List<Attempt> getUserQuizAttempts(int quizId, int userId, String host, String token) {
         RestTemplate restTemplate = new RestTemplate();
     	String url = host + "/webservice/rest/server.php?wsfunction=mod_quiz_get_user_attempts&moodlewsrestformat=json&wstoken="
     			+ token + "&quizid=" + quizId + "&userid=" + userId;
+    	System.out.println("url getUserQuizAttempts: "+ url);
         
     	AttemptList attemptList= restTemplate.getForObject(url, AttemptList.class);
         if (attemptList==null){return new ArrayList<>();}
@@ -673,10 +697,11 @@ public class WebServiceClient {
     }
     
     // Obtener la nota de un intento en un cuestionario
-    public Double getQuizAttemptGrade(int quizId, int attemptId, String host, String token) {
+    public static Double getQuizAttemptGrade(int quizId, int attemptId, String host, String token) {
         RestTemplate restTemplate = new RestTemplate();
         String url = host + "/webservice/rest/server.php?wsfunction=mod_quiz_get_attempt_review&moodlewsrestformat=json&wstoken="
-        		+ token + "&quizid=" + quizId + "&attemptid=" + attemptId;
+        		+ token + "&attemptid=" + attemptId;
+    	System.out.println("url getQuizAttemptGrade: "+ url);
         
         AttemptReviewList attemptReviewList= restTemplate.getForObject(url, AttemptReviewList.class);
 
