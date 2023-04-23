@@ -7,7 +7,7 @@ public class File {
     private String fileurl;
     private int timemodified;
     private String mimetype;
-    private int isexternalfile;
+    private boolean isexternalfile;
     private String repositorytype;
 	
     
@@ -59,15 +59,15 @@ public class File {
 		this.mimetype = mimetype;
 	}
 	
-    public int getIsexternalfile() {
+    public boolean isIsexternalfile() {
 		return isexternalfile;
 	}
-	
-    public void setIsexternalfile(int isexternalfile) {
+
+	public void setIsexternalfile(boolean isexternalfile) {
 		this.isexternalfile = isexternalfile;
 	}
-	
-    public String getRepositorytype() {
+
+	public String getRepositorytype() {
 		return repositorytype;
 	}
 	

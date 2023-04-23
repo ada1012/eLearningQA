@@ -391,14 +391,16 @@ public class WebServiceClient {
         }
         for (Table calificador:listaCalificadores) {
             for (Tabledata tabledata:calificador.getTabledata()) {
-                if (tabledata.getItemname().getMyclass().contains("item ")&&
-                        tabledata.getGrade()!=null&&!tabledata.getGrade().getContent().matches("[- ]")){
-                    contadorTuplasComentables++;
-                    feedback=tabledata.getFeedback();
-                    if (feedback!=null && feedback.getContent().length()>6){
-                        contadorRetroalimentacion++;
-                    }
-                }
+            	if (tabledata.getItemname() != null) {
+	                if (tabledata.getItemname().getMyclass().contains("item ")&&
+	                        tabledata.getGrade()!=null&&!tabledata.getGrade().getContent().matches("[- ]")){
+	                    contadorTuplasComentables++;
+	                    feedback=tabledata.getFeedback();
+	                    if (feedback!=null && feedback.getContent().length()>6){
+	                        contadorRetroalimentacion++;
+	                    }
+	                }
+            	}
             }
         }
         if(contadorTuplasComentables==0){
@@ -436,7 +438,6 @@ public class WebServiceClient {
     // Método que comprueba si el curso tiene cuestionarios
     // En este método no se comprueba ningún dato más del cuestionario
     public static boolean hayCuestionarios(List<Quiz> quizzes, AlertLog registro){
-    	System.out.println(quizzes.size());
         if (quizzes != null && quizzes.isEmpty()){
             registro.guardarAlerta("design consistentminquiz","No hay cuestionarios en el curso");
             return false;
@@ -656,7 +657,6 @@ public class WebServiceClient {
     	RestTemplate restTemplate = new RestTemplate();
         String url= host + "/webservice/rest/server.php?wsfunction=mod_quiz_get_quizzes_by_courses&moodlewsrestformat=json&wstoken="
         		+token+ COURSEIDS_0 +courseId;
-    	System.out.println("url: "+url);
         QuizList listaCuestionarios= restTemplate.getForObject(url, QuizList.class);
         if (listaCuestionarios==null){return new ArrayList<>();}
         return listaCuestionarios.getQuizzes();
@@ -669,7 +669,6 @@ public class WebServiceClient {
         List<User> usuarios = obtenerUsuarios(token, courseId, host);
         
         for (User usuario:usuarios) {
-        	 System.out.println("Usuario: " + usuario);
             int userId = usuario.getId();
             List<Attempt> attempts = getUserQuizAttempts(quizId, userId, host, token);
             
@@ -689,7 +688,6 @@ public class WebServiceClient {
         RestTemplate restTemplate = new RestTemplate();
     	String url = host + "/webservice/rest/server.php?wsfunction=mod_quiz_get_user_attempts&moodlewsrestformat=json&wstoken="
     			+ token + "&quizid=" + quizId + "&userid=" + userId;
-    	System.out.println("url getUserQuizAttempts: "+ url);
         
     	AttemptList attemptList= restTemplate.getForObject(url, AttemptList.class);
         if (attemptList==null){return new ArrayList<>();}
@@ -701,11 +699,10 @@ public class WebServiceClient {
         RestTemplate restTemplate = new RestTemplate();
         String url = host + "/webservice/rest/server.php?wsfunction=mod_quiz_get_attempt_review&moodlewsrestformat=json&wstoken="
         		+ token + "&attemptid=" + attemptId;
-    	System.out.println("url getQuizAttemptGrade: "+ url);
         
         AttemptReviewList attemptReviewList= restTemplate.getForObject(url, AttemptReviewList.class);
 
-        Double grade = Double.parseDouble(attemptReviewList.getGrade());
+        Double grade = Double.parseDouble(attemptReviewList.getGrade() != null ? attemptReviewList.getGrade() : "0");
 
         return grade;
     }
