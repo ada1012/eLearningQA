@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +15,7 @@ public class ELearningQAFacade {
     private static final int CHECKS_DISENO =7;
     private static final int CHECKS_IMPLEMENTACION =5;
     private static final int CHECKS_REALIZACION =4;
-    private static final int CHECKS_EVALUACION =2;
+    private static final int CHECKS_EVALUACION =3;
     private static final int CHECKS_TOTAL = CHECKS_DISENO + CHECKS_IMPLEMENTACION + CHECKS_REALIZACION + CHECKS_EVALUACION;
     protected static String[] camposInformeFases;
     private final FacadeConfig config;
@@ -60,7 +61,7 @@ public class ELearningQAFacade {
         return WebServiceClient.obtenerNombreCompleto(token, username, config.getHost());
     }
 
-    public int[] realizarComprobaciones(String token, long courseid, AlertLog registro) {
+    public double[] realizarComprobaciones(String token, long courseid, AlertLog registro) {
         Course curso= getCursoPorId(token, courseid);
         List<User> listaUsuarios= WebServiceClient.obtenerUsuarios(token, courseid, config.getHost());
         StatusList listaEstados=WebServiceClient.obtenerListaEstados(token, courseid, listaUsuarios, config.getHost());
@@ -84,6 +85,7 @@ public class ELearningQAFacade {
         
         // Primero vamos a ver si hay cuestionarios (diseño)
         List<Quiz> quizzes = WebServiceClient.getQuizzes(courseid, config.getHost(), token);
+        List<Double> estadisticas = new ArrayList<Double>();
         for (Quiz quiz : quizzes) {
         	System.out.println("Quiz id: " + quiz.getId());
         	Map<Integer, Double> grades = WebServiceClient.getQuizGrades(token, courseid, config.getHost(), quiz.getId());
@@ -93,9 +95,11 @@ public class ELearningQAFacade {
                 
                 System.out.println("Key: " + key + ", Value: " + value);
             }
+            double estadistica = WebServiceClient.obtenerEstadisticasCuestionario(token, courseid, config.getHost(), quiz.getId());
+            estadisticas.add(estadistica);
         }
         
-        int[] puntosComprobaciones = new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+        double[] puntosComprobaciones = new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
         if(isestaProgresoActivado(listaEstados, registro)){puntosComprobaciones[0]++;}
         if(isHayVariedadFormatos(listaModulos, registro)){puntosComprobaciones[1]++;}
         if(isTieneGrupos(listaGrupos, registro)){puntosComprobaciones[2]++;}
@@ -114,16 +118,17 @@ public class ELearningQAFacade {
         if(isCalificadorMuestraPonderacion(listaCalificadores, registro)){puntosComprobaciones[15]++;}
         if(isRespondenFeedbacks(listaAnalisis,listaUsuarios, registro)){puntosComprobaciones[16]++;}
         if(isUsaSurveys(listaSurveys, registro)){puntosComprobaciones[17]++;}
-        // El 17 comprueba si hay cuestionarios
+        puntosComprobaciones[18] = porcentajeCuestionariosContestados(quizzes, estadisticas, registro);
+
         return puntosComprobaciones;
     }
 
-    public String generarInformeFases(int[] puntos, int nroCursos) {
-        int contadorDiseno=puntos[0]+puntos[1]+puntos[2]+puntos[3]+puntos[4]+puntos[5]+puntos[6];
-        int contadorImplementacion=puntos[7]+puntos[8]+puntos[9]+puntos[10]+puntos[11];
-        int contadorRealizacion=puntos[12]+puntos[13]+puntos[14]+puntos[15];
-        int contadorEvaluacion=puntos[16]+puntos[17];
-        int contadorTotal=contadorDiseno+contadorImplementacion+contadorRealizacion+contadorEvaluacion;
+    public String generarInformeFases(double[] puntos, int nroCursos) {
+        double contadorDiseno=puntos[0]+puntos[1]+puntos[2]+puntos[3]+puntos[4]+puntos[5]+puntos[6];
+        double contadorImplementacion=puntos[7]+puntos[8]+puntos[9]+puntos[10]+puntos[11];
+        double contadorRealizacion=puntos[12]+puntos[13]+puntos[14]+puntos[15];
+        double contadorEvaluacion=puntos[16]+puntos[17]+puntos[18];
+        double contadorTotal=contadorDiseno+contadorImplementacion+contadorRealizacion+contadorEvaluacion;
         return camposInformeFases[0]+generarCampoRelativo((float)contadorTotal/nroCursos, CHECKS_TOTAL) +
                 camposInformeFases[1]+generarCampoRelativo((float)contadorDiseno/nroCursos, CHECKS_DISENO) +
                 generarFilas(new int[]{2, 0}, 7, puntos, nroCursos)+
@@ -132,10 +137,12 @@ public class ELearningQAFacade {
                 camposInformeFases[15]+generarCampoRelativo((float)contadorRealizacion/nroCursos, CHECKS_REALIZACION) +
                 generarFilas(new int[]{16, 12}, 4, puntos, nroCursos)+
                 camposInformeFases[20]+generarCampoRelativo((float)contadorEvaluacion/nroCursos, CHECKS_EVALUACION) +
-                generarFilas(new int[]{21, 16}, 2, puntos, nroCursos)+camposInformeFases[23];
+                generarFilas(new int[]{21, 16}, 2, puntos, nroCursos)+
+                camposInformeFases[23]+generarCampoRelativo((float)puntos[18], 1) +
+                camposInformeFases[24];
     }
 
-    private String generarFilas(int[] posiciones, int cantidad, int[] puntos, int nroCursos){
+    private String generarFilas(int[] posiciones, int cantidad, double[] puntos, int nroCursos){
         StringBuilder filas= new StringBuilder();
         if(nroCursos==1){
             for (int i = 0; i < cantidad; i++) {
@@ -143,7 +150,7 @@ public class ELearningQAFacade {
             }
         }else{
             for (int i = 0; i < cantidad; i++) {
-                filas.append(camposInformeFases[posiciones[0] + i]).append(generarCampoRelativo(puntos[posiciones[1] + i],nroCursos));
+                filas.append(camposInformeFases[posiciones[0] + i]).append(generarCampoRelativo((float)puntos[posiciones[1] + i],nroCursos));
             }
         }
         return filas.toString();
@@ -200,6 +207,7 @@ public class ELearningQAFacade {
         return WebServiceClient.esNotaMaxConsistente(listaCalificadores, registro);
     }
 
+    // Devuelve true si hay algún cuestionario, sino se devuelve false y se añade un registro de alerta
     public boolean isHayCuestionarios(List<Quiz> quizzes, AlertLog registro) {
         return WebServiceClient.hayCuestionarios(quizzes, registro);
     }
@@ -228,11 +236,16 @@ public class ELearningQAFacade {
         return WebServiceClient.hayVariedadFormatos(listamodulos, registro, config);
     }
 
+    // Devuelve el porcentaje de cuestionarios contestados, sino se devuelve 0 y se añade un registro de alerta
+    public double porcentajeCuestionariosContestados(List<Quiz> quizzes, List<Double> estadisticas, AlertLog registro) {
+        return WebServiceClient.calculaPorcentajeCuestionarios(quizzes, estadisticas, registro);
+    }
+
     public float porcentajeFraccion(float numerador, float denominador){
         return numerador/denominador*100;
     }
 
-    public String generarCampoAbsoluto(int puntos){
+    public String generarCampoAbsoluto(double puntos){
         if (puntos==0){
             return "<td class=\"tg-pred\"><img src=\"Cross.png\" width=\"16\" height=\"16\" alt=\"No\"></td>";
         }else{
@@ -252,8 +265,8 @@ public class ELearningQAFacade {
         else{return "<td class=\"tg-pgre\">"+campoAMedias;}
     }
 
-    public float[] calcularPorcentajesMatriz(int[] puntos,int numeroCursos){
-        int[][] matrizPuntos=new int[][]{
+    public float[] calcularPorcentajesMatriz(double[] puntos,int numeroCursos){
+        double[][] matrizPuntos=new double[][]{
                 {3,1,0,0,0,0,0,0,0},
                 {3,1,1,3,1,1,0,0,0},
                 {3,1,1,0,0,0,0,0,0},
@@ -270,11 +283,10 @@ public class ELearningQAFacade {
                 {1,3,1,1,3,1,0,0,0},
                 {1,3,1,1,3,1,0,0,0},
                 {1,1,3,1,1,3,1,1,3},
-                {1,1,3,1,1,3,1,1,3},
                 {1,1,3,1,1,3,1,1,3}
         };
         float[] porcentajes=new float[9];
-        int[] puntuacionesMax=new int[]{34*numeroCursos,26*numeroCursos,19*numeroCursos,17*numeroCursos,20*numeroCursos,17*numeroCursos,6*numeroCursos,3*numeroCursos,10*numeroCursos};
+        double[] puntuacionesMax=new double[]{34*numeroCursos,26*numeroCursos,19*numeroCursos,17*numeroCursos,20*numeroCursos,17*numeroCursos,6*numeroCursos,3*numeroCursos,10*numeroCursos};
         for(int i=0;i<matrizPuntos.length;i++){
             for(int j=0;j<porcentajes.length;j++){
                 porcentajes[j]+= (float) (matrizPuntos[i][j] * puntos[i]) /puntuacionesMax[j];

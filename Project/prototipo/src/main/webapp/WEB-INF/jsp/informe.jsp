@@ -15,14 +15,14 @@
           String grafico="";
           float[] porcentajes;
           AlertLog alertas= new AlertLog();
-          int[] puntosComprobaciones;
-          int[] puntosCurso;
+          double[] puntosComprobaciones;
+          double[] puntosCurso;
           String vinculo=(String)session.getAttribute("host")+"/course/view.php?id=";
           try{ELearningQAFacade fachada=(ELearningQAFacade)session.getAttribute("fachada");
           String courseid= request.getParameter("courseid");
           vinculo+=courseid;
           if(courseid==null){
-            puntosComprobaciones=new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+            puntosComprobaciones=new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
             List<Course> listaCursos=fachada.getListaCursos(token);
             for(Course curso:listaCursos){
               alertas.guardarTitulo(curso.getFullname());

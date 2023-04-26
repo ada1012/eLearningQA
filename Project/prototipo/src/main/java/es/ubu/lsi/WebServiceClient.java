@@ -338,7 +338,7 @@ public class WebServiceClient {
     public static List<User> obtenerAlumnosSinGrupo(List<User> listaUsuarios) {
         List<User> listaUsuariosHuerfanos=new ArrayList<>();
         for (User usuario:listaUsuarios) {
-            if (usuario.getGroups().isEmpty()&&esAlumno(listaUsuarios,usuario.getId())){
+            if (usuario.getGroups()!=null && usuario.getGroups().isEmpty() && esAlumno(listaUsuarios,usuario.getId())){
                 listaUsuariosHuerfanos.add(usuario);
             }
         }
@@ -651,6 +651,22 @@ public class WebServiceClient {
             return false;
         }
     }
+
+    // Método para calcular el porcentaje de alumnos que han respondido a un cuestionario
+    public static double calculaPorcentajeCuestionarios(List<Quiz> quizzes, List<Double> estadisticas, AlertLog registro){
+        double porcentaje=0;
+
+        if (quizzes.size()==0 || estadisticas.size()==0){
+            registro.guardarAlerta("evaluation estadisticquiz","No se han realizado cuestionarios");
+            return 0;
+        } else {
+            for (Double estadistica: estadisticas) {
+                porcentaje+=estadistica;
+            }
+            porcentaje=porcentaje/estadisticas.size();
+            return porcentaje/100;
+        }
+    }
     
     // Método para obtener los cuestionarios de un curso
     public static List<Quiz> getQuizzes(long courseId, String host, String token) {
@@ -706,5 +722,29 @@ public class WebServiceClient {
 
         return grade;
     }
+    
+    // Devuelve el porcentaje de alumnos que intenta el cuestionario
+    public static double obtenerEstadisticasCuestionario(String token, long courseId, String host, int quizId) {
+        List<User> usuarios = obtenerUsuarios(token, courseId, host);
+        int totalAlumnos = usuarios.size();
+        int alumnosConIntento = 0;
+
+        for (User usuario : usuarios) {
+            int userId = usuario.getId();
+            List<Attempt> attempts = getUserQuizAttempts(quizId, userId, host, token);
+            if (!attempts.isEmpty()) {
+                alumnosConIntento++;
+            }
+        }
+
+        double porcentajeRealizado = ((double) alumnosConIntento / totalAlumnos) * 100;
+
+        System.out.println("Total de alumnos: " + totalAlumnos);
+        System.out.println("Alumnos que realizaron el cuestionario: " + alumnosConIntento);
+        System.out.println("Porcentaje de alumnos que realizaron el cuestionario: " + porcentajeRealizado + "%");
+        
+        return porcentajeRealizado;
+    }
+
 
 }
