@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="java.util.List, es.ubu.lsi.ELearningQAFacade, es.ubu.lsi.AlertLog, es.ubu.lsi.RegistryIO, es.ubu.lsi.AnalysisSnapshot, es.ubu.lsi.model.Course, org.apache.logging.log4j.LogManager, org.apache.logging.log4j.Logger" %>
+<%@ page import="java.util.List, java.util.Map, java.util.HashMap, es.ubu.lsi.ELearningQAFacade, es.ubu.lsi.AlertLog, es.ubu.lsi.RegistryIO, es.ubu.lsi.AnalysisSnapshot, es.ubu.lsi.model.Course, org.apache.logging.log4j.LogManager, org.apache.logging.log4j.Logger" %>
 <html lang="en">
 <head>
     <%String informe="";
@@ -17,6 +17,7 @@
           AlertLog alertas= new AlertLog();
           double[] puntosComprobaciones;
           double[] puntosCurso;
+          Map<Integer, Double> estadisticasCuestionarios = new HashMap<>();
           String vinculo=(String)session.getAttribute("host")+"/course/view.php?id=";
           try{ELearningQAFacade fachada=(ELearningQAFacade)session.getAttribute("fachada");
           String courseid= request.getParameter("courseid");
@@ -26,7 +27,7 @@
             List<Course> listaCursos=fachada.getListaCursos(token);
             for(Course curso:listaCursos){
               alertas.guardarTitulo(curso.getFullname());
-              puntosCurso = fachada.realizarComprobaciones(token, curso.getId(), alertas);
+              puntosCurso = fachada.realizarComprobaciones(token, curso.getId(), alertas, estadisticasCuestionarios);
               for(int i=0;i<puntosComprobaciones.length;i++){
                 puntosComprobaciones[i]+=puntosCurso[i];
               }
@@ -34,16 +35,18 @@
             nombreCurso="Informe general de cursos";
             porcentajes=fachada.calcularPorcentajesMatriz(puntosComprobaciones, listaCursos.size());
             matriz=fachada.generarMatrizRolPerspectiva(porcentajes);
-            fases=fachada.generarInformeFases(puntosComprobaciones,listaCursos.size());
+            fases=fachada.generarInformeFases(puntosComprobaciones, estadisticasCuestionarios, listaCursos.size());
           }else{
             Course curso= fachada.getCursoPorId(token, Integer.parseInt(courseid));
             alertas.setCourseid(Integer.parseInt(courseid));
             nombreCurso=curso.getFullname();
             session.setAttribute("coursename",nombreCurso);
-            puntosComprobaciones = fachada.realizarComprobaciones(token, Integer.parseInt(courseid), alertas);
+            // Almacenamos las estadísticas de cada cuestionario, será del tipo: Map<Id cuestionario, porcentaje de usuarios que han respondido>
+            estadisticasCuestionarios=fachada.generarEstadisticasCuestionarios(token, Integer.parseInt(courseid));
+            puntosComprobaciones = fachada.realizarComprobaciones(token, Integer.parseInt(courseid), estadisticasCuestionarios, alertas);
             porcentajes=fachada.calcularPorcentajesMatriz(puntosComprobaciones,1);
             matriz=fachada.generarMatrizRolPerspectiva(porcentajes);
-            fases=fachada.generarInformeFases(puntosComprobaciones,1);
+            fases=fachada.generarInformeFases(puntosComprobaciones, estadisticasCuestionarios, 1);
             RegistryIO.guardarResultados(host, fullname, courseid,
                        new AnalysisSnapshot(nombreCurso, puntosComprobaciones, porcentajes, alertas.toString()));
             grafico=RegistryIO.generarGraficos(host, fullname, courseid);
@@ -94,6 +97,10 @@
 
     .accordion-button:not(.collapsed){
       color:#842029;background-color:#f8d7da;border-color:#f5c2c7
+    }
+
+    .toggle-cuestionarios{
+      display: none;
     }
     </style>
 </head>
@@ -163,6 +170,18 @@
               wanted[i].style.display = "block";
             }
             evt.currentTarget.className += " active";
+          }
+
+          function toggleCuestionarios() {
+            const cuestionarios = document.querySelectorAll('.toggle-cuestionarios');
+            for (let i = 0; i < cuestionarios.length; i++) {
+              const cuestionario = cuestionarios[i];
+              if (cuestionario.style.display === 'none') {
+                cuestionario.style.display = 'table-row';
+              } else {
+                cuestionario.style.display = 'none';
+              }
+            }
           }
           </script>
           <script>

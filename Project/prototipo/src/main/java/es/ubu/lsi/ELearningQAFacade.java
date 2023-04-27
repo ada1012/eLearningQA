@@ -61,7 +61,7 @@ public class ELearningQAFacade {
         return WebServiceClient.obtenerNombreCompleto(token, username, config.getHost());
     }
 
-    public double[] realizarComprobaciones(String token, long courseid, AlertLog registro) {
+    public double[] realizarComprobaciones(String token, long courseid, AlertLog registro, Map<Integer, Double> estadisticasCuestionarios) {
         Course curso= getCursoPorId(token, courseid);
         List<User> listaUsuarios= WebServiceClient.obtenerUsuarios(token, courseid, config.getHost());
         StatusList listaEstados=WebServiceClient.obtenerListaEstados(token, courseid, listaUsuarios, config.getHost());
@@ -82,21 +82,31 @@ public class ELearningQAFacade {
         List<Resource> recursosDesfasados=WebServiceClient.obtenerRecursosDesfasados(curso, listaRecursos);
         
         // Cuestionarios
-        
-        // Primero vamos a ver si hay cuestionarios (diseño)
         List<Quiz> quizzes = WebServiceClient.getQuizzes(courseid, config.getHost(), token);
-        List<Double> estadisticas = new ArrayList<Double>();
-        for (Quiz quiz : quizzes) {
-        	System.out.println("Quiz id: " + quiz.getId());
-        	Map<Integer, Double> grades = WebServiceClient.getQuizGrades(token, courseid, config.getHost(), quiz.getId());
-        	System.out.println("Grades: " + grades.size());
-        	for (Integer key : grades.keySet()) {
-                Double value = grades.get(key);
-                
-                System.out.println("Key: " + key + ", Value: " + value);
+        // List<Double> estadisticas = new ArrayList<Double>();
+        // for (Quiz quiz : quizzes) {
+        // 	System.out.println("Quiz id: " + quiz.getId());
+        // 	Map<Integer, Double> grades = WebServiceClient.getQuizGrades(token, courseid, config.getHost(), quiz.getId());
+        // 	System.out.println("Grades: " + grades.size());
+        // 	for (Integer key : grades.keySet()) {
+        //         Double value = grades.get(key);
+        //         
+        //         System.out.println("Key: " + key + ", Value: " + value);
+        //     }
+        //     // double estadistica = WebServiceClient.obtenerEstadisticasCuestionario(token, courseid, config.getHost(), quiz.getId());
+        //     // estadisticas.add(estadistica);
+        // }
+
+        // Calculamos los porcentajes
+        double porcentaje;
+        double sum = 0;
+        if (estadisticasCuestionarios.isEmpty()) {
+            porcentaje = 0;
+        } else {
+            for (Double estadistica : estadisticasCuestionarios.values()) {
+                sum += estadistica;
             }
-            double estadistica = WebServiceClient.obtenerEstadisticasCuestionario(token, courseid, config.getHost(), quiz.getId());
-            estadisticas.add(estadistica);
+            porcentaje = sum / estadisticasCuestionarios.size();
         }
         
         double[] puntosComprobaciones = new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -118,18 +128,28 @@ public class ELearningQAFacade {
         if(isCalificadorMuestraPonderacion(listaCalificadores, registro)){puntosComprobaciones[15]++;}
         if(isRespondenFeedbacks(listaAnalisis,listaUsuarios, registro)){puntosComprobaciones[16]++;}
         if(isUsaSurveys(listaSurveys, registro)){puntosComprobaciones[17]++;}
-        puntosComprobaciones[18] = porcentajeCuestionariosContestados(quizzes, estadisticas, registro);
+        puntosComprobaciones[18] = porcentajeCuestionariosContestados(quizzes, porcentaje, registro);
 
         return puntosComprobaciones;
     }
 
-    public String generarInformeFases(double[] puntos, int nroCursos) {
+    public Map<Integer, Double> generarEstadisticasCuestionarios(String token, long courseid) {
+        List<Quiz> quizzes = WebServiceClient.getQuizzes(courseid, config.getHost(), token);
+
+        if (!quizzes.isEmpty()) {
+            return WebServiceClient.obtenerEstadisticasCuestionarios(token, courseid, config.getHost(), quizzes);
+        }
+        
+        return null;
+    }
+
+    public String generarInformeFases(double[] puntos, Map<Integer, Double> estadisticasCuestionarios, int nroCursos) {
         double contadorDiseno=puntos[0]+puntos[1]+puntos[2]+puntos[3]+puntos[4]+puntos[5]+puntos[6];
         double contadorImplementacion=puntos[7]+puntos[8]+puntos[9]+puntos[10]+puntos[11];
         double contadorRealizacion=puntos[12]+puntos[13]+puntos[14]+puntos[15];
         double contadorEvaluacion=puntos[16]+puntos[17]+puntos[18];
         double contadorTotal=contadorDiseno+contadorImplementacion+contadorRealizacion+contadorEvaluacion;
-        return camposInformeFases[0]+generarCampoRelativo((float)contadorTotal/nroCursos, CHECKS_TOTAL) +
+        String tabla = camposInformeFases[0]+generarCampoRelativo((float)contadorTotal/nroCursos, CHECKS_TOTAL) +
                 camposInformeFases[1]+generarCampoRelativo((float)contadorDiseno/nroCursos, CHECKS_DISENO) +
                 generarFilas(new int[]{2, 0}, 7, puntos, nroCursos)+
                 camposInformeFases[9]+generarCampoRelativo((float)contadorImplementacion/nroCursos, CHECKS_IMPLEMENTACION) +
@@ -138,8 +158,18 @@ public class ELearningQAFacade {
                 generarFilas(new int[]{16, 12}, 4, puntos, nroCursos)+
                 camposInformeFases[20]+generarCampoRelativo((float)contadorEvaluacion/nroCursos, CHECKS_EVALUACION) +
                 generarFilas(new int[]{21, 16}, 2, puntos, nroCursos)+
-                camposInformeFases[23]+generarCampoRelativo((float)puntos[18], 1) +
-                camposInformeFases[24];
+                camposInformeFases[23]+generarCampoRelativo((float)puntos[18], 1);
+
+        if(estadisticasCuestionarios != null && !estadisticasCuestionarios.isEmpty()){
+            for (Map.Entry<Integer, Double> entry : estadisticasCuestionarios.entrySet()) {
+                tabla += "</tr><tr class=\"toggle-cuestionarios\" data-bs-toggle=\"tooltip\"> <td class=\"tg-ltgr\">Cuestionario " + entry.getKey() + "</td>" + generarCampoRelativo((float)(entry.getValue()/100), 1);
+                // tabla += camposInformeFases[24]+entry.getKey()+camposInformeFases[25]+entry.getValue();
+            }
+        }
+
+        tabla += camposInformeFases[24];
+
+        return tabla;
     }
 
     private String generarFilas(int[] posiciones, int cantidad, double[] puntos, int nroCursos){
@@ -237,8 +267,8 @@ public class ELearningQAFacade {
     }
 
     // Devuelve el porcentaje de cuestionarios contestados, sino se devuelve 0 y se añade un registro de alerta
-    public double porcentajeCuestionariosContestados(List<Quiz> quizzes, List<Double> estadisticas, AlertLog registro) {
-        return WebServiceClient.calculaPorcentajeCuestionarios(quizzes, estadisticas, registro);
+    public double porcentajeCuestionariosContestados(List<Quiz> quizzes, double porcentaje, AlertLog registro) {
+        return WebServiceClient.calculaPorcentajeCuestionarios(quizzes, porcentaje, registro);
     }
 
     public float porcentajeFraccion(float numerador, float denominador){

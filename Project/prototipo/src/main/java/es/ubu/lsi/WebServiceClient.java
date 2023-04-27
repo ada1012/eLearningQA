@@ -653,17 +653,12 @@ public class WebServiceClient {
     }
 
     // Método para calcular el porcentaje de alumnos que han respondido a un cuestionario
-    public static double calculaPorcentajeCuestionarios(List<Quiz> quizzes, List<Double> estadisticas, AlertLog registro){
-        double porcentaje=0;
+    public static double calculaPorcentajeCuestionarios(List<Quiz> quizzes, double porcentaje, AlertLog registro){
 
-        if (quizzes.size()==0 || estadisticas.size()==0){
+        if (quizzes.size()==0 || porcentaje==0){
             registro.guardarAlerta("evaluation estadisticquiz","No se han realizado cuestionarios");
             return 0;
         } else {
-            for (Double estadistica: estadisticas) {
-                porcentaje+=estadistica;
-            }
-            porcentaje=porcentaje/estadisticas.size();
             return porcentaje/100;
         }
     }
@@ -722,28 +717,41 @@ public class WebServiceClient {
 
         return grade;
     }
-    
-    // Devuelve el porcentaje de alumnos que intenta el cuestionario
-    public static double obtenerEstadisticasCuestionario(String token, long courseId, String host, int quizId) {
+
+    // Método para obtener las estadísticas de participación en cuestionarios
+    public static Map<Integer, Double> obtenerEstadisticasCuestionarios(String token, long courseId, String host, List<Quiz> quizzes) {
         List<User> usuarios = obtenerUsuarios(token, courseId, host);
         int totalAlumnos = usuarios.size();
-        int alumnosConIntento = 0;
-
+        Map<Integer, Integer> alumnosPorCuestionario = new HashMap<>();
+        List<Integer> quizIds = new ArrayList<>();
+        
+        for (Quiz quiz : quizzes) {
+            quizIds.add(quiz.getId());
+            alumnosPorCuestionario.put(quiz.getId(), 0);
+        }
+    
         for (User usuario : usuarios) {
             int userId = usuario.getId();
-            List<Attempt> attempts = getUserQuizAttempts(quizId, userId, host, token);
-            if (!attempts.isEmpty()) {
-                alumnosConIntento++;
+            List<Attempt> attempts = new ArrayList<>();
+            for (int quizId : quizIds) {
+                attempts.addAll(getUserQuizAttempts(quizId, userId, host, token));
+                if (!attempts.isEmpty()) {
+                    int contador = alumnosPorCuestionario.get(quizId);
+                    alumnosPorCuestionario.put(quizId, contador + 1);
+                    attempts.clear();
+                }
             }
         }
-
-        double porcentajeRealizado = ((double) alumnosConIntento / totalAlumnos) * 100;
-
-        System.out.println("Total de alumnos: " + totalAlumnos);
-        System.out.println("Alumnos que realizaron el cuestionario: " + alumnosConIntento);
-        System.out.println("Porcentaje de alumnos que realizaron el cuestionario: " + porcentajeRealizado + "%");
-        
-        return porcentajeRealizado;
+    
+        Map<Integer, Double> porcentajesRealizados = new HashMap<>();
+        for (int quizId : quizIds) {
+            int alumnosConIntento = alumnosPorCuestionario.get(quizId);
+            double porcentajeRealizado = ((double) alumnosConIntento / totalAlumnos) * 100;
+            porcentajesRealizados.put(quizId, porcentajeRealizado);
+            System.out.println("Porcentaje de alumnos que realizaron el cuestionario " + quizId + ": " + porcentajeRealizado + "%");
+        }
+    
+        return porcentajesRealizados;
     }
 
 
