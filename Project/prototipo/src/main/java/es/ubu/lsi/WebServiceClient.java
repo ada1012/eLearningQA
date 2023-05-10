@@ -717,6 +717,17 @@ public class WebServiceClient {
 
         return grade;
     }
+    
+    // Obtener un intento en un cuestionario
+    public static AttemptReviewList getQuizAttempt(int quizId, int attemptId, String host, String token) {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = host + "/webservice/rest/server.php?wsfunction=mod_quiz_get_attempt_review&moodlewsrestformat=json&wstoken="
+        		+ token + "&attemptid=" + attemptId;
+        
+        AttemptReviewList attemptReviewList= restTemplate.getForObject(url, AttemptReviewList.class);
+
+        return attemptReviewList;
+    }
 
     // Método para obtener las estadísticas de participación en cuestionarios
     public static Map<Integer, Double> obtenerEstadisticasCuestionarios(String token, long courseId, String host, List<Quiz> quizzes) {
@@ -752,6 +763,60 @@ public class WebServiceClient {
         }
     
         return porcentajesRealizados;
+    }
+
+    // Método para obtener los datos resumidos de un cuestionario
+    public static QuizSummary obtenerResumenCuestionario(String token, long courseId, String host, int quizId) {
+        QuizSummary quizSummary = new QuizSummary();
+        // Obtener los usuarios del curso
+        List<User> usuarios = obtenerUsuarios(token, courseId, host);
+        int contadorIntentos = 0;
+        int totalPreguntas = 0;
+        double nota = 0;
+        int intento = 0;
+        List<Double> notas = new ArrayList<>();
+        List<Integer> intentos = new ArrayList<>();
+        int totalAlumnos = usuarios.size();
+        
+        // Obtener los alumnos que participan en el cuestionario (alumnosExaminados)
+        for (User usuario : usuarios) {
+            int userId = usuario.getId();
+            List<Attempt> attempts = new ArrayList<>();
+            attempts.addAll(getUserQuizAttempts(quizId, userId, host, token));
+            if (!attempts.isEmpty()) {
+                contadorIntentos++;
+                attempts.clear();
+            }
+            for (Attempt attempt : attempts) {
+                int attemptId = (int) attempt.getId();
+                AttemptReviewList attemptReviewList = getQuizAttempt(quizId, attemptId, host, token);
+                totalPreguntas = attemptReviewList.getQuestions().size();
+                nota = Double.parseDouble(Double.parseDouble(attemptReviewList.getGrade()) > nota ? attemptReviewList.getGrade() : nota+"");
+                intento++;
+            }
+            intentos.add(intento);
+            notas.add(nota);
+            nota = 0;
+        }
+    
+        // Obtener objeto Quiz pasando el id
+        List<Quiz> quizzes = getQuizzes(courseId, host, token);
+        for (Quiz quiz : quizzes) {
+            if (quiz.getId() == quizId) {
+                quizSummary.setId(quizId);
+                quizSummary.setNombreCuestionario(quiz.getName());
+                quizSummary.setNotaMáxima(quiz.getGrade());
+                quizSummary.setMaxIntentos(quiz.getAttempts());
+            }
+        }
+        
+        quizSummary.setTotalAlumnos(totalAlumnos);
+        quizSummary.setAlumnosExaminados(contadorIntentos);
+        quizSummary.setTotalPreguntas(totalPreguntas);
+        quizSummary.setNotaMedia(notas.stream().mapToDouble(Double::doubleValue).average().orElse(0.0));
+        quizSummary.setMediaIntentos(intentos.stream().mapToInt(Integer::intValue).average().orElse(0.0));
+    
+        return quizSummary;
     }
 
 

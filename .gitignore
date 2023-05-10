@@ -1,3 +1,4 @@
 Project/prototipo/.idea
 Project/prototipo/registry/
-*.class
+.class
+.metadata

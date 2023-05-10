@@ -18,6 +18,7 @@
           double[] puntosComprobaciones;
           double[] puntosCurso;
           Map<Integer, Double> estadisticasCuestionarios = new HashMap<>();
+          String cuestionario="";
           String vinculo=(String)session.getAttribute("host")+"/course/view.php?id=";
           try{ELearningQAFacade fachada=(ELearningQAFacade)session.getAttribute("fachada");
           String courseid= request.getParameter("courseid");
@@ -43,6 +44,8 @@
             session.setAttribute("coursename",nombreCurso);
             // Almacenamos las estadísticas de cada cuestionario, será del tipo: Map<Id cuestionario, porcentaje de usuarios que han respondido>
             estadisticasCuestionarios=fachada.generarEstadisticasCuestionarios(token, Integer.parseInt(courseid));
+            // Resumen del cuestionario, incluirá también gráficos
+            
             puntosComprobaciones = fachada.realizarComprobaciones(token, Integer.parseInt(courseid), estadisticasCuestionarios, alertas);
             porcentajes=fachada.calcularPorcentajesMatriz(puntosComprobaciones,1);
             matriz=fachada.generarMatrizRolPerspectiva(porcentajes);
@@ -102,6 +105,10 @@
     .toggle-cuestionarios{
       display: none;
     }
+
+    .cuestionarios{
+      display: none;
+    }
     </style>
 </head>
 <body>
@@ -120,9 +127,11 @@
                 <div class="card m-2 me-0 p-1" style="width: 60%;overflow:auto;">
                     <%=fases%>
                 </div>
-                              <div class="card m-2 ms-0 p-1" style="width: 40%;overflow:auto;">
-                                <%=alertas%>
-
+                <div class="card m-2 ms-0 p-1 alertas" style="width: 40%;overflow:auto;">
+                  <%=alertas%>
+                </div>
+                <div class="card m-2 ms-0 p-1 cuestionarios" style="width: 40%;overflow:auto;">
+                  
                 </div>
         </div>
         <div id="Matriz" class="tabcontent w-100 p-0" style="display:none">

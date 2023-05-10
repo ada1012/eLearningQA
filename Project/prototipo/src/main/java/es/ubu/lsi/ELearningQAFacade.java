@@ -186,6 +186,13 @@ public class ELearningQAFacade {
         return filas.toString();
     }
 
+    public String generarInformeCuestionario(String token, long courseid, int quizId) {
+        QuizSummary quizSummary = WebServiceClient.obtenerResumenCuestionario(token, courseid, config.getHost(), quizId);
+        
+
+        return "";
+    }
+
 
     public boolean isSonVisiblesCondiciones(Course curso, AlertLog registro) {
         return WebServiceClient.sonVisiblesCondiciones(curso, registro);
