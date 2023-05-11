@@ -6,7 +6,7 @@ public class QuizSummary {
     private int totalAlumnos;
     private int alumnosExaminados;
     private int totalPreguntas;
-    private double notaMáxima;
+    private double notaMaxima;
     private double notaMedia;
     private int maxIntentos;
     private double mediaIntentos;
@@ -41,11 +41,11 @@ public class QuizSummary {
 	public void setTotalPreguntas(int totalPreguntas) {
 		this.totalPreguntas = totalPreguntas;
 	}
-	public double getNotaMáxima() {
-		return notaMáxima;
+	public double getNotaMaxima() {
+		return notaMaxima;
 	}
-	public void setNotaMáxima(double notaMáxima) {
-		this.notaMáxima = notaMáxima;
+	public void setNotaMaxima(double notaMaxima) {
+		this.notaMaxima = notaMaxima;
 	}
 	public double getNotaMedia() {
 		return notaMedia;

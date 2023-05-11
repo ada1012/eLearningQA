@@ -18,7 +18,7 @@
           double[] puntosComprobaciones;
           double[] puntosCurso;
           Map<Integer, Double> estadisticasCuestionarios = new HashMap<>();
-          String cuestionario="";
+          Map<Integer, String> cuestionarios = new HashMap<>();
           String vinculo=(String)session.getAttribute("host")+"/course/view.php?id=";
           try{ELearningQAFacade fachada=(ELearningQAFacade)session.getAttribute("fachada");
           String courseid= request.getParameter("courseid");
@@ -44,8 +44,8 @@
             session.setAttribute("coursename",nombreCurso);
             // Almacenamos las estadísticas de cada cuestionario, será del tipo: Map<Id cuestionario, porcentaje de usuarios que han respondido>
             estadisticasCuestionarios=fachada.generarEstadisticasCuestionarios(token, Integer.parseInt(courseid));
-            // Resumen del cuestionario, incluirá también gráficos
-            
+            // Generamos los informes de los cuestionarios
+            cuestionarios=fachada.generarInformesCuestionarios(token, Integer.parseInt(courseid));
             puntosComprobaciones = fachada.realizarComprobaciones(token, Integer.parseInt(courseid), alertas, estadisticasCuestionarios);
             porcentajes=fachada.calcularPorcentajesMatriz(puntosComprobaciones,1);
             matriz=fachada.generarMatrizRolPerspectiva(porcentajes);
@@ -102,12 +102,18 @@
       color:#842029;background-color:#f8d7da;border-color:#f5c2c7
     }
 
-    .toggle-cuestionarios{
+    .toggle-cuestionarios, .cuestionarios, .cuestionario{
       display: none;
     }
 
-    .cuestionarios{
-      display: none;
+    h1 {
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    p {
+      margin-bottom: 5px;
     }
     </style>
 </head>
@@ -131,7 +137,11 @@
                   <%=alertas%>
                 </div>
                 <div class="card m-2 ms-0 p-1 cuestionarios" style="width: 40%;overflow:auto;">
-                  
+                  <% for (Map.Entry<Integer, String> entry : cuestionarios.entrySet()) { %>
+                    <% if (entry.getValue() instanceof String) { %>
+                      <%= entry.getValue() %>
+                    <% } %>
+                  <% } %>
                 </div>
         </div>
         <div id="Matriz" class="tabcontent w-100 p-0" style="display:none">
@@ -152,6 +162,16 @@
 
           function openTab(evt, tab) {
             var i, tabcontent, tablinks;
+
+            const alertas = document.getElementsByClassName('alertas');
+            for (i = 0; i < alertas.length; i++) {
+              alertas[i].style.display = "block";
+            }
+            const cuestionariosDiv = document.getElementsByClassName('cuestionarios');
+            for (i = 0; i < cuestionariosDiv.length; i++) {
+              cuestionariosDiv[i].style.display = "none";
+            }
+
             tabcontent = document.getElementsByClassName("tabcontent");
             for (i = 0; i < tabcontent.length; i++) {
               tabcontent[i].style.display = "none";
@@ -191,6 +211,34 @@
                 cuestionario.style.display = 'none';
               }
             }
+          }
+
+          function muestraCuestionario(idCuestionario) {
+            // Quitar alertas
+            // const alertas = document.querySelector('.alertas');
+            // alertas.style.display = 'none';
+            // 
+            // const cuestionariosDiv = document.querySelector('.cuestionarios');
+            // cuestionariosDiv.style.display = 'block';
+            // const cuestionarios = document.querySelector('.cuestionario');
+            // cuestionarios.style.display = 'none';
+            // const cuestionario = document.querySelector('#' + idCuestionario);
+            // cuestionario.style.display = 'block';
+            const alertas = document.getElementsByClassName('alertas');
+            for (i = 0; i < alertas.length; i++) {
+              alertas[i].style.display = "none";
+            }
+
+            const cuestionariosDiv = document.getElementsByClassName('cuestionarios');
+            for (i = 0; i < cuestionariosDiv.length; i++) {
+              cuestionariosDiv[i].style.display = "block";
+            }
+            const cuestionarios = document.getElementsByClassName('cuestionario');
+            for (i = 0; i < cuestionarios.length; i++) {
+              cuestionarios[i].style.display = "none";
+            }
+            const cuestionario = document.getElementById(idCuestionario);
+            cuestionario.style.display = "block";
           }
           </script>
           <script>

@@ -653,14 +653,14 @@ public class WebServiceClient {
     }
 
     // Método para calcular el porcentaje de alumnos que han respondido a un cuestionario
-    public static double calculaPorcentajeCuestionarios(List<Quiz> quizzes, double porcentaje, AlertLog registro){
+    public static double calculaPorcentajeCuestionarios(List<Quiz> quizzes, double porcentaje, AlertLog registro, FacadeConfig config){
 
-        if (quizzes.size()==0 || porcentaje==0){
-            registro.guardarAlerta("evaluation estadisticquiz","No se han realizado cuestionarios");
-            return 0;
-        } else {
-            return porcentaje/100;
-        }
+        if (quizzes.size()==0) return 0;
+        
+        if  (porcentaje < (config.getMinQuizAnswerPercentage() * 100))
+            registro.guardarAlerta("evaluation estadisticquiz","No se han realizado más del " + config.getMinQuizAnswerPercentage() * 100 + " cuestionarios");
+        
+        return porcentaje/100;
     }
     
     // Método para obtener los cuestionarios de un curso
@@ -668,6 +668,7 @@ public class WebServiceClient {
     	RestTemplate restTemplate = new RestTemplate();
         String url= host + "/webservice/rest/server.php?wsfunction=mod_quiz_get_quizzes_by_courses&moodlewsrestformat=json&wstoken="
         		+token+ COURSEIDS_0 +courseId;
+
         QuizList listaCuestionarios= restTemplate.getForObject(url, QuizList.class);
         if (listaCuestionarios==null){return new ArrayList<>();}
         return listaCuestionarios.getQuizzes();
@@ -766,7 +767,7 @@ public class WebServiceClient {
     }
 
     // Método para obtener los datos resumidos de un cuestionario
-    public static QuizSummary obtenerResumenCuestionario(String token, long courseId, String host, int quizId) {
+    public static QuizSummary obtenerResumenCuestionario(String token, long courseId, String host, Quiz quiz) {
         QuizSummary quizSummary = new QuizSummary();
         // Obtener los usuarios del curso
         List<User> usuarios = obtenerUsuarios(token, courseId, host);
@@ -782,33 +783,30 @@ public class WebServiceClient {
         for (User usuario : usuarios) {
             int userId = usuario.getId();
             List<Attempt> attempts = new ArrayList<>();
-            attempts.addAll(getUserQuizAttempts(quizId, userId, host, token));
+            attempts.addAll(getUserQuizAttempts(quiz.getId(), userId, host, token));
+            for (Attempt attempt : attempts) {
+                int attemptId = (int) attempt.getId();
+                AttemptReviewList attemptReviewList = getQuizAttempt(quiz.getId(), attemptId, host, token);
+                totalPreguntas = attemptReviewList.getQuestions().size();
+                if (attemptReviewList.getGrade() != null) {
+	                nota = Double.parseDouble(Double.parseDouble(attemptReviewList.getGrade()) > nota ? attemptReviewList.getGrade() : nota+"");
+	                notas.add(nota);
+	                nota = 0;
+                }
+                intento++;
+            }
+            
+            intentos.add(intento);
             if (!attempts.isEmpty()) {
                 contadorIntentos++;
                 attempts.clear();
             }
-            for (Attempt attempt : attempts) {
-                int attemptId = (int) attempt.getId();
-                AttemptReviewList attemptReviewList = getQuizAttempt(quizId, attemptId, host, token);
-                totalPreguntas = attemptReviewList.getQuestions().size();
-                nota = Double.parseDouble(Double.parseDouble(attemptReviewList.getGrade()) > nota ? attemptReviewList.getGrade() : nota+"");
-                intento++;
-            }
-            intentos.add(intento);
-            notas.add(nota);
-            nota = 0;
         }
     
-        // Obtener objeto Quiz pasando el id
-        List<Quiz> quizzes = getQuizzes(courseId, host, token);
-        for (Quiz quiz : quizzes) {
-            if (quiz.getId() == quizId) {
-                quizSummary.setId(quizId);
-                quizSummary.setNombreCuestionario(quiz.getName());
-                quizSummary.setNotaMáxima(quiz.getGrade());
-                quizSummary.setMaxIntentos(quiz.getAttempts());
-            }
-        }
+        quizSummary.setId(quiz.getId());
+        quizSummary.setNombreCuestionario(quiz.getName());
+        quizSummary.setNotaMaxima(quiz.getGrade());
+        quizSummary.setMaxIntentos(quiz.getAttempts());
         
         quizSummary.setTotalAlumnos(totalAlumnos);
         quizSummary.setAlumnosExaminados(contadorIntentos);

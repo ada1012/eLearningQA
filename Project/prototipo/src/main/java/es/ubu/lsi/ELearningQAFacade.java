@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -157,17 +158,20 @@ public class ELearningQAFacade {
                 camposInformeFases[15]+generarCampoRelativo((float)contadorRealizacion/nroCursos, CHECKS_REALIZACION) +
                 generarFilas(new int[]{16, 12}, 4, puntos, nroCursos)+
                 camposInformeFases[20]+generarCampoRelativo((float)contadorEvaluacion/nroCursos, CHECKS_EVALUACION) +
-                generarFilas(new int[]{21, 16}, 2, puntos, nroCursos)+
-                camposInformeFases[23]+generarCampoRelativo((float)puntos[18], 1);
+                generarFilas(new int[]{21, 16}, 2, puntos, nroCursos);
+        
+        // Porcentaje de cuestionarios realizados
+        tabla += "</tr><tr onclick=\"openInfo(event, 'estadisticquiz')\" data-bs-toggle=\"tooltip\" title=\"Se comprueba qué porcentaje de alumno realiza los respectivos cursos.\"> <td class=\"tg-ltgr\">Al menos un " + config.getMinQuizAnswerPercentage() * 100 + "% responde al cuestionario  <button onclick=\"toggleCuestionarios()\">Desplegar</button></td>" +
+                generarCampoRelativo((float)puntos[18], 1);
 
         if(estadisticasCuestionarios != null && !estadisticasCuestionarios.isEmpty()){
             for (Map.Entry<Integer, Double> entry : estadisticasCuestionarios.entrySet()) {
-                tabla += "</tr><tr class=\"toggle-cuestionarios\" data-bs-toggle=\"tooltip\"> <td class=\"tg-ltgr\">Cuestionario " + entry.getKey() + "</td>" + generarCampoRelativo((float)(entry.getValue()/100), 1);
+                tabla += "</tr><tr class=\"toggle-cuestionarios\" data-bs-toggle=\"tooltip\"> <td class=\"tg-ltgr\">Cuestionario " + entry.getKey() + "  <button onclick=\"muestraCuestionario(" + entry.getKey() + ")\">Resumen</button></td>" + generarCampoRelativo((float)(entry.getValue()/100), 1);
                 // tabla += camposInformeFases[24]+entry.getKey()+camposInformeFases[25]+entry.getValue();
             }
         }
 
-        tabla += camposInformeFases[24];
+        tabla += camposInformeFases[23];
 
         return tabla;
     }
@@ -186,11 +190,38 @@ public class ELearningQAFacade {
         return filas.toString();
     }
 
-    public String generarInformeCuestionario(String token, long courseid, int quizId) {
-        QuizSummary quizSummary = WebServiceClient.obtenerResumenCuestionario(token, courseid, config.getHost(), quizId);
+    public Map<Integer, String> generarInformesCuestionarios(String token, long courseid) {
+        // Obtenemos los cuestionarios
+        List<Quiz> quizzes = WebServiceClient.getQuizzes(courseid, config.getHost(), token);
+        Map<Integer, String> informes = new HashMap<>();
         
+        // Por cada cuestionario, generamos su informe
+        for (Quiz quiz : quizzes) {
+            String informe = generarInformeCuestionario(token, courseid, quiz);
+            // Creamos una relación entre el id del cuestionario y su informe
+            informes.put(quiz.getId(), informe);
+        }
 
-        return "";
+        return informes;
+    }
+
+    public String generarInformeCuestionario(String token, long courseid, Quiz quiz) {
+        QuizSummary quizSummary = WebServiceClient.obtenerResumenCuestionario(token, courseid, config.getHost(), quiz);
+        String informe = "";
+
+        if (quizSummary != null) {
+            informe += "<div class=\"cuestionario\" id=\"" + quiz.getId() + "\">";
+            informe += "<h1>Cuestionario " + quiz.getId() + " - " + quizSummary.getNombreCuestionario() + "</h1>";
+            informe += "<p>Número de alumnos: " + quizSummary.getTotalAlumnos() + "</p>";
+            informe += "<p>Número de alumnos examinados: " + quizSummary.getAlumnosExaminados() + "</p>";
+            informe += "<p>Número de preguntas: " + quizSummary.getTotalPreguntas() + "</p>";
+            informe += "<p>Nota máxima: " + quizSummary.getNotaMaxima() + "</p>";
+            informe += "<p>Nota media: " + quizSummary.getNotaMedia() + "</p>";
+            informe += "<p>Media de intentos: " + quizSummary.getMediaIntentos() + "</p>";
+            informe += "</div>";
+
+        }
+        return informe;
     }
 
 
@@ -275,7 +306,7 @@ public class ELearningQAFacade {
 
     // Devuelve el porcentaje de cuestionarios contestados, sino se devuelve 0 y se añade un registro de alerta
     public double porcentajeCuestionariosContestados(List<Quiz> quizzes, double porcentaje, AlertLog registro) {
-        return WebServiceClient.calculaPorcentajeCuestionarios(quizzes, porcentaje, registro);
+        return WebServiceClient.calculaPorcentajeCuestionarios(quizzes, porcentaje, registro, config);
     }
 
     public float porcentajeFraccion(float numerador, float denominador){
