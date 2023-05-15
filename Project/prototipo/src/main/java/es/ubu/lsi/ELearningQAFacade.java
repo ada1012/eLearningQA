@@ -70,8 +70,6 @@ public class ELearningQAFacade {
         List<Group> listaGrupos=WebServiceClient.obtenerListaGrupos(token, courseid, config.getHost(), registro);
         List<Assignment> listaTareas=WebServiceClient.obtenerListaTareas(token, courseid, config.getHost());
         List<Table> listaCalificadores=WebServiceClient.obtenerCalificadores(token, courseid, config.getHost());
-        
-        // Obtener recursos no funciona para Pilgrimage
         List<Resource> listaRecursos=WebServiceClient.obtenerRecursos(token, courseid, config.getHost());
         List<CourseModule> listaModulosTareas=WebServiceClient.obtenerModulosTareas(token, listaTareas, config.getHost());
         List<Post> listaPosts=WebServiceClient.obtenerListaPosts(token, courseid, config.getHost());
@@ -94,7 +92,6 @@ public class ELearningQAFacade {
             for (QuizSummary quizSummary : estadisticasCuestionarios) {
                 if (quizSummary.getTotalAlumnos() > 0 && quizSummary.getAlumnosExaminados() > 0)
                     sum += (float)((quizSummary.getAlumnosExaminados()*100)/quizSummary.getTotalAlumnos());
-                    System.out.println("sum: " + sum);
             }
             porcentaje = sum / estadisticasCuestionarios.size();
         }
@@ -181,9 +178,11 @@ public class ELearningQAFacade {
         ArrayList<QuizSummary> listaCuestionarios = new ArrayList<>();
 
         for (Quiz quiz : quizzes) {
-            QuizSummary quizSummary = WebServiceClient.obtenerResumenCuestionario(token, courseid, config.getHost(), quiz);
-            if (quizSummary != null) {
-                listaCuestionarios.add(quizSummary);
+            if (quiz.isVisible()) {
+                QuizSummary quizSummary = WebServiceClient.obtenerResumenCuestionario(token, courseid, config.getHost(), quiz);
+                if (quizSummary != null) {
+                    listaCuestionarios.add(quizSummary);
+                }
             }
         }
         return listaCuestionarios;
@@ -211,9 +210,11 @@ public class ELearningQAFacade {
             informe += "<p>Número de alumnos: " + quizSummary.getTotalAlumnos() + "</p>";
             informe += "<p>Número de alumnos examinados: " + quizSummary.getAlumnosExaminados() + "</p>";
             informe += "<p>Número de preguntas: " + quizSummary.getTotalPreguntas() + "</p>";
-            informe += "<p>Nota máxima: " + quizSummary.getNotaMaxima() + "</p>";
-            informe += "<p>Nota media: " + quizSummary.getNotaMedia() + "</p>";
-            informe += "<p>Media de intentos: " + quizSummary.getMediaIntentos() + "</p>";
+            informe += "<p>Nota máxima: " + ((int)(quizSummary.getNotaMaxima() * 100)) / 100.00 + "</p>";
+            informe += "<p>Nota media: " + ((int)(quizSummary.getNotaMedia() * 100)) / 100.00 + "</p>";
+            informe += "<p>Media de intentos: " + ((int)(quizSummary.getMediaIntentos() * 100)) / 100.00 + "</p>";
+            informe += "<p>Skewness: " + ((int)(quizSummary.getSkewness() * 100)) / 100.00 + "</p>";
+            informe += "<p>Kurtosis: " + ((int)(quizSummary.getKurtosis() * 100)) / 100.00 + "</p>";
             informe += "</div>";
 
         }

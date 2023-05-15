@@ -9,7 +9,6 @@
           String fases="";
           String nombreCurso="";
           String token=(String)session.getAttribute("token");
-          System.out.println(token);
           String host=(String)session.getAttribute("host");
           String fullname=(String)session.getAttribute("fullname");
           String grafico="";

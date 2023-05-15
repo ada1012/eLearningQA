@@ -10,6 +10,8 @@ public class QuizSummary {
     private double notaMedia;
     private int maxIntentos;
     private double mediaIntentos;
+	private double skewness;
+	private double kurtosis;
     
 	public int getId() {
 		return id;
@@ -66,5 +68,17 @@ public class QuizSummary {
 		this.mediaIntentos = mediaIntentos;
 	}
 
+	public double getSkewness() {
+		return skewness;
+	}
+	public void setSkewness(double skewness) {
+		this.skewness = skewness;
+	}
+	public double getKurtosis() {
+		return kurtosis;
+	}
+	public void setKurtosis(double kurtosis) {
+		this.kurtosis = kurtosis;
+	}
 
 }

@@ -668,7 +668,7 @@ public class WebServiceClient {
     	RestTemplate restTemplate = new RestTemplate();
         String url= host + "/webservice/rest/server.php?wsfunction=mod_quiz_get_quizzes_by_courses&moodlewsrestformat=json&wstoken="
         		+token+ COURSEIDS_0 +courseId;
-
+        
         QuizList listaCuestionarios= restTemplate.getForObject(url, QuizList.class);
         if (listaCuestionarios==null){return new ArrayList<>();}
         return listaCuestionarios.getQuizzes();
@@ -760,7 +760,6 @@ public class WebServiceClient {
             int alumnosConIntento = alumnosPorCuestionario.get(quizId);
             double porcentajeRealizado = ((double) alumnosConIntento / totalAlumnos) * 100;
             porcentajesRealizados.put(quizId, porcentajeRealizado);
-            System.out.println("Porcentaje de alumnos que realizaron el cuestionario " + quizId + ": " + porcentajeRealizado + "%");
         }
     
         return porcentajesRealizados;
@@ -774,13 +773,13 @@ public class WebServiceClient {
         int contadorIntentos = 0;
         int totalPreguntas = 0;
         double nota = 0;
-        int intento = 0;
         List<Double> notas = new ArrayList<>();
         List<Integer> intentos = new ArrayList<>();
         int totalAlumnos = usuarios.size();
         
         // Obtener los alumnos que participan en el cuestionario (alumnosExaminados)
         for (User usuario : usuarios) {
+            int intento = 0;
             int userId = usuario.getId();
             List<Attempt> attempts = new ArrayList<>();
             attempts.addAll(getUserQuizAttempts(quiz.getId(), userId, host, token));
@@ -813,9 +812,62 @@ public class WebServiceClient {
         quizSummary.setTotalPreguntas(totalPreguntas);
         quizSummary.setNotaMedia(notas.stream().mapToDouble(Double::doubleValue).average().orElse(0.0));
         quizSummary.setMediaIntentos(intentos.stream().mapToInt(Integer::intValue).average().orElse(0.0));
+
+        quizSummary.setSkewness(calculaSkewness(notas));
+        quizSummary.setKurtosis(calculaKurtosis(notas));
     
         return quizSummary;
     }
 
+    // Método para calcula la asimetría o skewness de un cuestionario
+    public static double calculaSkewness(List<Double> notas) {
+        int n = notas.size();
+        double media = calculaMedia(notas);
+        double stdDev = calculaDesviacionEstandar(notas, media);
+
+        double sumaDiferencia = 0.0;
+        for (double nota : notas) {
+            double diferencia = nota - media;
+            sumaDiferencia += Math.pow(diferencia, 3);
+        }
+
+        double skewness = (sumaDiferencia / (stdDev * stdDev * stdDev * (n - 1))) * Math.sqrt(n);
+        return skewness;
+    }
+
+    // Método para calcular la media de un cuestionario
+    public static double calculaMedia(List<Double> notas) {
+        int suma = 0;
+        for (double nota : notas) {
+            suma += nota;
+        }
+        return (double) suma / notas.size();
+    }
+
+    // Método para calcular la desviación estándar de un cuestionario
+    public static double calculaDesviacionEstandar(List<Double> notas, double media) {
+        double sumaDiferencia = 0.0;
+        for (double nota : notas) {
+            double diferencia = nota - media;
+            sumaDiferencia += diferencia * diferencia;
+        }
+        return Math.sqrt(sumaDiferencia / (notas.size() - 1));
+    }
+
+    // Método para calcular la Kurtosis de un cuestionario
+    public static double calculaKurtosis(List<Double> notas) {
+        int n = notas.size();
+        double media = calculaMedia(notas);
+        double stdDev = calculaDesviacionEstandar(notas, media);
+
+        double sumaDiferencia = 0.0;
+        for (double nota : notas) {
+            double diferencia = nota - media;
+            sumaDiferencia += Math.pow(diferencia, 4);
+        }
+
+        double curtosis = (sumaDiferencia / (stdDev * stdDev * stdDev * stdDev * (n - 1))) * n * (n + 1) / ((n - 1) * (n - 2) * (n - 3));
+        return curtosis;
+    }
 
 }
