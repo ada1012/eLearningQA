@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="java.util.List, java.util.Map, java.util.HashMap, es.ubu.lsi.ELearningQAFacade, es.ubu.lsi.AlertLog, es.ubu.lsi.RegistryIO, es.ubu.lsi.AnalysisSnapshot, es.ubu.lsi.model.Course, org.apache.logging.log4j.LogManager, org.apache.logging.log4j.Logger" %>
+<%@ page import="java.util.List, java.util.ArrayList, java.util.Map, java.util.HashMap, es.ubu.lsi.ELearningQAFacade, es.ubu.lsi.AlertLog, es.ubu.lsi.RegistryIO, es.ubu.lsi.AnalysisSnapshot, es.ubu.lsi.model.Course, es.ubu.lsi.model.QuizSummary, org.apache.logging.log4j.LogManager, org.apache.logging.log4j.Logger" %>
 <html lang="en">
 <head>
     <%String informe="";
@@ -18,6 +18,7 @@
           double[] puntosComprobaciones;
           double[] puntosCurso;
           Map<Integer, Double> estadisticasCuestionarios = new HashMap<>();
+          List<QuizSummary> resumenCuestionarios = new ArrayList<>();
           Map<Integer, String> cuestionarios = new HashMap<>();
           String vinculo=(String)session.getAttribute("host")+"/course/view.php?id=";
           try{ELearningQAFacade fachada=(ELearningQAFacade)session.getAttribute("fachada");
@@ -28,7 +29,7 @@
             List<Course> listaCursos=fachada.getListaCursos(token);
             for(Course curso:listaCursos){
               alertas.guardarTitulo(curso.getFullname());
-              puntosCurso = fachada.realizarComprobaciones(token, curso.getId(), alertas, estadisticasCuestionarios);
+              puntosCurso = fachada.realizarComprobaciones(token, curso.getId(), alertas, resumenCuestionarios);
               for(int i=0;i<puntosComprobaciones.length;i++){
                 puntosComprobaciones[i]+=puntosCurso[i];
               }
@@ -36,20 +37,20 @@
             nombreCurso="Informe general de cursos";
             porcentajes=fachada.calcularPorcentajesMatriz(puntosComprobaciones, listaCursos.size());
             matriz=fachada.generarMatrizRolPerspectiva(porcentajes);
-            fases=fachada.generarInformeFases(puntosComprobaciones, estadisticasCuestionarios, listaCursos.size());
+            fases=fachada.generarInformeFases(puntosComprobaciones, resumenCuestionarios, listaCursos.size());
           }else{
             Course curso= fachada.getCursoPorId(token, Integer.parseInt(courseid));
             alertas.setCourseid(Integer.parseInt(courseid));
             nombreCurso=curso.getFullname();
             session.setAttribute("coursename",nombreCurso);
-            // Almacenamos las estadísticas de cada cuestionario, será del tipo: Map<Id cuestionario, porcentaje de usuarios que han respondido>
-            estadisticasCuestionarios=fachada.generarEstadisticasCuestionarios(token, Integer.parseInt(courseid));
+            // Obtener resumenes de cuestionarios
+            resumenCuestionarios=fachada.generarListaCuestionarios(token, Integer.parseInt(courseid));
             // Generamos los informes de los cuestionarios
-            cuestionarios=fachada.generarInformesCuestionarios(token, Integer.parseInt(courseid));
-            puntosComprobaciones = fachada.realizarComprobaciones(token, Integer.parseInt(courseid), alertas, estadisticasCuestionarios);
+            cuestionarios=fachada.generarInformesCuestionarios(token, Integer.parseInt(courseid), resumenCuestionarios);
+            puntosComprobaciones = fachada.realizarComprobaciones(token, Integer.parseInt(courseid), alertas, resumenCuestionarios);
             porcentajes=fachada.calcularPorcentajesMatriz(puntosComprobaciones,1);
             matriz=fachada.generarMatrizRolPerspectiva(porcentajes);
-            fases=fachada.generarInformeFases(puntosComprobaciones, estadisticasCuestionarios, 1);
+            fases=fachada.generarInformeFases(puntosComprobaciones, resumenCuestionarios, 1);
             RegistryIO.guardarResultados(host, fullname, courseid,
                        new AnalysisSnapshot(nombreCurso, puntosComprobaciones, porcentajes, alertas.toString()));
             grafico=RegistryIO.generarGraficos(host, fullname, courseid);
