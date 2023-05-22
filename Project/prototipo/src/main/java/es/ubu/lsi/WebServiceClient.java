@@ -791,6 +791,8 @@ public class WebServiceClient {
 	                nota = Double.parseDouble(Double.parseDouble(attemptReviewList.getGrade()) > nota ? attemptReviewList.getGrade() : nota+"");
 	                notas.add(nota);
 	                nota = 0;
+                } else {
+                    notas.add(nota);
                 }
                 intento++;
             }
@@ -831,13 +833,13 @@ public class WebServiceClient {
             sumaDiferencia += Math.pow(diferencia, 3);
         }
 
-        double skewness = (sumaDiferencia / (stdDev * stdDev * stdDev * (n - 1))) * Math.sqrt(n);
+        double skewness = sumaDiferencia / (stdDev * stdDev * stdDev * (n - 1));
         return skewness;
     }
 
     // Método para calcular la media de un cuestionario
     public static double calculaMedia(List<Double> notas) {
-        int suma = 0;
+        double suma = 0;
         for (double nota : notas) {
             suma += nota;
         }
@@ -866,7 +868,7 @@ public class WebServiceClient {
             sumaDiferencia += Math.pow(diferencia, 4);
         }
 
-        double curtosis = (sumaDiferencia / (stdDev * stdDev * stdDev * stdDev * (n - 1))) * n * (n + 1) / ((n - 1) * (n - 2) * (n - 3));
+        double curtosis = sumaDiferencia / (stdDev * stdDev * stdDev * stdDev * (n - 1));
         return curtosis;
     }
 
@@ -896,7 +898,7 @@ public class WebServiceClient {
                 }
             }
         }
-
+        
         for (int idPregunta : notas.keySet()) {
             double notaMediaPregunta = notas.get(idPregunta) / usuarios.size();
             double puntuacionMaxima = notasMaximas.get(idPregunta);
