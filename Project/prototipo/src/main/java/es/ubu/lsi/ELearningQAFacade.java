@@ -144,7 +144,7 @@ public class ELearningQAFacade {
                 if (quizSummary.getTotalAlumnos() > 0 && quizSummary.getAlumnosExaminados() > 0)
                     porcentaje = (float)((quizSummary.getAlumnosExaminados()*100)/quizSummary.getTotalAlumnos())/100;
 
-                tabla += "</tr><tr class=\"toggle-cuestionarios\" data-bs-toggle=\"tooltip\"> <td class=\"tg-ltgr\">Cuestionario " + quizSummary.getNombreCuestionario() + "  <button onclick=\"muestraCuestionario(" + quizSummary.getId() + ")\">Resumen</button></td>" + generarCampoRelativo(porcentaje, 1);
+                tabla += "</tr><tr class=\"toggle-cuestionarios\" data-bs-toggle=\"tooltip\"> <td class=\"tg-ltgr\"onclick=\"muestraCuestionario(" + quizSummary.getId() + ")\">Cuestionario " + quizSummary.getNombreCuestionario() + " </td>" + generarCampoRelativo(porcentaje, 1);
                 // tabla += camposInformeFases[24]+entry.getKey()+camposInformeFases[25]+entry.getValue();
             }
         }
@@ -219,6 +219,50 @@ public class ELearningQAFacade {
 
         }
         return informe;
+    }
+
+    // Método para obtener la relación entre el id de un cuestionario y las preguntas que lo componen
+    public Map<Integer, int[]> generarGraficoPreguntas(String token, long courseid) {
+        List<EstadisticaNotasPregunta> estadisticas = new ArrayList<>();
+        // Obtenemos los cuestionarios
+        List<Quiz> quizzes = WebServiceClient.getQuizzes(courseid, config.getHost(), token);
+        Map<Integer, int[]> informes = new HashMap<>();
+        for (Quiz quiz : quizzes) {
+            if (quiz.isVisible()) {
+                estadisticas = WebServiceClient.obtenerEstadisticasNotasPregunta(config.getHost(), token, quiz);
+                int[] idPreguntas = new int[estadisticas.size()];
+                int i = 0;
+                for (EstadisticaNotasPregunta estadistica : estadisticas) {
+                    idPreguntas[i] = estadistica.getIdPregunta();
+                    i++;
+                }
+                informes.put(quiz.getId(), idPreguntas);
+            }
+        }
+
+        return informes;
+    }
+    
+    // Método para obtener la relación entre el id de un cuestionario y las notas medias por pregunta
+    public Map<Integer, double[]> generarGraficoNotas(String token, long courseid) {
+        List<EstadisticaNotasPregunta> estadisticas = new ArrayList<>();
+        // Obtenemos los cuestionarios
+        List<Quiz> quizzes = WebServiceClient.getQuizzes(courseid, config.getHost(), token);
+        Map<Integer, double[]> informes = new HashMap<>();
+        for (Quiz quiz : quizzes) {
+            if (quiz.isVisible()) {
+                estadisticas = WebServiceClient.obtenerEstadisticasNotasPregunta(config.getHost(), token, quiz);
+                double[] notaMediaPreguntas = new double[estadisticas.size()];
+                int i = 0;
+                for (EstadisticaNotasPregunta estadistica : estadisticas) {
+                    notaMediaPreguntas[i] = estadistica.getNotaMediaPregunta();
+                    i++;
+                }
+                informes.put(quiz.getId(), notaMediaPreguntas);
+            }
+        }
+
+        return informes;
     }
 
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="java.util.List, java.util.ArrayList, java.util.Map, java.util.HashMap, es.ubu.lsi.ELearningQAFacade, es.ubu.lsi.AlertLog, es.ubu.lsi.RegistryIO, es.ubu.lsi.AnalysisSnapshot, es.ubu.lsi.model.Course, es.ubu.lsi.model.QuizSummary, org.apache.logging.log4j.LogManager, org.apache.logging.log4j.Logger" %>
+<%@ page import="java.util.List, java.util.Arrays, java.util.ArrayList, java.util.Map, java.util.HashMap, es.ubu.lsi.ELearningQAFacade, es.ubu.lsi.AlertLog, es.ubu.lsi.RegistryIO, es.ubu.lsi.AnalysisSnapshot, es.ubu.lsi.model.Course, es.ubu.lsi.model.QuizSummary, org.apache.logging.log4j.LogManager, org.apache.logging.log4j.Logger" %>
 <html lang="en">
 <head>
     <%String informe="";
@@ -19,6 +19,13 @@
           Map<Integer, Double> estadisticasCuestionarios = new HashMap<>();
           List<QuizSummary> resumenCuestionarios = new ArrayList<>();
           Map<Integer, String> cuestionarios = new HashMap<>();
+
+          // Relación de cuestionarios con sus gráficos
+          // graficoPreguntas es un mapa que relaciona el id del cuestionario con un array del id de las preguntas
+          // graficoNotas es un mapa que relaciona el id del cuestionario con un array de las notas de las preguntas
+          Map<Integer, int[]> graficoPreguntas = new HashMap<>();
+          Map<Integer, double[]> graficoNotas = new HashMap<>();
+
           String vinculo=(String)session.getAttribute("host")+"/course/view.php?id=";
           try{ELearningQAFacade fachada=(ELearningQAFacade)session.getAttribute("fachada");
           String courseid= request.getParameter("courseid");
@@ -46,6 +53,10 @@
             resumenCuestionarios=fachada.generarListaCuestionarios(token, Integer.parseInt(courseid));
             // Generamos los informes de los cuestionarios
             cuestionarios=fachada.generarInformesCuestionarios(token, Integer.parseInt(courseid), resumenCuestionarios);
+            // Generamos primer grafico
+            // Obtenemos los datos para el grafico
+            graficoPreguntas=fachada.generarGraficoPreguntas(token, Integer.parseInt(courseid));
+            graficoNotas=fachada.generarGraficoNotas(token, Integer.parseInt(courseid));
             puntosComprobaciones = fachada.realizarComprobaciones(token, Integer.parseInt(courseid), alertas, resumenCuestionarios);
             porcentajes=fachada.calcularPorcentajesMatriz(puntosComprobaciones,1);
             matriz=fachada.generarMatrizRolPerspectiva(porcentajes);
@@ -140,6 +151,31 @@
                   <% for (Map.Entry<Integer, String> entry : cuestionarios.entrySet()) { %>
                     <% if (entry.getValue() instanceof String) { %>
                       <%= entry.getValue() %>
+                      <div class="cuestionario" id="grafico<%=entry.getKey()%>">
+                        <script>
+                          var idPreguntas = <%=Arrays.toString(graficoPreguntas.get(entry.getKey()))%>;
+                          var notasMedias = <%=Arrays.toString(graficoNotas.get(entry.getKey()))%>;
+
+                          // Crea los datos para el gráfico de barras
+                          var data = [{
+                            type: 'bar',
+                            x: idPreguntas,
+                            y: notasMedias
+                          }];
+
+                          // Crea el diseño del gráfico
+                          var layout = {
+                            title: 'Gráfico de barras',
+                            xaxis: { title: 'ID de Pregunta' },
+                            yaxis: { title: 'Nota Media' }
+                          };
+                          
+                          if (idPreguntas.length > 0) {
+                            // Crea el gráfico
+                            Plotly.newPlot('grafico<%=entry.getKey()%>', data, layout);
+                          }
+                        </script>
+                      </div>
                     <% } %>
                   <% } %>
                 </div>
@@ -185,6 +221,17 @@
           }
 
           function openInfo(evt, category) {
+            // Oculta los cuestionarios
+            const cuestionarios = document.getElementsByClassName('cuestionarios');
+            for (i = 0; i < cuestionarios.length; i++) {
+              cuestionarios[i].style.display = "none";
+            }
+            // Muestra las alertas
+            const alertas = document.getElementsByClassName('alertas');
+            for (i = 0; i < alertas.length; i++) {
+              alertas[i].style.display = "block";
+            }
+
             var i, ltgr, infolines, wanted;
             ltgr = document.getElementsByTagName("tr");
             for (i = 0; i < ltgr.length; i++) {
@@ -214,31 +261,28 @@
           }
 
           function muestraCuestionario(idCuestionario) {
-            // Quitar alertas
-            // const alertas = document.querySelector('.alertas');
-            // alertas.style.display = 'none';
-            // 
-            // const cuestionariosDiv = document.querySelector('.cuestionarios');
-            // cuestionariosDiv.style.display = 'block';
-            // const cuestionarios = document.querySelector('.cuestionario');
-            // cuestionarios.style.display = 'none';
-            // const cuestionario = document.querySelector('#' + idCuestionario);
-            // cuestionario.style.display = 'block';
+            // Oculta todas las alertas
             const alertas = document.getElementsByClassName('alertas');
             for (i = 0; i < alertas.length; i++) {
               alertas[i].style.display = "none";
             }
 
+            // Muestra el componente de cuestionarios
             const cuestionariosDiv = document.getElementsByClassName('cuestionarios');
             for (i = 0; i < cuestionariosDiv.length; i++) {
               cuestionariosDiv[i].style.display = "block";
             }
+            // Oculta todos los cuestionarios
             const cuestionarios = document.getElementsByClassName('cuestionario');
             for (i = 0; i < cuestionarios.length; i++) {
               cuestionarios[i].style.display = "none";
             }
+            // Muestra el cuestionario seleccionado
             const cuestionario = document.getElementById(idCuestionario);
             cuestionario.style.display = "block";
+            // Muestra el gráfico del cuestionario seleccionado
+            const grafico = document.getElementById("grafico"+idCuestionario);
+            grafico.style.display = "block";
           }
           </script>
           <script>

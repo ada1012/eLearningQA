@@ -2,36 +2,39 @@ package es.ubu.lsi.model;
 
 public class EstadisticaNotasPregunta {
     private int idPregunta;
-    private int puntuacionMaxima;
-    private double notaMediaPrgunta;
+    private double puntuacionMaxima;
+    private double notaMediaPregunta;
 
-    public EstadisticaNotasPregunta(int idPregunta, int puntuacionMaxima, double notaMediaPrgunta) {
+    public EstadisticaNotasPregunta(int idPregunta, double puntuacionMaxima, double notaMediaPregunta) {
         this.idPregunta = idPregunta;
         this.puntuacionMaxima = puntuacionMaxima;
-        this.notaMediaPrgunta = notaMediaPrgunta;
+        this.notaMediaPregunta = notaMediaPregunta;
+    }
+
+    public EstadisticaNotasPregunta() {
     }
 
     public int getIdPregunta() {
         return idPregunta;
     }
 
-    public int getPuntuacionMaxima() {
+    public double getPuntuacionMaxima() {
         return puntuacionMaxima;
     }
 
-    public double getNotaMediaPrgunta() {
-        return notaMediaPrgunta;
+    public double getNotaMediaPregunta() {
+        return notaMediaPregunta;
     }
 
     public void setIdPregunta(int idPregunta) {
         this.idPregunta = idPregunta;
     }
 
-    public void setPuntuacionMaxima(int puntuacionMaxima) {
+    public void setPuntuacionMaxima(double puntuacionMaxima) {
         this.puntuacionMaxima = puntuacionMaxima;
     }
 
-    public void setNotaMediaPrgunta(double notaMediaPrgunta) {
-        this.notaMediaPrgunta = notaMediaPrgunta;
+    public void setNotaMediaPregunta(double notaMediaPregunta) {
+        this.notaMediaPregunta = notaMediaPregunta;
     }
 }

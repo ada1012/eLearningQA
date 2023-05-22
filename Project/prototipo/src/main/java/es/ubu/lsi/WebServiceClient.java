@@ -870,4 +870,43 @@ public class WebServiceClient {
         return curtosis;
     }
 
+    // Método para rellenar los datos del gráfico notas/preguntas de un cuestionario
+    public static List<EstadisticaNotasPregunta> obtenerEstadisticasNotasPregunta(String host, String token, Quiz quiz) {
+        List<EstadisticaNotasPregunta> estadisticasNotasPregunta = new ArrayList<>();
+        List<Attempt> attempts = new ArrayList<>();
+        List<User> usuarios = obtenerUsuarios(token, quiz.getCourse(), host);
+
+        Map<Integer, Double> notas = new HashMap<>();
+        Map<Integer, Double> notasMaximas = new HashMap<>();
+        for (User usuario : usuarios) {
+            int userId = usuario.getId();
+            attempts.addAll(getUserQuizAttempts(quiz.getId(), userId, host, token));
+            for (Attempt attempt : attempts) {
+                int attemptId = (int) attempt.getId();
+                AttemptReviewList attemptReviewList = getQuizAttempt(quiz.getId(), attemptId, host, token);
+                
+                // TODO: Controlar que un usuario solo realiza un intento
+                
+                for (Question question : attemptReviewList.getQuestions()) {
+                    int idPregunta = question.getNumber();
+                    double puntuacionMaxima = question.getMaxmark();
+                    double notaMediaPregunta = Double.parseDouble(question.getMark() != "" ? question.getMark() : "0");
+                    notas.put(idPregunta, notaMediaPregunta + notas.getOrDefault(idPregunta, 0.0));
+                    notasMaximas.put(idPregunta, puntuacionMaxima);
+                }
+            }
+        }
+
+        for (int idPregunta : notas.keySet()) {
+            double notaMediaPregunta = notas.get(idPregunta) / usuarios.size();
+            double puntuacionMaxima = notasMaximas.get(idPregunta);
+            EstadisticaNotasPregunta estadisticaNotasPregunta = new EstadisticaNotasPregunta();
+            estadisticaNotasPregunta.setIdPregunta(idPregunta);
+            estadisticaNotasPregunta.setNotaMediaPregunta(notaMediaPregunta);
+            estadisticaNotasPregunta.setPuntuacionMaxima(puntuacionMaxima);
+            estadisticasNotasPregunta.add(estadisticaNotasPregunta);
+        }
+        
+        return estadisticasNotasPregunta;
+    }
 }
