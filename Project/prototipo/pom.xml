@@ -6,7 +6,7 @@
 
     <groupId>es.ubu.lsi</groupId>
     <artifactId>prototipo</artifactId>
-    <version>0.5-SNAPSHOT</version>
+    <version>0.6-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <parent>
