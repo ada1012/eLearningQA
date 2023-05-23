@@ -1,15 +1,43 @@
 \apendice{Plan de Proyecto Software}
 
 \section{Introducción}
-Para hablar sobre el plan de proyecto haremos una guía con los puntos y avances de cada sprint además de las herramientas elegidas, horas invertidas, etc. En los sprint vendrán indicadas las fechas de inicio y fin, objetivos propuestos y objetivos cumplidos junto con los respectivos problemas que han ido surgiendo para mostrar la evolución que se ha ido consiguiendo.
+Con el fin de abordar el plan del proyecto, desarrollaremos una guía detallada que incluirá los puntos clave y los avances logrados en cada sprint. Además, se registrarán las herramientas seleccionadas, las horas invertidas y otros aspectos relevantes. En cada sprint, se especificarán las fechas de inicio y finalización, los objetivos propuestos y los objetivos cumplidos, junto con los problemas encontrados durante el proceso, lo que nos permitirá mostrar la evolución que hemos logrado hasta el momento.
+
+Además, dentro de la guía del plan de proyecto, abordaremos los requisitos detallados del mismo. Esto incluirá un análisis exhaustivo de las funcionalidades y características que la aplicación debe cumplir para satisfacer las necesidades del cliente y los usuarios finales.
+
+También se contemplará el diseño del proyecto, donde se describirán los aspectos técnicos y estéticos que guiarán el desarrollo.
+
+Además, se proporcionará un manual específico destinado al programador, donde se detallarán las pautas y las mejores prácticas para la codificación de la aplicación. Este manual incluirá información sobre los lenguajes de programación utilizados, las convenciones de nomenclatura, las directrices de estilo de codificación y cualquier otro detalle técnico que facilite el desarrollo del proyecto de manera eficiente y coherente.
+
+Asimismo, se creará un manual orientado al usuario final. Este manual contendrá instrucciones claras y concisas sobre cómo utilizar la aplicación o proyecto una vez finalizado. Se incluirán descripciones detalladas de las funcionalidades, los flujos de trabajo recomendados, las configuraciones disponibles y cualquier otra información relevante para que los usuarios finales puedan aprovechar al máximo la aplicación o proyecto.
 \section{Planificación temporal}
 En esta sección se estimará el tiempo de trabajo en el TFG tanto en la elaboración de la memoria y anexo como en la del propio programa, detallando los acontecimientos a lo largo del proceso.
 
-La planificación del proyecto se ha llevado a cabo en sprints de una duración de dos semanas. Con una reunión al final de cada sprint para comentar los objetivos del último sprint y los nuevos objetivos, en caso de ser necesario se reducirán los tiempos de sprint a una semana únicamente. Para el control de versiones tanto de las memorias como del programa se ha utilizado github con un seguimiento a través de commits dejando un histórico bastante detallado.
+La planificación del proyecto se ha llevado a cabo en sprints de una duración de dos semanas. Con una reunión al final de cada sprint para comentar los objetivos del último sprint y los nuevos objetivos, en varias ocasiones fue necesario reducir la duración de dichos sprints a una semana. Para el control de versiones tanto de las memorias como del programa se ha utilizado github con un seguimiento a través de commits dejando un histórico bastante detallado. Además de realizar una release cada vez que se tuviese un prototipo funcional de la aplicación.
 
-La estimación inicial es de 16 semanas con unas 4 horas semanales aunque al tratarse de un periodo tan largo las 4 horas semanales son una media ya que algunas semanas se dedicarán más horas y en otras no se habrá podido dedicar tiempo.
-
-Ahora paso a resumir los objetivos y sucesos de cada sprint:
+A continuación mostraré un resumen de dichos sprints:
 
 \subsection{Sprint 0 (23/02/2023 - 08/03/2023)}
 	En esta primera reunión se introdujo el proyecto anterior, posibles herramientas con las que trabajar, recursos necesarios y disponibilidad tanto del alumno como de los tutores. Como objetivos se marcaron: inspeccionar el código ya existente, poner en funcionamiento el anterior proyecto, realizar pequeños cambios en el código, inspeccionar el WebService de moodle, instalación y creación de moodle en localhost para empezar a trabajar en local y crear el esqueleto de los documentos en LaTex.
+    También añado a la reunión de este sprint que el profesor Carlos López se encontraba de baja por lo que esta y las posteriores reuniones hasta su incorporación las haría con Raúl Marticorena.
+
+\subsection{Sprint 1 (08/03/2023 - 22/03/2023)}
+	Durante el segundo sprint tuve varios problemas tanto para entender cómo funcionaba el código como para hacerlo funcionar ya que Moodle había cambiado a la versión 4.0 con cambios en sus respuesta en las llamadas de los web services. Un ejemplo es el paso de campos como "isVisible" de un entero a un booleano. Dados estos problemas y mi falta de tiempo el profesor Raúl Marticorena y yo indicamos como objetivos seguir con la refactorización, enviar el repositorio de github, probar la aplicación contra mountorange e investigar la integración con Heroku aunque este último punto era el menos prioritario para nosotros.
+
+\subsection{Sprint 2 (22/03/2023 - 31/03/2023)}
+	Este sprint se decidió hacer de una semana porque a las dos semanas era semana santa y vimos más prioritario realizar la reunión antes y no aplazar la reunión una semana más dejando el sprinte de tres o cuatro semanas. Durante esta semana conseguí que la aplicación se adaptase completamente a la nueva versión de Moodle. Para el siguiente sprint seguiamos con los mismos objetivos ya que no había avanzado mucho.
+
+\subsection{Sprint 3 (31/03/2023 - 17/04/2023)}
+	En la revisión de este sprint mostré la incorporación de los modelos necesarios para poder trabajar con cuestionarios en la aplicación y descubrí que Heroku se había vuelto de pago incluso para las aplicaciones de prueba por lo que dejamos el tema de buscra un servidor online de lado. Se mantienen objetivos para el siguiente sprint y se deja la próxima reunión para dentro de una semana.
+
+\subsection{Sprint 4 (17/04/2023 - 27/04/2023)}
+	Para esta reunión se había inorporado el un campo en los informes que mostraba si el curso seleccionado tenía cuestionarios o no. También se añadió un registro que mostraba el porcentaje de alumnos que realizaban los cuestionarios del curso. Esta es la primera vez del trabajo que realizo una release ya que teníamos algo avanzada la aplicación. Para el siguiente sprint decidimos mantener la reunión semanal y pusimos como objetivo realizar un resumen del cuestionario al hacer click en dicho cuestionario junto con algún gráfico.
+
+\subsection{Sprint 5 (27/04/2023 - 03/05/2023)}
+	Durante este sprint avancé en la lógica de obtención de datos de dicho resumen pero al llegar la reunión no tenía ninguna implementación definitiva por lo que no se mostraban avances en la interfaz. Para la semana siguiente debería tener implementado ya dicho resumen.
+
+\subsection{Sprint 6 (03/05/2023 - 11/05/2023)}
+	Para este sprint ya aparecía un resumen en el cuestionario mostrando datos básicos a falta del gráfico. El profesor Raúl MArticorena vió importante meter alguna estadística como el coeficiente de curtosis (con este valor podríamos saber si hay valores atípicos en las notas) y la asimetría. Para la siguiente semana dejamos como objetivo implementar estos datos y el gráfico.
+
+\subsection{Sprint 7 (11/05/2023 - 18/05/2023)}
+	Durante esta semana terminé primero los datos del resumen restantes aunque Raúl Marticorena dijo que se estaban calculando mal por lo que para la siguiente semana tendré que corregir la forma en la que los calcula y respecto al gráfico se implementó la lógica pero el envío de la información de Java a Javascript no tuvo éxito por lo que para la siguiente reunión dejamos como objetivo terminar dicho gráfico, empezar a desarrollar la memoria y comenzar con la parte de foros.
