@@ -675,7 +675,7 @@ public class WebServiceClient {
     }
     
     // Método para obtener las notas de un cuertionario
-    public static Map<Integer, Double> getQuizGrades(String token, long courseId, String host, int quizId) {
+    /*public static Map<Integer, Double> getQuizGrades(String token, long courseId, String host, int quizId) {
         Map<Integer, Double> grades = new HashMap<>();
         
         List<User> usuarios = obtenerUsuarios(token, courseId, host);
@@ -693,7 +693,7 @@ public class WebServiceClient {
         }
         
         return grades;
-    }
+    }*/
     
     // Método para obtener los intentos de un usuario para un cuestionario
     private static List<Attempt> getUserQuizAttempts(int quizId, int userId, String host, String token) {
@@ -707,7 +707,7 @@ public class WebServiceClient {
     }
     
     // Obtener la nota de un intento en un cuestionario
-    public static Double getQuizAttemptGrade(int quizId, int attemptId, String host, String token) {
+    /* public static Double getQuizAttemptGrade(int quizId, int attemptId, String host, String token) {
         RestTemplate restTemplate = new RestTemplate();
         String url = host + "/webservice/rest/server.php?wsfunction=mod_quiz_get_attempt_review&moodlewsrestformat=json&wstoken="
         		+ token + "&attemptid=" + attemptId;
@@ -717,7 +717,7 @@ public class WebServiceClient {
         Double grade = Double.parseDouble(attemptReviewList.getGrade() != null ? attemptReviewList.getGrade() : "0");
 
         return grade;
-    }
+    } */
     
     // Obtener un intento en un cuestionario
     public static AttemptReviewList getQuizAttempt(int quizId, int attemptId, String host, String token) {
@@ -780,6 +780,7 @@ public class WebServiceClient {
         // Obtener los alumnos que participan en el cuestionario (alumnosExaminados)
         for (User usuario : usuarios) {
             int intento = 0;
+            boolean cuestionarioRealizado = false;
             int userId = usuario.getId();
             List<Attempt> attempts = new ArrayList<>();
             attempts.addAll(getUserQuizAttempts(quiz.getId(), userId, host, token));
@@ -791,16 +792,17 @@ public class WebServiceClient {
 	                nota = Double.parseDouble(Double.parseDouble(attemptReviewList.getGrade()) > nota ? attemptReviewList.getGrade() : nota+"");
 	                notas.add(nota);
 	                nota = 0;
-                } else {
-                    notas.add(nota);
+                    intento++;
+                    cuestionarioRealizado = true;
                 }
-                intento++;
             }
             
             intentos.add(intento);
             if (!attempts.isEmpty()) {
-                contadorIntentos++;
                 attempts.clear();
+            }
+            if (cuestionarioRealizado) {
+                contadorIntentos++;
             }
         }
     
@@ -880,23 +882,53 @@ public class WebServiceClient {
 
         Map<Integer, Double> notas = new HashMap<>();
         Map<Integer, Double> notasMaximas = new HashMap<>();
+        Map<Integer, Double> notasAuxiliar = new HashMap<>();
+
         for (User usuario : usuarios) {
             int userId = usuario.getId();
+            double nota = 0;
             attempts.addAll(getUserQuizAttempts(quiz.getId(), userId, host, token));
+            // Se recorren los intentos de cada alumno
             for (Attempt attempt : attempts) {
                 int attemptId = (int) attempt.getId();
                 AttemptReviewList attemptReviewList = getQuizAttempt(quiz.getId(), attemptId, host, token);
+                int idPregunta = 0;
+                double puntuacionMaxima = 0;
+                double notaMediaPregunta = 0;
                 
-                // TODO: Controlar que un usuario solo realiza un intento
-                
-                for (Question question : attemptReviewList.getQuestions()) {
-                    int idPregunta = question.getNumber();
-                    double puntuacionMaxima = question.getMaxmark();
-                    double notaMediaPregunta = Double.parseDouble(question.getMark() != "" ? question.getMark() : "0");
-                    notas.put(idPregunta, notaMediaPregunta + notas.getOrDefault(idPregunta, 0.0));
-                    notasMaximas.put(idPregunta, puntuacionMaxima);
+                if (attempts.size() > 1) {
+                    // Si el cuestionario tiene más de un intento, se almacena la nota del intento con mayor nota
+                    double notaIntento = attemptReviewList.getGrade() != null ? Double.parseDouble(attemptReviewList.getGrade()) : 0;
+                    // Si la nota del intento es mayor que la nota del intento anterior, se almacenan las notas
+                    if (notaIntento > nota) {
+                        nota = notaIntento;
+                        for (Question question : attemptReviewList.getQuestions()) {
+                            idPregunta = question.getNumber();
+                            puntuacionMaxima = question.getMaxmark();
+                            notaMediaPregunta = Double.parseDouble(question.getMark() != "" ? question.getMark() : "0");
+                            notasAuxiliar.remove(idPregunta);
+                            notasAuxiliar.put(idPregunta, notaMediaPregunta);
+                            notasMaximas.put(idPregunta, puntuacionMaxima);
+                        }
+                    }
+                } else {
+                    // Si el cuestionario tiene un único intento, se almacenan las notas
+                    for (Question question : attemptReviewList.getQuestions()) {
+                        idPregunta = question.getNumber();
+                        puntuacionMaxima = question.getMaxmark();
+                        notaMediaPregunta = Double.parseDouble(question.getMark() != "" ? question.getMark() : "0");
+                        notas.put(idPregunta, notaMediaPregunta + notas.getOrDefault(idPregunta, 0.0));
+                        notasMaximas.put(idPregunta, puntuacionMaxima);
+                    }
                 }
             }
+            if (notasAuxiliar.size() > 1) {
+                // Se almacenan las notas del intento con mayor nota
+                for (int idPregunta : notasAuxiliar.keySet()) {
+                    notas.put(idPregunta, notasAuxiliar.get(idPregunta) + notas.getOrDefault(idPregunta, 0.0));
+                }
+            }
+            attempts.clear();
         }
         
         for (int idPregunta : notas.keySet()) {
