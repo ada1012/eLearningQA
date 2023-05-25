@@ -895,7 +895,7 @@ public class WebServiceClient {
                 int idPregunta = 0;
                 double puntuacionMaxima = 0;
                 double notaMediaPregunta = 0;
-                
+
                 if (attempts.size() > 1) {
                     // Si el cuestionario tiene más de un intento, se almacena la nota del intento con mayor nota
                     double notaIntento = attemptReviewList.getGrade() != null ? Double.parseDouble(attemptReviewList.getGrade()) : 0;
@@ -903,9 +903,12 @@ public class WebServiceClient {
                     if (notaIntento > nota) {
                         nota = notaIntento;
                         for (Question question : attemptReviewList.getQuestions()) {
+                            String mark = question.getMark();
                             idPregunta = question.getNumber();
                             puntuacionMaxima = question.getMaxmark();
-                            notaMediaPregunta = Double.parseDouble(question.getMark() != "" ? question.getMark() : "0");
+                            if (question.getMark() != "") 
+                                mark = question.getMark().replace(",", ".");
+                            notaMediaPregunta = Double.parseDouble(mark != "" ? mark : "0");
                             notasAuxiliar.remove(idPregunta);
                             notasAuxiliar.put(idPregunta, notaMediaPregunta);
                             notasMaximas.put(idPregunta, puntuacionMaxima);
@@ -914,9 +917,12 @@ public class WebServiceClient {
                 } else {
                     // Si el cuestionario tiene un único intento, se almacenan las notas
                     for (Question question : attemptReviewList.getQuestions()) {
+                        String mark = question.getMark();
                         idPregunta = question.getNumber();
                         puntuacionMaxima = question.getMaxmark();
-                        notaMediaPregunta = Double.parseDouble(question.getMark() != "" ? question.getMark() : "0");
+                        if (question.getMark() != "") 
+                            mark = question.getMark().replace(",", ".");
+                        notaMediaPregunta = Double.parseDouble(mark != "" ? mark : "0");
                         notas.put(idPregunta, notaMediaPregunta + notas.getOrDefault(idPregunta, 0.0));
                         notasMaximas.put(idPregunta, puntuacionMaxima);
                     }
