@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="java.util.List, java.util.Arrays, java.util.ArrayList, java.util.Map, java.util.HashMap, es.ubu.lsi.ELearningQAFacade, es.ubu.lsi.AlertLog, es.ubu.lsi.RegistryIO, es.ubu.lsi.AnalysisSnapshot, es.ubu.lsi.model.Course, es.ubu.lsi.model.QuizSummary, org.apache.logging.log4j.LogManager, org.apache.logging.log4j.Logger" %>
+<%@ page import="java.util.List, java.util.Arrays, java.util.ArrayList, java.util.Map, java.util.HashMap, es.ubu.lsi.ELearningQAFacade, es.ubu.lsi.AlertLog, es.ubu.lsi.RegistryIO, es.ubu.lsi.AnalysisSnapshot, es.ubu.lsi.model.Course, es.ubu.lsi.model.QuizSummary, es.ubu.lsi.model.Quiz, org.apache.logging.log4j.LogManager, org.apache.logging.log4j.Logger" %>
 <html lang="en">
 <head>
     <%String informe="";
@@ -16,6 +16,7 @@
           AlertLog alertas= new AlertLog();
           double[] puntosComprobaciones;
           double[] puntosCurso;
+          List<Quiz> quizzes = new ArrayList<>();
           Map<Integer, Double> estadisticasCuestionarios = new HashMap<>();
           List<QuizSummary> resumenCuestionarios = new ArrayList<>();
           Map<Integer, String> cuestionarios = new HashMap<>();
@@ -35,7 +36,7 @@
             List<Course> listaCursos=fachada.getListaCursos(token);
             for(Course curso:listaCursos){
               alertas.guardarTitulo(curso.getFullname());
-              puntosCurso = fachada.realizarComprobaciones(token, curso.getId(), alertas, resumenCuestionarios);
+              puntosCurso = fachada.realizarComprobaciones(token, curso.getId(), alertas, resumenCuestionarios, quizzes);
               for(int i=0;i<puntosComprobaciones.length;i++){
                 puntosComprobaciones[i]+=puntosCurso[i];
               }
@@ -49,15 +50,17 @@
             alertas.setCourseid(Integer.parseInt(courseid));
             nombreCurso=curso.getFullname();
             session.setAttribute("coursename",nombreCurso);
+            // Obtener cuestionarios
+            quizzes=fachada.getQuizzes(token, Integer.parseInt(courseid));
             // Obtener resumenes de cuestionarios
-            resumenCuestionarios=fachada.generarListaCuestionarios(token, Integer.parseInt(courseid));
+            resumenCuestionarios=fachada.generarListaCuestionarios(token, Integer.parseInt(courseid), quizzes);
             // Generamos los informes de los cuestionarios
             cuestionarios=fachada.generarInformesCuestionarios(token, Integer.parseInt(courseid), resumenCuestionarios);
             // Generamos primer grafico
             // Obtenemos los datos para el grafico
-            graficoPreguntas=fachada.generarGraficoPreguntas(token, Integer.parseInt(courseid));
-            graficoNotas=fachada.generarGraficoNotas(token, Integer.parseInt(courseid));
-            puntosComprobaciones = fachada.realizarComprobaciones(token, Integer.parseInt(courseid), alertas, resumenCuestionarios);
+            graficoPreguntas=fachada.generarGraficoPreguntas(token, quizzes);
+            graficoNotas=fachada.generarGraficoNotas(token, quizzes);
+            puntosComprobaciones = fachada.realizarComprobaciones(token, Integer.parseInt(courseid), alertas, resumenCuestionarios, quizzes);
             porcentajes=fachada.calcularPorcentajesMatriz(puntosComprobaciones,1);
             matriz=fachada.generarMatrizRolPerspectiva(porcentajes);
             fases=fachada.generarInformeFases(puntosComprobaciones, resumenCuestionarios, 1);

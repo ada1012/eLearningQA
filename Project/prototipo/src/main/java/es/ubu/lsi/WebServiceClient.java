@@ -658,7 +658,7 @@ public class WebServiceClient {
         if (quizzes.size()==0) return 0;
         
         if  (porcentaje < (config.getMinQuizAnswerPercentage() * 100))
-            registro.guardarAlerta("evaluation estadisticquiz","No se han realizado más del " + config.getMinQuizAnswerPercentage() * 100 + " cuestionarios");
+            registro.guardarAlerta("evaluation estadisticquiz","Menos de un " + config.getMinQuizAnswerPercentage() * 100 + "% de los alumnos no realiza los cuestionarios");
         
         return porcentaje/100;
     }

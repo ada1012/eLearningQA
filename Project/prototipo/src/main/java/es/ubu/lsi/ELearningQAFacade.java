@@ -62,7 +62,12 @@ public class ELearningQAFacade {
         return WebServiceClient.obtenerNombreCompleto(token, username, config.getHost());
     }
 
-    public double[] realizarComprobaciones(String token, long courseid, AlertLog registro, List<QuizSummary> estadisticasCuestionarios) {
+    // Método para obtener la lista de cuesitonarios de un curso
+    public List<Quiz> getQuizzes(String token, long courseid) {
+        return WebServiceClient.getQuizzes(courseid, config.getHost(), token);
+    }
+
+    public double[] realizarComprobaciones(String token, long courseid, AlertLog registro, List<QuizSummary> estadisticasCuestionarios, List<Quiz> quizzes) {
         Course curso= getCursoPorId(token, courseid);
         List<User> listaUsuarios= WebServiceClient.obtenerUsuarios(token, courseid, config.getHost());
         StatusList listaEstados=WebServiceClient.obtenerListaEstados(token, courseid, listaUsuarios, config.getHost());
@@ -79,9 +84,6 @@ public class ELearningQAFacade {
         List<Survey> listaSurveys=WebServiceClient.obtenerSurveys(token, courseid, config.getHost());
         List<es.ubu.lsi.model.Module> modulosMalFechados=WebServiceClient.obtenerModulosMalFechados(curso, listaModulos);
         List<Resource> recursosDesfasados=WebServiceClient.obtenerRecursosDesfasados(curso, listaRecursos);
-        
-        // Cuestionarios
-        List<Quiz> quizzes = WebServiceClient.getQuizzes(courseid, config.getHost(), token);
 
         // Calculamos los porcentajes
         double porcentaje;
@@ -135,7 +137,7 @@ public class ELearningQAFacade {
                 generarFilas(new int[]{16, 12}, 4, puntos, nroCursos);
         
         // Porcentaje de cuestionarios realizados
-        tabla += "</tr><tr onclick=\"openInfo(event, 'estadisticquiz')\" data-bs-toggle=\"tooltip\" title=\"Se comprueba qué porcentaje de alumno realiza los respectivos cursos.\"> <td class=\"tg-ltgr\">Al menos un " + config.getMinQuizAnswerPercentage() * 100 + "% responde al cuestionario  <button onclick=\"toggleCuestionarios()\">Desplegar</button></td>" +
+        tabla += "</tr><tr onclick=\"openInfo(event, 'estadisticquiz')\" data-bs-toggle=\"tooltip\" title=\"Se comprueba qué porcentaje de alumno realiza los respectivos cursos.\"> <td class=\"tg-ltgr\">Al menos un " + config.getMinQuizAnswerPercentage() * 100 + "% de los alumnos responden a los cuestionarios  <button onclick=\"toggleCuestionarios()\">Desplegar</button></td>" +
                 generarCampoRelativo((float)puntos[18], 1);
 
         if(estadisticasCuestionarios != null && !estadisticasCuestionarios.isEmpty()){
@@ -172,9 +174,7 @@ public class ELearningQAFacade {
         return filas.toString();
     }
 
-    public List<QuizSummary> generarListaCuestionarios(String token, long courseid) {
-        // Obtenemos los cuestionarios
-        List<Quiz> quizzes = WebServiceClient.getQuizzes(courseid, config.getHost(), token);
+    public List<QuizSummary> generarListaCuestionarios(String token, long courseid, List<Quiz> quizzes) {
         ArrayList<QuizSummary> listaCuestionarios = new ArrayList<>();
 
         for (Quiz quiz : quizzes) {
@@ -222,11 +222,10 @@ public class ELearningQAFacade {
     }
 
     // Método para obtener la relación entre el id de un cuestionario y las preguntas que lo componen
-    public Map<Integer, int[]> generarGraficoPreguntas(String token, long courseid) {
+    public Map<Integer, int[]> generarGraficoPreguntas(String token, List<Quiz> quizzes) {
         List<EstadisticaNotasPregunta> estadisticas = new ArrayList<>();
-        // Obtenemos los cuestionarios
-        List<Quiz> quizzes = WebServiceClient.getQuizzes(courseid, config.getHost(), token);
         Map<Integer, int[]> informes = new HashMap<>();
+
         for (Quiz quiz : quizzes) {
             if (quiz.isVisible()) {
                 estadisticas = WebServiceClient.obtenerEstadisticasNotasPregunta(config.getHost(), token, quiz);
@@ -244,10 +243,8 @@ public class ELearningQAFacade {
     }
     
     // Método para obtener la relación entre el id de un cuestionario y las notas medias por pregunta
-    public Map<Integer, double[]> generarGraficoNotas(String token, long courseid) {
+    public Map<Integer, double[]> generarGraficoNotas(String token, List<Quiz> quizzes) {
         List<EstadisticaNotasPregunta> estadisticas = new ArrayList<>();
-        // Obtenemos los cuestionarios
-        List<Quiz> quizzes = WebServiceClient.getQuizzes(courseid, config.getHost(), token);
         Map<Integer, double[]> informes = new HashMap<>();
         for (Quiz quiz : quizzes) {
             if (quiz.isVisible()) {
