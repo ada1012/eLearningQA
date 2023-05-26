@@ -788,12 +788,14 @@ public class WebServiceClient {
                 int attemptId = (int) attempt.getId();
                 AttemptReviewList attemptReviewList = getQuizAttempt(quiz.getId(), attemptId, host, token);
                 totalPreguntas = attemptReviewList.getQuestions().size();
+                // Contamos el intento aunque no tenga nota ya que se ha realizado y puede que no se haya corregido,
+                // como puede tener preguntas tipo test que se corrigen automáticamente las estadísticas si que las van a mostrar
+                intento++;
+                cuestionarioRealizado = true;
                 if (attemptReviewList.getGrade() != null) {
 	                nota = Double.parseDouble(Double.parseDouble(attemptReviewList.getGrade()) > nota ? attemptReviewList.getGrade() : nota+"");
 	                notas.add(nota);
 	                nota = 0;
-                    intento++;
-                    cuestionarioRealizado = true;
                 }
             }
             
@@ -942,7 +944,14 @@ public class WebServiceClient {
             double puntuacionMaxima = notasMaximas.get(idPregunta);
             EstadisticaNotasPregunta estadisticaNotasPregunta = new EstadisticaNotasPregunta();
             estadisticaNotasPregunta.setIdPregunta(idPregunta);
-            estadisticaNotasPregunta.setNotaMediaPregunta(notaMediaPregunta);
+            // Normalizar la nota media de la pregunta
+            if (puntuacionMaxima != 0) {
+                double notaNormalizada = notaMediaPregunta / puntuacionMaxima;
+                estadisticaNotasPregunta.setNotaMediaPregunta(notaNormalizada);
+            } else {
+                // Manejar caso especial cuando puntuacionMaxima es 0 (evitar división por 0)
+                estadisticaNotasPregunta.setNotaMediaPregunta(0);
+            }
             estadisticaNotasPregunta.setPuntuacionMaxima(puntuacionMaxima);
             estadisticasNotasPregunta.add(estadisticaNotasPregunta);
         }
