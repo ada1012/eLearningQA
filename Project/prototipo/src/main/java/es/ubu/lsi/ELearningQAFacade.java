@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class ELearningQAFacade {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final int CHECKS_DISENO =7;
+    private static final int CHECKS_DISENO =8;
     private static final int CHECKS_IMPLEMENTACION =5;
     private static final int CHECKS_REALIZACION =5;
     private static final int CHECKS_EVALUACION =2;
@@ -98,7 +98,7 @@ public class ELearningQAFacade {
             porcentaje = sum / estadisticasCuestionarios.size();
         }
         
-        double[] puntosComprobaciones = new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+        double[] puntosComprobaciones = new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
         if(isestaProgresoActivado(listaEstados, registro)){puntosComprobaciones[0]++;}
         if(isHayVariedadFormatos(listaModulos, registro)){puntosComprobaciones[1]++;}
         if(isTieneGrupos(listaGrupos, registro)){puntosComprobaciones[2]++;}
@@ -106,39 +106,40 @@ public class ELearningQAFacade {
         if(isSonVisiblesCondiciones(curso, registro)){puntosComprobaciones[4]++;}
         if(isEsNotaMaxConsistente(listaCalificadores, registro)){puntosComprobaciones[5]++;}
         if(isHayCuestionarios(quizzes, registro)){puntosComprobaciones[6]++;}
-        if(isEstanActualizadosRecursos(recursosDesfasados, registro)){puntosComprobaciones[7]++;}
-        if(isSonFechasCorrectas(modulosMalFechados, registro)){puntosComprobaciones[8]++;}
-        if(isMuestraCriterios(listaModulosTareas, registro)){puntosComprobaciones[9]++;}
-        if(isAnidamientoCalificadorAceptable(listaCalificadores, registro)){puntosComprobaciones[10]++;}
-        if(isAlumnosEnGrupos(listaUsuarios, registro)){puntosComprobaciones[11]++;}
-        if(isRespondeATiempo(listaUsuarios,listaPosts, registro)){puntosComprobaciones[12]++;}
-        if(isHayRetroalimentacion(listaCalificadores, registro)){puntosComprobaciones[13]++;}
-        if(isEstaCorregidoATiempo(tareasConNotas,listaUsuarios, registro)){puntosComprobaciones[14]++;}
-        if(isCalificadorMuestraPonderacion(listaCalificadores, registro)){puntosComprobaciones[15]++;}
-        if(isRespondenFeedbacks(listaAnalisis,listaUsuarios, registro)){puntosComprobaciones[16]++;}
-        if(isUsaSurveys(listaSurveys, registro)){puntosComprobaciones[17]++;}
-        puntosComprobaciones[18] = porcentajeCuestionariosContestados(quizzes, porcentaje, registro);
+        if(isHayForos(listaPosts, registro)){puntosComprobaciones[7]++;}
+        if(isEstanActualizadosRecursos(recursosDesfasados, registro)){puntosComprobaciones[8]++;}
+        if(isSonFechasCorrectas(modulosMalFechados, registro)){puntosComprobaciones[9]++;}
+        if(isMuestraCriterios(listaModulosTareas, registro)){puntosComprobaciones[10]++;}
+        if(isAnidamientoCalificadorAceptable(listaCalificadores, registro)){puntosComprobaciones[11]++;}
+        if(isAlumnosEnGrupos(listaUsuarios, registro)){puntosComprobaciones[12]++;}
+        if(isRespondeATiempo(listaUsuarios,listaPosts, registro)){puntosComprobaciones[13]++;}
+        if(isHayRetroalimentacion(listaCalificadores, registro)){puntosComprobaciones[14]++;}
+        if(isEstaCorregidoATiempo(tareasConNotas,listaUsuarios, registro)){puntosComprobaciones[15]++;}
+        if(isCalificadorMuestraPonderacion(listaCalificadores, registro)){puntosComprobaciones[16]++;}
+        if(isRespondenFeedbacks(listaAnalisis,listaUsuarios, registro)){puntosComprobaciones[17]++;}
+        if(isUsaSurveys(listaSurveys, registro)){puntosComprobaciones[18]++;}
+        puntosComprobaciones[19] = porcentajeCuestionariosContestados(quizzes, porcentaje, registro);
 
         return puntosComprobaciones;
     }
 
     public String generarInformeFases(double[] puntos, List<QuizSummary> estadisticasCuestionarios, int nroCursos) {
-        double contadorDiseno=puntos[0]+puntos[1]+puntos[2]+puntos[3]+puntos[4]+puntos[5]+puntos[6];
-        double contadorImplementacion=puntos[7]+puntos[8]+puntos[9]+puntos[10]+puntos[11];
-        double contadorRealizacion=puntos[12]+puntos[13]+puntos[14]+puntos[15]+puntos[18];
-        double contadorEvaluacion=puntos[16]+puntos[17];
+        double contadorDiseno=puntos[0]+puntos[1]+puntos[2]+puntos[3]+puntos[4]+puntos[5]+puntos[6]+puntos[7];
+        double contadorImplementacion=puntos[8]+puntos[9]+puntos[10]+puntos[11]+puntos[12];
+        double contadorRealizacion=puntos[13]+puntos[14]+puntos[15]+puntos[16]+puntos[19];
+        double contadorEvaluacion=puntos[17]+puntos[18];
         double contadorTotal=contadorDiseno+contadorImplementacion+contadorRealizacion+contadorEvaluacion;
         String tabla = camposInformeFases[0]+generarCampoRelativo((float)contadorTotal/nroCursos, CHECKS_TOTAL) +
                 camposInformeFases[1]+generarCampoRelativo((float)contadorDiseno/nroCursos, CHECKS_DISENO) +
-                generarFilas(new int[]{2, 0}, 7, puntos, nroCursos)+
-                camposInformeFases[9]+generarCampoRelativo((float)contadorImplementacion/nroCursos, CHECKS_IMPLEMENTACION) +
-                generarFilas(new int[]{10, 7}, 5, puntos, nroCursos)+
-                camposInformeFases[15]+generarCampoRelativo((float)contadorRealizacion/nroCursos, CHECKS_REALIZACION) +
-                generarFilas(new int[]{16, 12}, 4, puntos, nroCursos);
+                generarFilas(new int[]{2, 0}, 8, puntos, nroCursos)+
+                camposInformeFases[10]+generarCampoRelativo((float)contadorImplementacion/nroCursos, CHECKS_IMPLEMENTACION) +
+                generarFilas(new int[]{11, 8}, 5, puntos, nroCursos)+
+                camposInformeFases[16]+generarCampoRelativo((float)contadorRealizacion/nroCursos, CHECKS_REALIZACION) +
+                generarFilas(new int[]{17, 13}, 4, puntos, nroCursos);
         
         // Porcentaje de cuestionarios realizados
         tabla += "</tr><tr onclick=\"openInfo(event, 'estadisticquiz')\" data-bs-toggle=\"tooltip\" title=\"Se comprueba qué porcentaje de alumno realiza los respectivos cursos.\"> <td class=\"tg-ltgr\">Al menos un " + config.getMinQuizAnswerPercentage() * 100 + "% de los alumnos responden a los cuestionarios  <button onclick=\"toggleCuestionarios()\">Desplegar</button></td>" +
-                generarCampoRelativo((float)puntos[18], 1);
+                generarCampoRelativoCuestionario((float)puntos[19], 1);
 
         if(estadisticasCuestionarios != null && !estadisticasCuestionarios.isEmpty()){
             for (QuizSummary quizSummary : estadisticasCuestionarios) {
@@ -146,16 +147,16 @@ public class ELearningQAFacade {
                 if (quizSummary.getTotalAlumnos() > 0 && quizSummary.getAlumnosExaminados() > 0)
                     porcentaje = (float)((quizSummary.getAlumnosExaminados()*100)/quizSummary.getTotalAlumnos())/100;
 
-                tabla += "</tr><tr class=\"toggle-cuestionarios\" data-bs-toggle=\"tooltip\"> <td class=\"tg-ltgr\"onclick=\"muestraCuestionario(" + quizSummary.getId() + ")\">Cuestionario " + quizSummary.getNombreCuestionario() + " </td>" + generarCampoRelativo(porcentaje, 1);
+                tabla += "</tr><tr class=\"toggle-cuestionarios\" data-bs-toggle=\"tooltip\"> <td class=\"tg-ltgr\"onclick=\"muestraCuestionario(" + quizSummary.getId() + ")\">Cuestionario " + quizSummary.getNombreCuestionario() + " </td>" + generarCampoRelativoCuestionario(porcentaje, 1);
                 // tabla += camposInformeFases[24]+entry.getKey()+camposInformeFases[25]+entry.getValue();
             }
         }
 
         // Evaluación
-        tabla += camposInformeFases[20]+generarCampoRelativo((float)contadorEvaluacion/nroCursos, CHECKS_EVALUACION) +
-                generarFilas(new int[]{21, 16}, 2, puntos, nroCursos);
+        tabla += camposInformeFases[21]+generarCampoRelativo((float)contadorEvaluacion/nroCursos, CHECKS_EVALUACION) +
+                generarFilas(new int[]{22, 17}, 2, puntos, nroCursos);
 
-        tabla += camposInformeFases[23];
+        tabla += camposInformeFases[24];
 
         return tabla;
     }
@@ -318,6 +319,11 @@ public class ELearningQAFacade {
         return WebServiceClient.hayCuestionarios(quizzes, registro);
     }
 
+    // Devuelve true si hay algún foro, sino se devuelve false y se añade un registro de alerta
+    public boolean isHayForos(List<Post> listaPosts, AlertLog registro) {
+        return WebServiceClient.hayForos(listaPosts, registro);
+    }
+
     public boolean isEstanActualizadosRecursos(List<Resource> listaRecursosDesfasados, AlertLog registro) {
         return WebServiceClient.estanActualizadosRecursos(listaRecursosDesfasados, registro, config);
     }
@@ -368,6 +374,14 @@ public class ELearningQAFacade {
         if (resultado<0.4){return "<td class=\"tg-oran\">"+campoAMedias;}
         if (resultado<0.6){return "<td class=\"tg-yell\">"+campoAMedias;}
         if (resultado<0.8){return "<td class=\"tg-char\">"+campoAMedias;}
+        else{return "<td class=\"tg-pgre\">"+campoAMedias;}
+    }
+
+    public String generarCampoRelativoCuestionario(float numerador, float denominador){
+        float resultado= numerador/denominador;
+        String campoAMedias="<meter value=\""+numerador+"\" min=\"0\" max=\""+denominador+"\"></meter>"+
+                String.format("%.1f",porcentajeFraccion(numerador, denominador))+"%"+"</td>";
+        if (resultado<config.getMinQuizAnswerPercentage() * 100){return "<td class=\"tg-pred\">"+campoAMedias;}
         else{return "<td class=\"tg-pgre\">"+campoAMedias;}
     }
 

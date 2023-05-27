@@ -445,6 +445,16 @@ public class WebServiceClient {
         return true;
     }
 
+    // Método que comprueba si el curso tiene al menos un foro
+    // En este método no se comprueba ningún dato más del foro
+    public static boolean hayForos(List<Post> listaPosts, AlertLog registro){
+        if (listaPosts != null && listaPosts.isEmpty()){
+            registro.guardarAlerta("design consistentminforum","No hay foros en el curso");
+            return false;
+        }
+        return true;
+    }
+
     public static List<Resource> obtenerRecursos(String token, long courseid, String host){
         RestTemplate restTemplate = new RestTemplate();
         String url = host + "/webservice/rest/server.php?wsfunction=mod_resource_get_resources_by_courses&moodlewsrestformat=json&wstoken=" +token+ COURSEIDS_0 +courseid;
