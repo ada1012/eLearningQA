@@ -272,13 +272,13 @@ public class WebServiceClient {
         List<Post> listaPostsDebate;
         List<Post> listaPostsCompleta= new ArrayList<>();
         for (Discussion debate: listaDebatesCompleta) {
-            listaPostsDebate = obtenerListaPosts(token, debate, host);
+            listaPostsDebate = obtenerListaPostsPorDebate(token, debate, host);
             listaPostsCompleta.addAll(listaPostsDebate);
         }
         return listaPostsCompleta;
     }
 
-    public static List<Post> obtenerListaPosts(String token, Discussion debate, String host) {
+    public static List<Post> obtenerListaPostsPorDebate(String token, Discussion debate, String host) {
         RestTemplate restTemplate = new RestTemplate();
         PostList listaPostsDebate;
         String url= host + "/webservice/rest/server.php?wsfunction=mod_forum_get_discussion_posts&moodlewsrestformat=json&wstoken=" + token +"&discussionid="+debate.getDiscussionNumber();
@@ -968,4 +968,49 @@ public class WebServiceClient {
         
         return estadisticasNotasPregunta;
     }
+
+    // Método que calcula el porcentaje de alumnos que han respondido a un foro
+    public static double calculaPorcentajeAlumnosForos(List<Post> listaPosts, List<User> alumnos, AlertLog registro, FacadeConfig config){
+        List<Integer> listaIdForos = new ArrayList<>();
+        List<Integer> intentosPorForo = new ArrayList<>();
+        List<Long> listaAlumnos = new ArrayList<>();
+
+        // Si no hay posts, no hay foros y no hay participación
+        if (listaPosts.size() == 0) return 0;
+
+        for (Post post : listaPosts) {
+            // Cada foro nuevo se añade a la lista de foros
+            if (!listaIdForos.contains(post.getDiscussionid())) {
+                listaIdForos.add(post.getDiscussionid());
+                // Si hay alumnos en la lista, se añade el número de alumnos que han participado en el foro
+                // Esto nos sirve por si ya hemos recorrido un foro ya que este bucle recorre todos los posts de todos los foros
+                if (listaAlumnos.size() > 0) {
+                    intentosPorForo.add(listaAlumnos.size());
+                    listaAlumnos.clear();
+                }
+            }
+            
+            // Si es la primera vez que participa un alumno en un foro, se añade a la lista de alumnos
+            if (!listaAlumnos.contains(post.getAuthor().getId())) {
+                listaAlumnos.add(post.getAuthor().getId());
+            }
+        }
+
+        // Si hay alumnos en la lista, se añade el número de alumnos que han participado en el foro
+        // Esta comprobación es necesaria para el último foro
+        if (listaAlumnos.size() > 0) {
+            intentosPorForo.add(listaAlumnos.size());
+        }
+
+        // Se calcula el porcentaje de alumnos que han participado en los foros
+        double mediaIntentos = intentosPorForo.stream().mapToDouble(Integer::doubleValue).average().orElse(0.0);
+        double porcentaje = mediaIntentos / alumnos.size() * 100;
+
+        // Si el porcentaje de alumnos que han participado en los foros es menor que el porcentaje mínimo, se guarda la alerta
+        if (porcentaje < (config.getMinQuizAnswerPercentage() * 100))
+            registro.guardarAlerta("evaluation estadisticforum","Menos de un " + config.getMinQuizAnswerPercentage() * 100 + "% de los alumnos participa en los foros");
+        
+        return porcentaje;
+    }
+    
 }

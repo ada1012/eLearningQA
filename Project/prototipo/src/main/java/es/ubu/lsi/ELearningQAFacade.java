@@ -67,9 +67,9 @@ public class ELearningQAFacade {
         return WebServiceClient.getQuizzes(courseid, config.getHost(), token);
     }
 
-    public double[] realizarComprobaciones(String token, long courseid, AlertLog registro, List<QuizSummary> estadisticasCuestionarios, List<Quiz> quizzes) {
+    public double[] realizarComprobaciones(String token, long courseid, AlertLog registro, List<QuizSummary> estadisticasCuestionarios, List<Quiz> quizzes,
+                                            List<User> listaUsuarios, List<Post> listaPosts) {
         Course curso= getCursoPorId(token, courseid);
-        List<User> listaUsuarios= WebServiceClient.obtenerUsuarios(token, courseid, config.getHost());
         StatusList listaEstados=WebServiceClient.obtenerListaEstados(token, courseid, listaUsuarios, config.getHost());
         List<es.ubu.lsi.model.Module> listaModulos=WebServiceClient.obtenerListaModulos(token, courseid, config.getHost());
         List<Group> listaGrupos=WebServiceClient.obtenerListaGrupos(token, courseid, config.getHost(), registro);
@@ -77,7 +77,6 @@ public class ELearningQAFacade {
         List<Table> listaCalificadores=WebServiceClient.obtenerCalificadores(token, courseid, config.getHost());
         List<Resource> listaRecursos=WebServiceClient.obtenerRecursos(token, courseid, config.getHost());
         List<CourseModule> listaModulosTareas=WebServiceClient.obtenerModulosTareas(token, listaTareas, config.getHost());
-        List<Post> listaPosts=WebServiceClient.obtenerListaPosts(token, courseid, config.getHost());
         Map<Integer, Long> mapaFechasLimite=WebServiceClient.generarMapaFechasLimite(listaTareas);
         List<Assignment> tareasConNotas=WebServiceClient.obtenerTareasConNotas(token,mapaFechasLimite, config.getHost(), listaTareas);
         List<ResponseAnalysis> listaAnalisis=WebServiceClient.obtenerAnalisis(token, courseid, config.getHost());
@@ -123,7 +122,8 @@ public class ELearningQAFacade {
         return puntosComprobaciones;
     }
 
-    public String generarInformeFases(double[] puntos, List<QuizSummary> estadisticasCuestionarios, int nroCursos) {
+    public String generarInformeFases(double[] puntos, AlertLog registro, List<QuizSummary> estadisticasCuestionarios, List<User> listaUsuarios,
+                                    List<Post> listaPosts, int nroCursos) {
         double contadorDiseno=puntos[0]+puntos[1]+puntos[2]+puntos[3]+puntos[4]+puntos[5]+puntos[6]+puntos[7];
         double contadorImplementacion=puntos[8]+puntos[9]+puntos[10]+puntos[11]+puntos[12];
         double contadorRealizacion=puntos[13]+puntos[14]+puntos[15]+puntos[16]+puntos[19];
@@ -151,6 +151,11 @@ public class ELearningQAFacade {
                 // tabla += camposInformeFases[24]+entry.getKey()+camposInformeFases[25]+entry.getValue();
             }
         }
+
+        // Porcentaje de alumnos que participan en los foros
+        double porcentaje = porcentajeAlumnosForos(listaPosts, listaUsuarios, registro);
+        tabla += "</tr><tr onclick=\"openInfo(event, 'estadisticforum')\" data-bs-toggle=\"tooltip\" title=\"Se comprueba qué porcentaje de alumnos participan en los foros.\"> <td class=\"tg-ltgr\">Al menos un " + config.getMinQuizAnswerPercentage() * 100 + "% de los alumnos participa en los foros</td>" +
+                generarCampoRelativoCuestionario((float)porcentaje/100, 1);
 
         // Evaluación
         tabla += camposInformeFases[21]+generarCampoRelativo((float)contadorEvaluacion/nroCursos, CHECKS_EVALUACION) +
@@ -187,6 +192,16 @@ public class ELearningQAFacade {
             }
         }
         return listaCuestionarios;
+    }
+
+    // Obtener la lista de usuarios de un curso
+    public List<User> getListaUsuarios(String token, long courseid) {
+        return WebServiceClient.obtenerUsuarios(token, courseid, config.getHost());
+    }
+
+    // Obtener la lista de posts de un curso
+    public List<Post> getListaPosts(String token, long courseid) {
+        return WebServiceClient.obtenerListaPosts(token, courseid, config.getHost());
     }
 
     public Map<Integer, String> generarInformesCuestionarios(String token, long courseid, List<QuizSummary> quizzes) {
@@ -351,6 +366,11 @@ public class ELearningQAFacade {
     // Devuelve el porcentaje de cuestionarios contestados, sino se devuelve 0 y se añade un registro de alerta
     public double porcentajeCuestionariosContestados(List<Quiz> quizzes, double porcentaje, AlertLog registro) {
         return WebServiceClient.calculaPorcentajeCuestionarios(quizzes, porcentaje, registro, config);
+    }
+
+    // Devuelve el porcentaje de alumnos que participan en los foros, sino se devuelve 0 y se añade un registro de alerta
+    public double porcentajeAlumnosForos(List<Post> listaPosts, List<User> alumnos, AlertLog registro) {
+        return WebServiceClient.calculaPorcentajeAlumnosForos(listaPosts, alumnos, registro, config);
     }
 
     public float porcentajeFraccion(float numerador, float denominador){
