@@ -153,9 +153,22 @@ public class ELearningQAFacade {
         }
 
         // Porcentaje de alumnos que participan en los foros
-        double porcentaje = porcentajeAlumnosForos(listaPosts, listaUsuarios, registro);
-        tabla += "</tr><tr onclick=\"openInfo(event, 'estadisticforum')\" data-bs-toggle=\"tooltip\" title=\"Se comprueba qué porcentaje de alumnos participan en los foros.\"> <td class=\"tg-ltgr\">Al menos un " + config.getMinQuizAnswerPercentage() * 100 + "% de los alumnos participa en los foros</td>" +
+        List<EstadisticasForo> foros = porcentajeAlumnosForos(listaPosts, listaUsuarios, registro);
+        double porcentaje = 0;
+        if (foros != null && !foros.isEmpty()) {
+            for (EstadisticasForo estadisticasForo : foros) {
+                porcentaje += estadisticasForo.getPorcentajeParticipacion();
+            }
+            porcentaje = porcentaje / foros.size();
+        }
+        tabla += "</tr><tr onclick=\"openInfo(event, 'estadisticforum')\" data-bs-toggle=\"tooltip\" title=\"Se comprueba qué porcentaje de alumnos participan en los foros.\"> <td class=\"tg-ltgr\">Al menos un " + config.getMinQuizAnswerPercentage() * 100 + "% de los alumnos participa en los foros  <button onclick=\"toggleForos()\">Desplegar</button></td>" +
                 generarCampoRelativoCuestionario((float)porcentaje/100, 1);
+        // Porcentaje de alumnos que participa en cada foro
+        if (foros != null && !foros.isEmpty()) {
+            for (EstadisticasForo estadisticasForo : foros) {
+                tabla += "</tr><tr class=\"toggle-foros\" data-bs-toggle=\"tooltip\"> <td class=\"tg-ltgr\">Foro " + estadisticasForo.getAsunto() + " </td>" + generarCampoRelativoCuestionario((float)estadisticasForo.getPorcentajeParticipacion()/100, 1);
+            }
+        }
 
         // Evaluación
         tabla += camposInformeFases[21]+generarCampoRelativo((float)contadorEvaluacion/nroCursos, CHECKS_EVALUACION) +
@@ -369,7 +382,7 @@ public class ELearningQAFacade {
     }
 
     // Devuelve el porcentaje de alumnos que participan en los foros, sino se devuelve 0 y se añade un registro de alerta
-    public double porcentajeAlumnosForos(List<Post> listaPosts, List<User> alumnos, AlertLog registro) {
+    public List<EstadisticasForo> porcentajeAlumnosForos(List<Post> listaPosts, List<User> alumnos, AlertLog registro) {
         return WebServiceClient.calculaPorcentajeAlumnosForos(listaPosts, alumnos, registro, config);
     }
 

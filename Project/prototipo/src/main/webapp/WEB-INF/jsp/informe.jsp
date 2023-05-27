@@ -122,7 +122,7 @@
       color:#842029;background-color:#f8d7da;border-color:#f5c2c7
     }
 
-    .toggle-cuestionarios, .cuestionarios, .cuestionario{
+    .toggle-cuestionarios, .cuestionarios, .cuestionario, .toggle-foros, .foros{
       display: none;
     }
 
@@ -265,6 +265,18 @@
                 cuestionario.style.display = 'table-row';
               } else {
                 cuestionario.style.display = 'none';
+              }
+            }
+          }
+
+          function toggleForos() {
+            const foros = document.querySelectorAll('.toggle-foros');
+            for (let i = 0; i < foros.length; i++) {
+              const foro = foros[i];
+              if (foro.style.display === 'none') {
+                foro.style.display = 'table-row';
+              } else {
+                foro.style.display = 'none';
               }
             }
           }

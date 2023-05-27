@@ -970,47 +970,50 @@ public class WebServiceClient {
     }
 
     // Método que calcula el porcentaje de alumnos que han respondido a un foro
-    public static double calculaPorcentajeAlumnosForos(List<Post> listaPosts, List<User> alumnos, AlertLog registro, FacadeConfig config){
-        List<Integer> listaIdForos = new ArrayList<>();
-        List<Integer> intentosPorForo = new ArrayList<>();
+    public static List<EstadisticasForo> calculaPorcentajeAlumnosForos(List<Post> listaPosts, List<User> alumnos, AlertLog registro, FacadeConfig config){
+        List<EstadisticasForo> estadisticasForos = new ArrayList<>();
+        EstadisticasForo estadisticasForo = new EstadisticasForo();
         List<Long> listaAlumnos = new ArrayList<>();
+        double porcentaje = 0;
 
         // Si no hay posts, no hay foros y no hay participación
-        if (listaPosts.size() == 0) return 0;
+        if (listaPosts.size() == 0) return estadisticasForos;
 
         for (Post post : listaPosts) {
             // Cada foro nuevo se añade a la lista de foros
-            if (!listaIdForos.contains(post.getDiscussionid())) {
-                listaIdForos.add(post.getDiscussionid());
-                // Si hay alumnos en la lista, se añade el número de alumnos que han participado en el foro
-                // Esto nos sirve por si ya hemos recorrido un foro ya que este bucle recorre todos los posts de todos los foros
-                if (listaAlumnos.size() > 0) {
-                    intentosPorForo.add(listaAlumnos.size());
-                    listaAlumnos.clear();
-                }
+            if (!estadisticasForos.stream().anyMatch(e -> e.getIdForo() == post.getDiscussionid())) {
+                estadisticasForo = new EstadisticasForo();
+                estadisticasForo.setIdForo(post.getDiscussionid());
+                estadisticasForo.setAsunto(post.getSubject());
+                estadisticasForo.setNumeroMensajes(0);
+                estadisticasForo.setUsuariosUnicos(0);
+                estadisticasForos.add(estadisticasForo);
+                listaAlumnos.clear();
             }
             
+            // Se actualiza el número de mensajes del foro
+            estadisticasForo = estadisticasForos.stream().filter(e -> e.getIdForo() == post.getDiscussionid()).findFirst().get();
+            estadisticasForo.setNumeroMensajes(estadisticasForo.getNumeroMensajes() + 1);
+
             // Si es la primera vez que participa un alumno en un foro, se añade a la lista de alumnos
             if (!listaAlumnos.contains(post.getAuthor().getId())) {
                 listaAlumnos.add(post.getAuthor().getId());
+                estadisticasForo.setUsuariosUnicos(estadisticasForo.getUsuariosUnicos() + 1);
             }
         }
 
-        // Si hay alumnos en la lista, se añade el número de alumnos que han participado en el foro
-        // Esta comprobación es necesaria para el último foro
-        if (listaAlumnos.size() > 0) {
-            intentosPorForo.add(listaAlumnos.size());
+        // Se calcula el porcentaje de alumnos que han participado en los foros
+        for (EstadisticasForo estadisticas : estadisticasForos) {
+            double porcentajeForo = (double) estadisticas.getUsuariosUnicos() / alumnos.size() * 100;
+            estadisticas.setPorcentajeParticipacion(porcentajeForo);
+            porcentaje += porcentajeForo;
         }
 
-        // Se calcula el porcentaje de alumnos que han participado en los foros
-        double mediaIntentos = intentosPorForo.stream().mapToDouble(Integer::doubleValue).average().orElse(0.0);
-        double porcentaje = mediaIntentos / alumnos.size() * 100;
-
         // Si el porcentaje de alumnos que han participado en los foros es menor que el porcentaje mínimo, se guarda la alerta
-        if (porcentaje < (config.getMinQuizAnswerPercentage() * 100))
+        if (porcentaje / estadisticasForos.size() < (config.getMinQuizAnswerPercentage() * 100))
             registro.guardarAlerta("evaluation estadisticforum","Menos de un " + config.getMinQuizAnswerPercentage() * 100 + "% de los alumnos participa en los foros");
         
-        return porcentaje;
+        return estadisticasForos;
     }
     
 }
