@@ -284,7 +284,7 @@ public class ELearningQAFacade {
                 double[] notaMediaPreguntas = new double[estadisticas.size()];
                 int i = 0;
                 for (EstadisticaNotasPregunta estadistica : estadisticas) {
-                    notaMediaPreguntas[i] = estadistica.getNotaMediaPregunta();
+                    notaMediaPreguntas[i] = estadistica.getNotaMediaPregunta() * 100;
                     i++;
                 }
                 informes.put(quiz.getId(), notaMediaPreguntas);

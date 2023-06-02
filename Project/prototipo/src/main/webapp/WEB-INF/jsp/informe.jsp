@@ -174,9 +174,9 @@
 
                           // Crea el diseño del gráfico
                           var layout = {
-                            title: 'Gráfico de barras',
+                            title: 'Gráfico de barras de los alumnos con calificación',
                             xaxis: { title: 'ID de Pregunta' },
-                            yaxis: { title: 'Nota Media' }
+                            yaxis: { title: 'Porcentaje Nota Media' }
                           };
                           
                           if (idPreguntas.length > 0) {
