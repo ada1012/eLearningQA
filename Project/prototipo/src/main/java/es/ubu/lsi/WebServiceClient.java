@@ -636,10 +636,14 @@ public class WebServiceClient {
     }
 
     public static boolean muestraCriterios(List<CourseModule> listaModulosTareas, AlertLog registro){
-        for (CourseModule modulo:listaModulosTareas) {
-            for (Advancedgrading metodoAvanzado: modulo.getAdvancedgrading()) {
-                if (metodoAvanzado.getMethod()!=null){
-                    return true;
+        if (listaModulosTareas != null) {
+            for (CourseModule modulo:listaModulosTareas) {
+                if (modulo.getAdvancedgrading() != null) {
+                    for (Advancedgrading metodoAvanzado: modulo.getAdvancedgrading()) {
+                        if (metodoAvanzado.getMethod()!=null){
+                            return true;
+                        }
+                    }
                 }
             }
         }
