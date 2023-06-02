@@ -138,7 +138,7 @@ public class ELearningQAFacade {
                 generarFilas(new int[]{17, 13}, 4, puntos, nroCursos);
         
         // Porcentaje de cuestionarios realizados
-        tabla += "</tr><tr onclick=\"openInfo(event, 'estadisticquiz')\" data-bs-toggle=\"tooltip\" title=\"Se comprueba qué porcentaje de alumno realiza los respectivos cursos.\"> <td class=\"tg-ltgr\">Al menos un " + config.getMinQuizAnswerPercentage() * 100 + "% de los alumnos responden a los cuestionarios  <button onclick=\"toggleCuestionarios()\">Desplegar</button></td>" +
+        tabla += "</tr><tr onclick=\"openInfo(event, 'estadisticquiz')\" data-bs-toggle=\"tooltip\" title=\"Se comprueba qué porcentaje de alumnos participa en los cuestionarios.\"> <td class=\"tg-ltgr\">Al menos un " + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos responden a los cuestionarios  <button onclick=\"toggleCuestionarios()\">Desplegar</button></td>" +
                 generarCampoRelativoCuestionario((float)puntos[19], 1);
 
         if(estadisticasCuestionarios != null && !estadisticasCuestionarios.isEmpty()){
@@ -161,7 +161,7 @@ public class ELearningQAFacade {
             }
             porcentaje = porcentaje / foros.size();
         }
-        tabla += "</tr><tr onclick=\"openInfo(event, 'estadisticforum')\" data-bs-toggle=\"tooltip\" title=\"Se comprueba qué porcentaje de alumnos participan en los foros.\"> <td class=\"tg-ltgr\">Al menos un " + config.getMinQuizAnswerPercentage() * 100 + "% de los alumnos participa en los foros  <button onclick=\"toggleForos()\">Desplegar</button></td>" +
+        tabla += "</tr><tr onclick=\"openInfo(event, 'estadisticforum')\" data-bs-toggle=\"tooltip\" title=\"Se comprueba qué porcentaje de alumnos participa en los foros.\"> <td class=\"tg-ltgr\">Al menos un " + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos participa en los foros  <button onclick=\"toggleForos()\">Desplegar</button></td>" +
                 generarCampoRelativoCuestionario((float)porcentaje/100, 1);
         // Porcentaje de alumnos que participa en cada foro
         if (foros != null && !foros.isEmpty()) {
