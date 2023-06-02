@@ -787,37 +787,36 @@ public class WebServiceClient {
         int contadorIntentos = 0;
         int totalPreguntas = 0;
         double nota = 0;
+        double notaIntento = 0;
         List<Double> notas = new ArrayList<>();
+        List<Double> notasUltimoIntento = new ArrayList<>();
         List<Integer> intentos = new ArrayList<>();
         int totalAlumnos = usuarios.size();
         
-        // Obtener los alumnos que participan en el cuestionario (alumnosExaminados)
+        // Obtener los alumnos que participan en el cuestionario
         for (User usuario : usuarios) {
             int intento = 0;
-            boolean cuestionarioRealizado = false;
             int userId = usuario.getId();
             List<Attempt> attempts = new ArrayList<>();
             attempts.addAll(getUserQuizAttempts(quiz.getId(), userId, host, token));
+
             for (Attempt attempt : attempts) {
                 int attemptId = (int) attempt.getId();
                 AttemptReviewList attemptReviewList = getQuizAttempt(quiz.getId(), attemptId, host, token);
                 totalPreguntas = attemptReviewList.getQuestions().size();
-                // Contamos el intento aunque no tenga nota ya que se ha realizado y puede que no se haya corregido,
-                // como puede tener preguntas tipo test que se corrigen automáticamente las estadísticas si que las van a mostrar
-                intento++;
-                cuestionarioRealizado = true;
-                if (attemptReviewList.getGrade() != null) {
-	                nota = Double.parseDouble(Double.parseDouble(attemptReviewList.getGrade()) > nota ? attemptReviewList.getGrade() : nota+"");
-	                notas.add(nota);
-	                nota = 0;
+                notaIntento = attemptReviewList.getGrade() != null ? Double.parseDouble(attemptReviewList.getGrade()) : 0;
+                if (notaIntento > nota) {
+                    nota = notaIntento;
                 }
+                intento++;
             }
-            
-            intentos.add(intento);
             if (!attempts.isEmpty()) {
                 attempts.clear();
-            }
-            if (cuestionarioRealizado) {
+                notasUltimoIntento.add(notaIntento);
+                notas.add(nota);
+                notaIntento = 0;
+                nota = 0;
+                intentos.add(intento);
                 contadorIntentos++;
             }
         }
@@ -830,7 +829,10 @@ public class WebServiceClient {
         quizSummary.setTotalAlumnos(totalAlumnos);
         quizSummary.setAlumnosExaminados(contadorIntentos);
         quizSummary.setTotalPreguntas(totalPreguntas);
-        quizSummary.setNotaMedia(notas.stream().mapToDouble(Double::doubleValue).average().orElse(0.0));
+        quizSummary.setNotaMediaMejorIntentoAlumnosConNota(notas.stream().mapToDouble(Double::doubleValue).average().orElse(0.0));
+        quizSummary.setNotaMediaUltimoIntentoAlumnosConNota(notasUltimoIntento.stream().mapToDouble(Double::doubleValue).average().orElse(0.0));
+        quizSummary.setNotaMediaMejorIntentoTotalAlumnos(notas.stream().mapToDouble(Double::doubleValue).sum() / totalAlumnos);
+        quizSummary.setNotaMediaUltimoIntentoTotalAlumnos(notasUltimoIntento.stream().mapToDouble(Double::doubleValue).sum() / totalAlumnos);
         quizSummary.setMediaIntentos(intentos.stream().mapToInt(Integer::intValue).average().orElse(0.0));
 
         quizSummary.setSkewness(calculaSkewness(notas));

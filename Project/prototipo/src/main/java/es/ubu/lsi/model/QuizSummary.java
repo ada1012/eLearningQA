@@ -7,7 +7,10 @@ public class QuizSummary {
     private int alumnosExaminados;
     private int totalPreguntas;
     private double notaMaxima;
-    private double notaMedia;
+    private double notaMediaMejorIntentoAlumnosConNota;
+	private double notaMediaMejorIntentoTotalAlumnos;
+	private double notaMediaUltimoIntentoAlumnosConNota;
+	private double notaMediaUltimoIntentoTotalAlumnos;
     private int maxIntentos;
     private double mediaIntentos;
 	private double skewness;
@@ -49,11 +52,29 @@ public class QuizSummary {
 	public void setNotaMaxima(double notaMaxima) {
 		this.notaMaxima = notaMaxima;
 	}
-	public double getNotaMedia() {
-		return notaMedia;
+	public double getNotaMediaMejorIntentoAlumnosConNota() {
+		return notaMediaMejorIntentoAlumnosConNota;
 	}
-	public void setNotaMedia(double notaMedia) {
-		this.notaMedia = notaMedia;
+	public void setNotaMediaMejorIntentoAlumnosConNota(double notaMediaMejorIntentoAlumnosConNota) {
+		this.notaMediaMejorIntentoAlumnosConNota = notaMediaMejorIntentoAlumnosConNota;
+	}
+	public double getNotaMediaMejorIntentoTotalAlumnos() {
+		return notaMediaMejorIntentoTotalAlumnos;
+	}
+	public void setNotaMediaMejorIntentoTotalAlumnos(double notaMediaMejorIntentoTotalAlumnos) {
+		this.notaMediaMejorIntentoTotalAlumnos = notaMediaMejorIntentoTotalAlumnos;
+	}
+	public double getNotaMediaUltimoIntentoAlumnosConNota() {
+		return notaMediaUltimoIntentoAlumnosConNota;
+	}
+	public void setNotaMediaUltimoIntentoAlumnosConNota(double notaMediaUltimoIntentoAlumnosConNota) {
+		this.notaMediaUltimoIntentoAlumnosConNota = notaMediaUltimoIntentoAlumnosConNota;
+	}
+	public double getNotaMediaUltimoIntentoTotalAlumnos() {
+		return notaMediaUltimoIntentoTotalAlumnos;
+	}
+	public void setNotaMediaUltimoIntentoTotalAlumnos(double notaMediaUltimoIntentoTotalAlumnos) {
+		this.notaMediaUltimoIntentoTotalAlumnos = notaMediaUltimoIntentoTotalAlumnos;
 	}
 	public int getMaxIntentos() {
 		return maxIntentos;

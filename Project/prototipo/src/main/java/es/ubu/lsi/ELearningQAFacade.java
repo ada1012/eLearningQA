@@ -240,7 +240,10 @@ public class ELearningQAFacade {
             informe += "<p>Número de alumnos examinados: " + quizSummary.getAlumnosExaminados() + "</p>";
             informe += "<p>Número de preguntas: " + quizSummary.getTotalPreguntas() + "</p>";
             informe += "<p>Nota máxima: " + ((int)(quizSummary.getNotaMaxima() * 100)) / 100.00 + "</p>";
-            informe += "<p>Nota media: " + ((int)(quizSummary.getNotaMedia() * 100)) / 100.00 + "</p>";
+            informe += "<p>Nota media del mejor intento (Solo alumnos que han realizado el examen): " + ((int)(quizSummary.getNotaMediaMejorIntentoAlumnosConNota() * 100)) / 100.00 + "</p>";
+            informe += "<p>Nota media del mejor intento (Todos los alumnos): " + ((int)(quizSummary.getNotaMediaMejorIntentoTotalAlumnos() * 100)) / 100.00 + "</p>";
+            informe += "<p>Nota media del último intento (Solo alumnos que han realizado el examen): " + ((int)(quizSummary.getNotaMediaUltimoIntentoAlumnosConNota() * 100)) / 100.00 + "</p>";
+            informe += "<p>Nota media del último intento (Todos los alumnos): " + ((int)(quizSummary.getNotaMediaUltimoIntentoTotalAlumnos() * 100)) / 100.00 + "</p>";
             informe += "<p>Media de intentos: " + ((int)(quizSummary.getMediaIntentos() * 100)) / 100.00 + "</p>";
             informe += "<p>Skewness: " + ((int)(quizSummary.getSkewness() * 100)) / 100.00 + "</p>";
             informe += "<p>Kurtosis: " + ((int)(quizSummary.getKurtosis() * 100)) / 100.00 + "</p>";
