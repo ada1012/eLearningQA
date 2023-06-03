@@ -1,6 +1,6 @@
-# ![eLearningQA](https://github.com/RobertoArastiBlanco/eLearningQA/blob/main/Memo/plantillaLatex-master/img/FullLogo.png?raw=true)
+# ![eLearningQA](https://github.com/ada1012/eLearningQA/blob/main/Memo/plantillaLatex-master/img/FullLogo.png?raw=true)
 
-[![](https://github.com/RobertoArastiBlanco/MoodleQA/actions/workflows/maven.yml/badge.svg)](https://github.com/RobertoArastiBlanco/MoodleQA/actions/workflows/maven.yml)
+[![](https://github.com/ada1012/eLearningQA/actions/workflows/maven.yml/badge.svg)](https://github.com/ada1012/eLearningQA/actions/workflows/maven.yml)
 [![](https://img.shields.io/github/deployments/RobertoArastiBlanco/eLearningQA/elearningqa?label=Heroku%20deployment&style=plastic)](https://elearningqa.herokuapp.com)
 [![](https://sonarcloud.io/api/project_badges/measure?project=ada1012_eLearningQA&metric=alert_status)](https://sonarcloud.io/summary/overall?id=ada1012_eLearningQA)
 ## Description
