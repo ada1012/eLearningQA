@@ -2,7 +2,7 @@
 
 [![](https://github.com/RobertoArastiBlanco/MoodleQA/actions/workflows/maven.yml/badge.svg)](https://github.com/RobertoArastiBlanco/MoodleQA/actions/workflows/maven.yml)
 [![](https://img.shields.io/github/deployments/RobertoArastiBlanco/eLearningQA/elearningqa?label=Heroku%20deployment&style=plastic)](https://elearningqa.herokuapp.com)
-[![](https://sonarcloud.io/api/project_badges/measure?project=RobertoArastiBlanco_MoodleQA&metric=alert_status)](https://sonarcloud.io/summary/overall?id=RobertoArastiBlanco_MoodleQA)
+[![](https://sonarcloud.io/api/project_badges/measure?project=ada1012_eLearningQA&metric=alert_status)](https://sonarcloud.io/summary/overall?id=ada1012_eLearningQA)
 ## Description
 
 eLearningQA is a web app that uses Moodle's web service 
