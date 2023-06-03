@@ -92,7 +92,7 @@ public class ELearningQAFacade {
         } else {
             for (QuizSummary quizSummary : estadisticasCuestionarios) {
                 if (quizSummary.getTotalAlumnos() > 0 && quizSummary.getAlumnosExaminados() > 0)
-                    sum += (float)((quizSummary.getAlumnosExaminados()*100)/quizSummary.getTotalAlumnos());
+                    sum += ((double)(quizSummary.getAlumnosExaminados()*100)/quizSummary.getTotalAlumnos());
             }
             porcentaje = sum / estadisticasCuestionarios.size();
         }
@@ -145,7 +145,7 @@ public class ELearningQAFacade {
             for (QuizSummary quizSummary : estadisticasCuestionarios) {
                 float porcentaje = 0;
                 if (quizSummary.getTotalAlumnos() > 0 && quizSummary.getAlumnosExaminados() > 0)
-                    porcentaje = (float)((quizSummary.getAlumnosExaminados()*100)/quizSummary.getTotalAlumnos())/100;
+                    porcentaje = ((float)(quizSummary.getAlumnosExaminados()*100)/quizSummary.getTotalAlumnos())/100;
 
                 tabla += "</tr><tr class=\"toggle-cuestionarios\" data-bs-toggle=\"tooltip\"> <td class=\"tg-ltgr\"onclick=\"muestraCuestionario(" + quizSummary.getId() + ")\">Cuestionario " + quizSummary.getNombreCuestionario() + " </td>" + generarCampoRelativoCuestionario(porcentaje, 1);
                 // tabla += camposInformeFases[24]+entry.getKey()+camposInformeFases[25]+entry.getValue();

@@ -70,8 +70,8 @@
                     <p><strong>Evaluación:</strong></p>
                     <ul>
                     <li><strong>La mayoría de alumnos responden a los feedbacks:</strong> se comprueba que no hayan muchos alumnos que no respondan a los feedbacks. <u>Responsable:</u> Proveedor <u>Involucrados:</u> Diseñador y Facilitador <u>Perspectivas:</u> Pedagógica, Tecnológica, y Estratégica</li>
-                    <li><strong>Se utilizan encuestas de opinión:</strong> se comprueba que el curso contenga encuestas de opinión. <u>Responsable:</u> Proveedor <u>Involucrados:</u> Diseñador y Facilitador <u>Perspectivas:</u> Pedagógica, Tecnológica, y Estratégica</li></ul>
-                    <li><strong>Al menos un alumno responde a los cuestionarios en caso de que existan:</strong> se comprueba el porcentaje de alumnos que ha respondido a los cuestionarios. <u>Responsable:</u> Proveedor <u>Involucrados:</u> Diseñador y Facilitador <u>Perspectivas:</u> Pedagógica, Tecnológica, y Estratégica</li>
+                    <li><strong>Se utilizan encuestas de opinión:</strong> se comprueba que el curso contenga encuestas de opinión. <u>Responsable:</u> Proveedor <u>Involucrados:</u> Diseñador y Facilitador <u>Perspectivas:</u> Pedagógica, Tecnológica, y Estratégica</li>
+                    <li><strong>Al menos un alumno responde a los cuestionarios en caso de que existan:</strong> se comprueba el porcentaje de alumnos que ha respondido a los cuestionarios. <u>Responsable:</u> Proveedor <u>Involucrados:</u> Diseñador y Facilitador <u>Perspectivas:</u> Pedagógica, Tecnológica, y Estratégica</li></ul>
           </div>
     </div>
     <footer class="d-flex justify-content-evenly p-3 bg-dark text-white">
