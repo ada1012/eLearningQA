@@ -787,15 +787,14 @@ public class WebServiceClient {
         int contadorIntentos = 0;
         int totalPreguntas = 0;
         double nota = 0;
+        int intentos = 0;
         double notaIntento = 0;
         List<Double> notas = new ArrayList<>();
         List<Double> notasUltimoIntento = new ArrayList<>();
-        List<Integer> intentos = new ArrayList<>();
         int totalAlumnos = usuarios.size();
         
         // Obtener los alumnos que participan en el cuestionario
         for (User usuario : usuarios) {
-            int intento = 0;
             int userId = usuario.getId();
             List<Attempt> attempts = new ArrayList<>();
             attempts.addAll(getUserQuizAttempts(quiz.getId(), userId, host, token));
@@ -808,7 +807,7 @@ public class WebServiceClient {
                 if (notaIntento > nota) {
                     nota = notaIntento;
                 }
-                intento++;
+                intentos++;
             }
             if (!attempts.isEmpty()) {
                 attempts.clear();
@@ -816,7 +815,6 @@ public class WebServiceClient {
                 notas.add(nota);
                 notaIntento = 0;
                 nota = 0;
-                intentos.add(intento);
                 contadorIntentos++;
             }
         }
@@ -833,10 +831,11 @@ public class WebServiceClient {
         quizSummary.setNotaMediaUltimoIntentoAlumnosConNota(notasUltimoIntento.stream().mapToDouble(Double::doubleValue).average().orElse(0.0));
         quizSummary.setNotaMediaMejorIntentoTotalAlumnos(notas.stream().mapToDouble(Double::doubleValue).sum() / totalAlumnos);
         quizSummary.setNotaMediaUltimoIntentoTotalAlumnos(notasUltimoIntento.stream().mapToDouble(Double::doubleValue).sum() / totalAlumnos);
-        quizSummary.setMediaIntentos(intentos.stream().mapToInt(Integer::intValue).average().orElse(0.0));
-
-        quizSummary.setSkewness(calculaSkewness(notas));
-        quizSummary.setKurtosis(calculaKurtosis(notas));
+        quizSummary.setTotalIntentos(intentos);
+        if (contadorIntentos > 3) {
+            quizSummary.setSkewness(calculaSkewness(notas));
+            quizSummary.setKurtosis(calculaKurtosis(notas));
+        }
     
         return quizSummary;
     }
@@ -845,15 +844,19 @@ public class WebServiceClient {
     public static double calculaSkewness(List<Double> notas) {
         int n = notas.size();
         double media = calculaMedia(notas);
-        double stdDev = calculaDesviacionEstandar(notas, media);
 
-        double sumaDiferencia = 0.0;
+        double sumaDiferenciam2 = 0.0;
+        double sumaDiferenciam3 = 0.0;
         for (double nota : notas) {
             double diferencia = nota - media;
-            sumaDiferencia += Math.pow(diferencia, 3);
+            sumaDiferenciam2 += Math.pow(diferencia, 2);
+            sumaDiferenciam3 += Math.pow(diferencia, 3);
         }
-
-        double skewness = sumaDiferencia / (stdDev * stdDev * stdDev * (n - 1));
+        double m2 = sumaDiferenciam2 / n;
+        double m3 = sumaDiferenciam3 / n;
+        double k2 = (n * m2) / (n - 1);
+        double k3 = (Math.pow(n, 2) * m3) / ((n - 1) * (n - 2));
+        double skewness = k3 / Math.pow(k2, (float)3 / 2);
         return skewness;
     }
 
@@ -880,15 +883,22 @@ public class WebServiceClient {
     public static double calculaKurtosis(List<Double> notas) {
         int n = notas.size();
         double media = calculaMedia(notas);
-        double stdDev = calculaDesviacionEstandar(notas, media);
 
-        double sumaDiferencia = 0.0;
+        double sumaDiferenciam2 = 0.0;
+        double sumaDiferenciam4 = 0.0;
         for (double nota : notas) {
             double diferencia = nota - media;
-            sumaDiferencia += Math.pow(diferencia, 4);
+            sumaDiferenciam2 += Math.pow(diferencia, 2);
+            sumaDiferenciam4 += Math.pow(diferencia, 4);
         }
-
-        double curtosis = sumaDiferencia / (stdDev * stdDev * stdDev * stdDev * (n - 1));
+        double m2 = sumaDiferenciam2 / n;
+        double m4 = sumaDiferenciam4 / n;
+        double primerArgumento = Math.pow(n, 2) / ((n - 1) * (n - 2) * (n - 3));
+        double segundoArgumento = (n + 1)*m4 - 3 * (n - 1) * Math.pow(m2, 2);
+        double k2 = (n * m2) / (n - 1);
+        double k4 = primerArgumento * segundoArgumento;
+        double curtosis = k4 / Math.pow(k2, 2);
+        
         return curtosis;
     }
 
@@ -897,6 +907,7 @@ public class WebServiceClient {
         List<EstadisticaNotasPregunta> estadisticasNotasPregunta = new ArrayList<>();
         List<Attempt> attempts = new ArrayList<>();
         List<User> usuarios = obtenerUsuarios(token, quiz.getCourse(), host);
+        int intentos = 0;
 
         Map<Integer, Double> notas = new HashMap<>();
         Map<Integer, Double> notasMaximas = new HashMap<>();
@@ -944,6 +955,7 @@ public class WebServiceClient {
                         notas.put(idPregunta, notaMediaPregunta + notas.getOrDefault(idPregunta, 0.0));
                         notasMaximas.put(idPregunta, puntuacionMaxima);
                     }
+                    intentos++;
                 }
             }
             if (notasAuxiliar.size() > 1) {
@@ -951,12 +963,12 @@ public class WebServiceClient {
                 for (int idPregunta : notasAuxiliar.keySet()) {
                     notas.put(idPregunta, notasAuxiliar.get(idPregunta) + notas.getOrDefault(idPregunta, 0.0));
                 }
+                intentos++;
             }
             attempts.clear();
         }
-        
         for (int idPregunta : notas.keySet()) {
-            double notaMediaPregunta = notas.get(idPregunta) / usuarios.size();
+            double notaMediaPregunta = notas.get(idPregunta) / intentos;
             double puntuacionMaxima = notasMaximas.get(idPregunta);
             EstadisticaNotasPregunta estadisticaNotasPregunta = new EstadisticaNotasPregunta();
             estadisticaNotasPregunta.setIdPregunta(idPregunta);

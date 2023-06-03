@@ -238,15 +238,17 @@ public class ELearningQAFacade {
             informe += "<h1>Cuestionario " + quizSummary.getId() + " - " + quizSummary.getNombreCuestionario() + "</h1>";
             informe += "<p>Número de alumnos: " + quizSummary.getTotalAlumnos() + "</p>";
             informe += "<p>Número de alumnos examinados: " + quizSummary.getAlumnosExaminados() + "</p>";
+            informe += "<p>Total de intentos: " + quizSummary.getTotalIntentos() + "</p>";
             informe += "<p>Número de preguntas: " + quizSummary.getTotalPreguntas() + "</p>";
             informe += "<p>Nota máxima: " + ((int)(quizSummary.getNotaMaxima() * 100)) / 100.00 + "</p>";
             informe += "<p>Nota media del mejor intento (Solo alumnos que han realizado el examen): " + ((int)(quizSummary.getNotaMediaMejorIntentoAlumnosConNota() * 100)) / 100.00 + "</p>";
             informe += "<p>Nota media del mejor intento (Todos los alumnos): " + ((int)(quizSummary.getNotaMediaMejorIntentoTotalAlumnos() * 100)) / 100.00 + "</p>";
             informe += "<p>Nota media del último intento (Solo alumnos que han realizado el examen): " + ((int)(quizSummary.getNotaMediaUltimoIntentoAlumnosConNota() * 100)) / 100.00 + "</p>";
             informe += "<p>Nota media del último intento (Todos los alumnos): " + ((int)(quizSummary.getNotaMediaUltimoIntentoTotalAlumnos() * 100)) / 100.00 + "</p>";
-            informe += "<p>Media de intentos: " + ((int)(quizSummary.getMediaIntentos() * 100)) / 100.00 + "</p>";
-            informe += "<p>Skewness: " + ((int)(quizSummary.getSkewness() * 100)) / 100.00 + "</p>";
-            informe += "<p>Kurtosis: " + ((int)(quizSummary.getKurtosis() * 100)) / 100.00 + "</p>";
+            if (quizSummary.getAlumnosExaminados() > 3) {
+                informe += "<p>Skewness (para las mejores calificaciones): " + ((int)(quizSummary.getSkewness() * 100)) / 100.00 + "</p>";
+                informe += "<p>Kurtosis (para las mejores calificaciones): " + ((int)(quizSummary.getKurtosis() * 100)) / 100.00 + "</p>";
+            }
             informe += "</div>";
 
         }

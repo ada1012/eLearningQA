@@ -12,7 +12,7 @@ public class QuizSummary {
 	private double notaMediaUltimoIntentoAlumnosConNota;
 	private double notaMediaUltimoIntentoTotalAlumnos;
     private int maxIntentos;
-    private double mediaIntentos;
+    private int totalIntentos;
 	private double skewness;
 	private double kurtosis;
     
@@ -82,11 +82,11 @@ public class QuizSummary {
 	public void setMaxIntentos(int maxIntentos) {
 		this.maxIntentos = maxIntentos;
 	}
-	public double getMediaIntentos() {
-		return mediaIntentos;
+	public int getTotalIntentos() {
+		return totalIntentos;
 	}
-	public void setMediaIntentos(double mediaIntentos) {
-		this.mediaIntentos = mediaIntentos;
+	public void setTotalIntentos(int totalIntentos) {
+		this.totalIntentos = totalIntentos;
 	}
 
 	public double getSkewness() {
