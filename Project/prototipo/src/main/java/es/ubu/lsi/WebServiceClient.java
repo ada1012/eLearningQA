@@ -260,8 +260,7 @@ public class WebServiceClient {
         return fechaSolucion-fechaOrigen>tiempoLimite&&fechaOrigen+tiempoRelevancia>Instant.now().getEpochSecond();
     }
 
-    public static List<Post> obtenerListaPosts(String token, long courseid, String host) {
-        List<Forum> listaForos= obtenerListaForos(token, courseid, host);
+    public static List<Post> obtenerListaPosts(String token, long courseid, String host, List<Forum> listaForos) {
         List<Discussion> listaDebates;
         List<Discussion> listaDebatesCompleta= new ArrayList<>();
         for (Forum foro:listaForos) {
@@ -446,8 +445,8 @@ public class WebServiceClient {
 
     // Método que comprueba si el curso tiene al menos un foro
     // En este método no se comprueba ningún dato más del foro
-    public static boolean hayForos(List<Post> listaPosts, AlertLog registro){
-        if (listaPosts != null && listaPosts.isEmpty()){
+    public static boolean hayForos(List<Forum> listaForos, AlertLog registro){
+        if (listaForos != null && listaForos.isEmpty()){
             registro.guardarAlerta("design consistentminforum","No hay foros en el curso");
             return false;
         }
@@ -953,56 +952,58 @@ public class WebServiceClient {
     }
 
     // Método que calcula el porcentaje de alumnos que han respondido a un foro
-    public static List<EstadisticasForo> calculaPorcentajeAlumnosForos(List<Post> listaPosts, List<User> alumnos, AlertLog registro, FacadeConfig config){
+    public static List<EstadisticasForo> calculaPorcentajeAlumnosForos(String token, List<Forum> listaForos, List<User> alumnos, AlertLog registro, FacadeConfig config){
         List<EstadisticasForo> estadisticasForos = new ArrayList<>();
-        EstadisticasForo estadisticasForo;
+        List<EstadisticasDiscusion> estadisticasDiscusiones = new ArrayList<>();
+        EstadisticasForo estadisticasForo = new EstadisticasForo();
+        EstadisticasDiscusion estadisticasDiscusion = new EstadisticasDiscusion();
         List<Long> listaAlumnos = new ArrayList<>();
+        int mensajes = 0;
+        int usuariosUnicos = 0;
         double porcentaje = 0;
 
-        // Si no hay posts, no hay foros y no hay participación
-        if (listaPosts.isEmpty()) {
+        // Si no hay foros no hay participación
+        if (listaForos.isEmpty()) {
             registro.guardarAlerta("realization estadisticforum","Menos de un " + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos participa en los foros");
             return estadisticasForos;
         }
 
-        for (Post post : listaPosts) {
-            // Cada foro nuevo se añade a la lista de foros
-            if (!estadisticasForos.stream().noneMatch(e -> e.getIdForo() == post.getDiscussionid())) {
-                estadisticasForo = new EstadisticasForo();
-                estadisticasForo.setIdForo(post.getDiscussionid());
-                estadisticasForo.setAsunto(post.getSubject());
-                estadisticasForo.setNumeroMensajes(0);
-                estadisticasForo.setUsuariosUnicos(0);
-                estadisticasForos.add(estadisticasForo);
-                listaAlumnos.clear();
-            }
-            
-            // Se actualiza el número de mensajes del foro
-            Optional<EstadisticasForo> foroOpcional = estadisticasForos.stream().filter(e -> e.getIdForo() == post.getDiscussionid()).findFirst();
-            if (foroOpcional.isPresent()) {
-                estadisticasForo = foroOpcional.get();
-            } else {
-                estadisticasForo = new EstadisticasForo();
-            }
-            
-            estadisticasForo.setNumeroMensajes(estadisticasForo.getNumeroMensajes() + 1);
+        // Se recorren los foros
+        for (Forum foro : listaForos) {
+            estadisticasForo.setIdForo(foro.getId());
+            estadisticasForo.setNombre(foro.getName());
 
-            // Si es la primera vez que participa un alumno en un foro, se añade a la lista de alumnos
-            if (!listaAlumnos.contains(post.getAuthor().getId())) {
-                listaAlumnos.add(post.getAuthor().getId());
-                estadisticasForo.setUsuariosUnicos(estadisticasForo.getUsuariosUnicos() + 1);
-            }
-        }
+            List<Discussion> listaDiscusiones = obtenerListaDebates(token, foro, config.getHost());
 
-        // Se calcula el porcentaje de alumnos que han participado en los foros
-        for (EstadisticasForo estadisticas : estadisticasForos) {
-            double porcentajeForo = (double) estadisticas.getUsuariosUnicos() / alumnos.size() * 100;
-            estadisticas.setPorcentajeParticipacion(porcentajeForo);
-            porcentaje += porcentajeForo;
+            for (Discussion discusion : listaDiscusiones) {
+                estadisticasDiscusion.setIdDiscusion(discusion.getId());
+                estadisticasDiscusion.setAsunto(discusion.getName());
+
+                List<Post> listaPostsDiscusion = obtenerListaPostsPorDebate(token, discusion, config.getHost());
+                for (Post post : listaPostsDiscusion) {
+                    mensajes++;
+                    if (!listaAlumnos.contains(post.getAuthor().getId())) {
+                        listaAlumnos.add(post.getAuthor().getId());
+                        usuariosUnicos++;
+                    }
+                }
+                estadisticasDiscusion.setNumeroMensajes(mensajes);
+                estadisticasDiscusiones.add(estadisticasDiscusion);
+                mensajes = 0;
+                estadisticasDiscusion = new EstadisticasDiscusion();
+            }
+            estadisticasForo.setUsuariosUnicos(usuariosUnicos);
+            estadisticasForo.setPorcentajeParticipacion((double) usuariosUnicos / alumnos.size() * 100);
+            estadisticasForo.setEstadisticasDiscusiones(estadisticasDiscusiones);
+            estadisticasForos.add(estadisticasForo);
+
+            usuariosUnicos = 0;
+            porcentaje += estadisticasForo.getPorcentajeParticipacion();
+            estadisticasForo = new EstadisticasForo();
         }
 
         // Si el porcentaje de alumnos que han participado en los foros es menor que el porcentaje mínimo, se guarda la alerta
-        if ((porcentaje / estadisticasForos.size()) < (config.getMinQuizAnswerPercentage() * 100))
+        if ((porcentaje / listaForos.size()) < (config.getMinQuizAnswerPercentage() * 100))
             registro.guardarAlerta("realization estadisticforum","Menos de un " + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos participa en los foros");
         
         return estadisticasForos;

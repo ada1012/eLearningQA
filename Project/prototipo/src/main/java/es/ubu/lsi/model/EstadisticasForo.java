@@ -1,16 +1,18 @@
 package es.ubu.lsi.model;
 
+import java.util.List;
+
 public class EstadisticasForo {
     private int idForo;
-    private String asunto;
-    private int numeroMensajes;
+    private String nombre;
+    private List<EstadisticasDiscusion> estadisticasDiscusiones;
     private int usuariosUnicos;
     private double porcentajeParticipacion;
 
-    public EstadisticasForo(int idForo, String asunto, int numeroMensajes, int usuariosUnicos, double porcentajeParticipacion) {
+    public EstadisticasForo(int idForo, String nombre, List<EstadisticasDiscusion> estadisticasDiscusiones, int usuariosUnicos, double porcentajeParticipacion) {
         this.idForo = idForo;
-        this.asunto = asunto;
-        this.numeroMensajes = numeroMensajes;
+        this.nombre = nombre;
+        this.estadisticasDiscusiones = estadisticasDiscusiones;
         this.usuariosUnicos = usuariosUnicos;
         this.porcentajeParticipacion = porcentajeParticipacion;
     }
@@ -22,12 +24,12 @@ public class EstadisticasForo {
         return idForo;
     }
 
-    public String getAsunto() {
-        return asunto;
+    public String getNombre() {
+        return nombre;
     }
-
-    public int getNumeroMensajes() {
-        return numeroMensajes;
+    
+    public List<EstadisticasDiscusion> getEstadisticasDiscusiones() {
+        return estadisticasDiscusiones;
     }
 
     public int getUsuariosUnicos() {
@@ -42,12 +44,12 @@ public class EstadisticasForo {
         this.idForo = idForo;
     }
 
-    public void setAsunto(String asunto) {
-        this.asunto = asunto;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
-
-    public void setNumeroMensajes(int numeroMensajes) {
-        this.numeroMensajes = numeroMensajes;
+    
+    public void setEstadisticasDiscusiones(List<EstadisticasDiscusion> estadisticasDiscusiones) {
+        this.estadisticasDiscusiones = estadisticasDiscusiones;
     }
 
     public void setUsuariosUnicos(int usuariosUnicos) {
@@ -56,10 +58,5 @@ public class EstadisticasForo {
 
     public void setPorcentajeParticipacion(double porcentajeParticipacion) {
         this.porcentajeParticipacion = porcentajeParticipacion;
-    }
-    
-    @Override
-    public String toString() {
-        return "EstadisticasForo{" + "idForo=" + idForo + ", asunto=" + asunto + ", numeroMensajes=" + numeroMensajes + ", usuariosUnicos=" + usuariosUnicos + ", porcentajeParticipacion=" + porcentajeParticipacion + '}';
     }
 }

@@ -68,7 +68,7 @@ public class ELearningQAFacade {
     }
 
     public double[] realizarComprobaciones(String token, long courseid, AlertLog registro, List<QuizSummary> estadisticasCuestionarios, List<Quiz> quizzes,
-                                            List<User> listaUsuarios, List<Post> listaPosts) {
+                                            List<User> listaUsuarios, List<Post> listaPosts, List<Forum> listaForos) {
         Course curso= getCursoPorId(token, courseid);
         StatusList listaEstados=WebServiceClient.obtenerListaEstados(token, courseid, listaUsuarios, config.getHost());
         List<es.ubu.lsi.model.Module> listaModulos=WebServiceClient.obtenerListaModulos(token, courseid, config.getHost());
@@ -98,7 +98,7 @@ public class ELearningQAFacade {
         }
 
         double[] puntosComprobaciones = asignarPuntosComprobaciones(curso, listaEstados, listaModulos, listaGrupos, listaTareas, listaCalificadores,
-                quizzes, listaPosts, recursosDesfasados, modulosMalFechados, listaModulosTareas, listaUsuarios, tareasConNotas, listaAnalisis,
+                quizzes, listaForos, listaPosts, recursosDesfasados, modulosMalFechados, listaModulosTareas, listaUsuarios, tareasConNotas, listaAnalisis,
                 listaSurveys, registro, porcentaje);
 
         return puntosComprobaciones;
@@ -106,7 +106,7 @@ public class ELearningQAFacade {
 
     public double[] asignarPuntosComprobaciones(Course curso, StatusList listaEstados, List<es.ubu.lsi.model.Module> listaModulos,
                                                 List<Group> listaGrupos, List<Assignment> listaTareas, List<Table> listaCalificadores,
-                                                List<Quiz> quizzes, List<Post> listaPosts, List<Resource> recursosDesfasados,
+                                                List<Quiz> quizzes, List<Forum> listaForos, List<Post> listaPosts, List<Resource> recursosDesfasados,
                                                 List<es.ubu.lsi.model.Module> modulosMalFechados, List<CourseModule> listaModulosTareas,
                                                 List<User> listaUsuarios, List<Assignment> tareasConNotas, List<ResponseAnalysis> listaAnalisis,
                                                 List<Survey> listaSurveys, AlertLog registro, double porcentaje){
@@ -118,7 +118,7 @@ public class ELearningQAFacade {
         if(isSonVisiblesCondiciones(curso, registro)){puntosComprobaciones[4]++;}
         if(isEsNotaMaxConsistente(listaCalificadores, registro)){puntosComprobaciones[5]++;}
         if(isHayCuestionarios(quizzes, registro)){puntosComprobaciones[6]++;}
-        if(isHayForos(listaPosts, registro)){puntosComprobaciones[7]++;}
+        if(isHayForos(listaForos, registro)){puntosComprobaciones[7]++;}
         if(isEstanActualizadosRecursos(recursosDesfasados, registro)){puntosComprobaciones[8]++;}
         if(isSonFechasCorrectas(modulosMalFechados, registro)){puntosComprobaciones[9]++;}
         if(isMuestraCriterios(listaModulosTareas, registro)){puntosComprobaciones[10]++;}
@@ -135,8 +135,8 @@ public class ELearningQAFacade {
         return puntosComprobaciones;
     }
 
-    public String generarInformeFases(double[] puntos, AlertLog registro, List<QuizSummary> estadisticasCuestionarios, List<User> listaUsuarios,
-                                    List<Post> listaPosts, int nroCursos) {
+    public String generarInformeFases(String token, double[] puntos, AlertLog registro, List<QuizSummary> estadisticasCuestionarios, List<User> listaUsuarios,
+                                    List<Post> listaPosts, List<Forum> listaForos, int nroCursos) {
         double contadorDiseno=puntos[0]+puntos[1]+puntos[2]+puntos[3]+puntos[4]+puntos[5]+puntos[6]+puntos[7];
         double contadorImplementacion=puntos[8]+puntos[9]+puntos[10]+puntos[11]+puntos[12];
         double contadorRealizacion=puntos[13]+puntos[14]+puntos[15]+puntos[16]+puntos[19];
@@ -159,7 +159,7 @@ public class ELearningQAFacade {
         tabla = generarInformeCuestionario(tabla, puntos, estadisticasCuestionarios); 
 
         // Porcentaje de alumnos que participan en los foros
-        tabla = generarInformeForos(tabla, listaPosts, listaUsuarios, registro);
+        tabla = generarInformeForos(token, tabla, listaForos, listaUsuarios, registro);
 
         // Evaluación
         tabla.append(camposInformeFases[21]+generarCampoRelativo((float)contadorEvaluacion/nroCursos, CHECKS_EVALUACION));
@@ -187,8 +187,8 @@ public class ELearningQAFacade {
         return tabla;
     }
 
-    public StringBuilder generarInformeForos(StringBuilder tabla, List<Post> listaPosts, List<User> listaUsuarios, AlertLog registro) {
-        List<EstadisticasForo> foros = porcentajeAlumnosForos(listaPosts, listaUsuarios, registro);
+    public StringBuilder generarInformeForos(String token, StringBuilder tabla, List<Forum> listaForos, List<User> listaUsuarios, AlertLog registro) {
+        List<EstadisticasForo> foros = porcentajeAlumnosForos(token, listaForos, listaUsuarios, registro);
         double porcentaje = 0;
         if (foros != null && !foros.isEmpty()) {
             for (EstadisticasForo estadisticasForo : foros) {
@@ -201,7 +201,7 @@ public class ELearningQAFacade {
         // Porcentaje de alumnos que participa en cada foro
         if (foros != null && !foros.isEmpty()) {
             for (EstadisticasForo estadisticasForo : foros) {
-                tabla.append("</tr><tr class=\"toggle-foros\" data-bs-toggle=\"tooltip\"> <td class=\"tg-ltgr\">Foro " + estadisticasForo.getAsunto() + " </td>" + generarCampoRelativoCuestionario((float)estadisticasForo.getPorcentajeParticipacion()/100, 1));
+                tabla.append("</tr><tr class=\"toggle-foros\" data-bs-toggle=\"tooltip\"> <td class=\"tg-ltgr\">Foro " + estadisticasForo.getNombre() + " </td>" + generarCampoRelativoCuestionario((float)estadisticasForo.getPorcentajeParticipacion()/100, 1));
             }
         }
 
@@ -242,8 +242,8 @@ public class ELearningQAFacade {
     }
 
     // Obtener la lista de posts de un curso
-    public List<Post> getListaPosts(String token, long courseid) {
-        return WebServiceClient.obtenerListaPosts(token, courseid, config.getHost());
+    public List<Post> getListaPosts(String token, long courseid, List<Forum> listaForos) {
+        return WebServiceClient.obtenerListaPosts(token, courseid, config.getHost(), listaForos);
     }
 
     public Map<Integer, String> generarInformesCuestionarios(String token, List<QuizSummary> quizzes) {
@@ -325,6 +325,10 @@ public class ELearningQAFacade {
         return informes;
     }
 
+    public List<Forum> getListaForos(String token, long courseid) {
+        return WebServiceClient.obtenerListaForos(token, courseid, config.getHost());
+    }
+
 
     public boolean isSonVisiblesCondiciones(Course curso, AlertLog registro) {
         return WebServiceClient.sonVisiblesCondiciones(curso, registro);
@@ -382,8 +386,8 @@ public class ELearningQAFacade {
     }
 
     // Devuelve true si hay algún foro, sino se devuelve false y se añade un registro de alerta
-    public boolean isHayForos(List<Post> listaPosts, AlertLog registro) {
-        return WebServiceClient.hayForos(listaPosts, registro);
+    public boolean isHayForos(List<Forum> listaForos, AlertLog registro) {
+        return WebServiceClient.hayForos(listaForos, registro);
     }
 
     public boolean isEstanActualizadosRecursos(List<Resource> listaRecursosDesfasados, AlertLog registro) {
@@ -416,8 +420,8 @@ public class ELearningQAFacade {
     }
 
     // Devuelve el porcentaje de alumnos que participan en los foros, sino se devuelve 0 y se añade un registro de alerta
-    public List<EstadisticasForo> porcentajeAlumnosForos(List<Post> listaPosts, List<User> alumnos, AlertLog registro) {
-        return WebServiceClient.calculaPorcentajeAlumnosForos(listaPosts, alumnos, registro, config);
+    public List<EstadisticasForo> porcentajeAlumnosForos(String token, List<Forum> listaForos, List<User> alumnos, AlertLog registro) {
+        return WebServiceClient.calculaPorcentajeAlumnosForos(token, listaForos, alumnos, registro, config);
     }
 
     public float porcentajeFraccion(float numerador, float denominador){
