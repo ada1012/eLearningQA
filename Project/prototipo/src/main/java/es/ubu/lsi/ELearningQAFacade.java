@@ -156,7 +156,7 @@ public class ELearningQAFacade {
         tabla.append(generarFilas(new int[]{17, 13}, 4, puntos, nroCursos));
         
         // Porcentaje de cuestionarios realizados
-        tabla = generarInformeCuestionario(tabla, puntos, registro, estadisticasCuestionarios); 
+        tabla = generarInformeCuestionario(tabla, puntos, estadisticasCuestionarios); 
 
         // Porcentaje de alumnos que participan en los foros
         tabla = generarInformeForos(tabla, listaPosts, listaUsuarios, registro);
@@ -165,12 +165,12 @@ public class ELearningQAFacade {
         tabla.append(camposInformeFases[21]+generarCampoRelativo((float)contadorEvaluacion/nroCursos, CHECKS_EVALUACION));
         tabla.append(generarFilas(new int[]{22, 17}, 2, puntos, nroCursos));
 
-        tabla.append(camposInformeFases[24]);;
+        tabla.append(camposInformeFases[24]);
 
         return tabla.toString();
     }
 
-    public StringBuilder generarInformeCuestionario(StringBuilder tabla, double[] puntos, AlertLog registro, List<QuizSummary> estadisticasCuestionarios) {
+    public StringBuilder generarInformeCuestionario(StringBuilder tabla, double[] puntos, List<QuizSummary> estadisticasCuestionarios) {
         tabla.append("</tr><tr onclick=\"openInfo(event, 'estadisticquiz')\" data-bs-toggle=\"tooltip\" title=\"Se comprueba qué porcentaje de alumnos participa en los cuestionarios.\"> <td class=\"tg-ltgr\">Al menos un " + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos responden a los cuestionarios  <button onclick=\"toggleCuestionarios()\">Desplegar</button></td>");
         tabla.append(generarCampoRelativoCuestionario((float)puntos[19], 1));
 
@@ -251,7 +251,7 @@ public class ELearningQAFacade {
         
         // Por cada cuestionario, generamos su informe
         for (QuizSummary quiz : quizzes) {
-            String informe = generarInformeCuestionario(token, quiz);
+            String informe = generarInformeCuestionario(quiz);
             // Creamos una relación entre el id del cuestionario y su informe
             informes.put(quiz.getId(), informe);
         }
@@ -259,7 +259,7 @@ public class ELearningQAFacade {
         return informes;
     }
 
-    public String generarInformeCuestionario(String token, QuizSummary quizSummary) {
+    public String generarInformeCuestionario(QuizSummary quizSummary) {
         String informe = "";
 
         if (quizSummary != null) {

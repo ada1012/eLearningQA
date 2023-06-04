@@ -390,15 +390,15 @@ public class WebServiceClient {
         }
         for (Table calificador:listaCalificadores) {
             for (Tabledata tabledata:calificador.getTabledata()) {
-            	if (tabledata.getItemname() != null) {
-	                if (tabledata.getItemname().getMyclass().contains("item ")&&
-	                        tabledata.getGrade()!=null&&!tabledata.getGrade().getContent().matches("[- ]")){
-	                    contadorTuplasComentables++;
-	                    feedback=tabledata.getFeedback();
-	                    if (feedback!=null && feedback.getContent().length()>6){
-	                        contadorRetroalimentacion++;
-	                    }
-	                }
+            	if (tabledata.getItemname() != null &&
+	                tabledata.getItemname().getMyclass().contains("item ")&&
+                    tabledata.getGrade()!=null&&!tabledata.getGrade().getContent().matches("[- ]")){
+                    
+                    contadorTuplasComentables++;
+                    feedback=tabledata.getFeedback();
+                    if (feedback!=null && feedback.getContent().length()>6){
+                        contadorRetroalimentacion++;
+                    }
             	}
             }
         }
@@ -955,7 +955,7 @@ public class WebServiceClient {
     // Método que calcula el porcentaje de alumnos que han respondido a un foro
     public static List<EstadisticasForo> calculaPorcentajeAlumnosForos(List<Post> listaPosts, List<User> alumnos, AlertLog registro, FacadeConfig config){
         List<EstadisticasForo> estadisticasForos = new ArrayList<>();
-        EstadisticasForo estadisticasForo = new EstadisticasForo();
+        EstadisticasForo estadisticasForo;
         List<Long> listaAlumnos = new ArrayList<>();
         double porcentaje = 0;
 
@@ -978,9 +978,12 @@ public class WebServiceClient {
             }
             
             // Se actualiza el número de mensajes del foro
-            estadisticasForo = estadisticasForos.stream().filter(e -> e.getIdForo() == post.getDiscussionid()).findFirst().isPresent()
-                ? estadisticasForos.stream().filter(e -> e.getIdForo() == post.getDiscussionid()).findFirst().get()
-                : null;
+            Optional<EstadisticasForo> foroOpcional = estadisticasForos.stream().filter(e -> e.getIdForo() == post.getDiscussionid()).findFirst();
+            if (foroOpcional.isPresent()) {
+                estadisticasForo = foroOpcional.get();
+            } else {
+                estadisticasForo = new EstadisticasForo();
+            }
             
             estadisticasForo.setNumeroMensajes(estadisticasForo.getNumeroMensajes() + 1);
 
