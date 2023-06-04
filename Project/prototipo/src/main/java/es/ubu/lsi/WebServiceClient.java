@@ -260,7 +260,7 @@ public class WebServiceClient {
         return fechaSolucion-fechaOrigen>tiempoLimite&&fechaOrigen+tiempoRelevancia>Instant.now().getEpochSecond();
     }
 
-    public static List<Post> obtenerListaPosts(String token, long courseid, String host, List<Forum> listaForos) {
+    public static List<Post> obtenerListaPosts(String token, String host, List<Forum> listaForos) {
         List<Discussion> listaDebates;
         List<Discussion> listaDebatesCompleta= new ArrayList<>();
         for (Forum foro:listaForos) {

@@ -136,7 +136,7 @@ public class ELearningQAFacade {
     }
 
     public String generarInformeFases(String token, double[] puntos, AlertLog registro, List<QuizSummary> estadisticasCuestionarios, List<User> listaUsuarios,
-                                    List<Post> listaPosts, List<Forum> listaForos, int nroCursos) {
+                                    List<Forum> listaForos, int nroCursos) {
         double contadorDiseno=puntos[0]+puntos[1]+puntos[2]+puntos[3]+puntos[4]+puntos[5]+puntos[6]+puntos[7];
         double contadorImplementacion=puntos[8]+puntos[9]+puntos[10]+puntos[11]+puntos[12];
         double contadorRealizacion=puntos[13]+puntos[14]+puntos[15]+puntos[16]+puntos[19];
@@ -243,10 +243,10 @@ public class ELearningQAFacade {
 
     // Obtener la lista de posts de un curso
     public List<Post> getListaPosts(String token, long courseid, List<Forum> listaForos) {
-        return WebServiceClient.obtenerListaPosts(token, courseid, config.getHost(), listaForos);
+        return WebServiceClient.obtenerListaPosts(token, config.getHost(), listaForos);
     }
 
-    public Map<Integer, String> generarInformesCuestionarios(String token, List<QuizSummary> quizzes) {
+    public Map<Integer, String> generarInformesCuestionarios(List<QuizSummary> quizzes) {
         Map<Integer, String> informes = new HashMap<>();
         
         // Por cada cuestionario, generamos su informe

@@ -50,7 +50,7 @@
             nombreCurso="Informe general de cursos";
             porcentajes=fachada.calcularPorcentajesMatriz(puntosComprobaciones, listaCursos.size());
             matriz=fachada.generarMatrizRolPerspectiva(porcentajes);
-            fases=fachada.generarInformeFases(token, puntosComprobaciones, alertas, resumenCuestionarios, usuarios, posts, foros, listaCursos.size());
+            fases=fachada.generarInformeFases(token, puntosComprobaciones, alertas, resumenCuestionarios, usuarios, foros, listaCursos.size());
           }else{
             Course curso= fachada.getCursoPorId(token, Integer.parseInt(courseid));
             usuarios=fachada.getListaUsuarios(token, curso.getId());
@@ -64,7 +64,7 @@
             // Obtener resumenes de cuestionarios
             resumenCuestionarios=fachada.generarListaCuestionarios(token, Integer.parseInt(courseid), quizzes);
             // Generamos los informes de los cuestionarios
-            cuestionarios=fachada.generarInformesCuestionarios(token, resumenCuestionarios);
+            cuestionarios=fachada.generarInformesCuestionarios(resumenCuestionarios);
             // Generamos primer grafico
             // Obtenemos los datos para el grafico
             graficoPreguntas=fachada.generarGraficoPreguntas(token, quizzes);
@@ -72,7 +72,7 @@
             puntosComprobaciones = fachada.realizarComprobaciones(token, Integer.parseInt(courseid), alertas, resumenCuestionarios, quizzes, usuarios, posts, foros);
             porcentajes=fachada.calcularPorcentajesMatriz(puntosComprobaciones,1);
             matriz=fachada.generarMatrizRolPerspectiva(porcentajes);
-            fases=fachada.generarInformeFases(token, puntosComprobaciones, alertas, resumenCuestionarios, usuarios, posts, foros, 1);
+            fases=fachada.generarInformeFases(token, puntosComprobaciones, alertas, resumenCuestionarios, usuarios, foros, 1);
             RegistryIO.guardarResultados(host, fullname, courseid,
                        new AnalysisSnapshot(nombreCurso, puntosComprobaciones, porcentajes, alertas.toString()));
             grafico=RegistryIO.generarGraficos(host, fullname, courseid);
