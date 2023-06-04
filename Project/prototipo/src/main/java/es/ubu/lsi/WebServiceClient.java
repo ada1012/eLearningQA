@@ -2,7 +2,6 @@ package es.ubu.lsi;
 
 import es.ubu.lsi.model.*;
 import es.ubu.lsi.model.Date;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -669,7 +668,7 @@ public class WebServiceClient {
     // Método para calcular el porcentaje de alumnos que han respondido a un cuestionario
     public static double calculaPorcentajeCuestionarios(List<Quiz> quizzes, double porcentaje, AlertLog registro, FacadeConfig config){
 
-        if (quizzes.size()==0) return 0;
+        if (quizzes.isEmpty()) return 0;
         
         if  (porcentaje < (config.getMinQuizAnswerPercentage() * 100))
             registro.guardarAlerta("realization estadisticquiz","Menos de un " + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos no realiza los cuestionarios");
@@ -700,7 +699,7 @@ public class WebServiceClient {
     }
     
     // Obtener un intento en un cuestionario
-    public static AttemptReviewList getQuizAttempt(int quizId, int attemptId, String host, String token) {
+    public static AttemptReviewList getQuizAttempt(int attemptId, String host, String token) {
         RestTemplate restTemplate = new RestTemplate();
         String url = host + "/webservice/rest/server.php?wsfunction=mod_quiz_get_attempt_review&moodlewsrestformat=json&wstoken="
         		+ token + "&attemptid=" + attemptId;
@@ -768,7 +767,7 @@ public class WebServiceClient {
 
             for (Attempt attempt : attempts) {
                 int attemptId = (int) attempt.getId();
-                AttemptReviewList attemptReviewList = getQuizAttempt(quiz.getId(), attemptId, host, token);
+                AttemptReviewList attemptReviewList = getQuizAttempt(attemptId, host, token);
                 if (attemptReviewList != null){
                     totalPreguntas = attemptReviewList.getQuestions().size();
                     notaIntento = attemptReviewList.getGrade() != null ? Double.parseDouble(attemptReviewList.getGrade()) : 0;
@@ -825,8 +824,7 @@ public class WebServiceClient {
         double m3 = sumaDiferenciam3 / n;
         double k2 = (n * m2) / (n - 1);
         double k3 = (Math.pow(n, 2) * m3) / ((n - 1) * (n - 2));
-        double skewness = k3 / Math.pow(k2, (float)3 / 2);
-        return skewness;
+        return k3 / Math.pow(k2, (float)3 / 2);
     }
 
     // Método para calcular la media de un cuestionario
@@ -835,7 +833,7 @@ public class WebServiceClient {
         for (double nota : notas) {
             suma += nota;
         }
-        return (double) suma / notas.size();
+        return suma / notas.size();
     }
 
     // Método para calcular la desviación estándar de un cuestionario
@@ -866,9 +864,7 @@ public class WebServiceClient {
         double segundoArgumento = (n + 1)*m4 - 3 * (n - 1) * Math.pow(m2, 2);
         double k2 = (n * m2) / (n - 1);
         double k4 = primerArgumento * segundoArgumento;
-        double curtosis = k4 / Math.pow(k2, 2);
-        
-        return curtosis;
+        return k4 / Math.pow(k2, 2);
     }
 
     // Método para rellenar los datos del gráfico notas/preguntas de un cuestionario
@@ -889,7 +885,7 @@ public class WebServiceClient {
             // Se recorren los intentos de cada alumno
             for (Attempt attempt : attempts) {
                 int attemptId = (int) attempt.getId();
-                AttemptReviewList attemptReviewList = getQuizAttempt(quiz.getId(), attemptId, host, token);
+                AttemptReviewList attemptReviewList = getQuizAttempt(attemptId, host, token);
                 int idPregunta = 0;
                 double puntuacionMaxima = 0;
                 double notaMediaPregunta = 0;
@@ -964,14 +960,14 @@ public class WebServiceClient {
         double porcentaje = 0;
 
         // Si no hay posts, no hay foros y no hay participación
-        if (listaPosts.size() == 0) {
+        if (listaPosts.isEmpty()) {
             registro.guardarAlerta("realization estadisticforum","Menos de un " + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos participa en los foros");
             return estadisticasForos;
         }
 
         for (Post post : listaPosts) {
             // Cada foro nuevo se añade a la lista de foros
-            if (!estadisticasForos.stream().anyMatch(e -> e.getIdForo() == post.getDiscussionid())) {
+            if (!estadisticasForos.stream().noneMatch(e -> e.getIdForo() == post.getDiscussionid())) {
                 estadisticasForo = new EstadisticasForo();
                 estadisticasForo.setIdForo(post.getDiscussionid());
                 estadisticasForo.setAsunto(post.getSubject());
@@ -982,9 +978,10 @@ public class WebServiceClient {
             }
             
             // Se actualiza el número de mensajes del foro
-            if (estadisticasForos.stream().filter(e -> e.getIdForo() == post.getDiscussionid()).findFirst().isPresent()) {
-                estadisticasForo = estadisticasForos.stream().filter(e -> e.getIdForo() == post.getDiscussionid()).findFirst().get();
-            }
+            estadisticasForo = estadisticasForos.stream().filter(e -> e.getIdForo() == post.getDiscussionid()).findFirst().isPresent()
+                ? estadisticasForos.stream().filter(e -> e.getIdForo() == post.getDiscussionid()).findFirst().get()
+                : null;
+            
             estadisticasForo.setNumeroMensajes(estadisticasForo.getNumeroMensajes() + 1);
 
             // Si es la primera vez que participa un alumno en un foro, se añade a la lista de alumnos

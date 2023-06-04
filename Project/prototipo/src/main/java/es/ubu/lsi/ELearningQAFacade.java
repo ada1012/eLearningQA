@@ -96,7 +96,20 @@ public class ELearningQAFacade {
             }
             porcentaje = sum / estadisticasCuestionarios.size();
         }
-        
+
+        double[] puntosComprobaciones = asignarPuntosComprobaciones(curso, listaEstados, listaModulos, listaGrupos, listaTareas, listaCalificadores,
+                quizzes, listaPosts, recursosDesfasados, modulosMalFechados, listaModulosTareas, listaUsuarios, tareasConNotas, listaAnalisis,
+                listaSurveys, registro, porcentaje);
+
+        return puntosComprobaciones;
+    }
+
+    public double[] asignarPuntosComprobaciones(Course curso, StatusList listaEstados, List<es.ubu.lsi.model.Module> listaModulos,
+                                                List<Group> listaGrupos, List<Assignment> listaTareas, List<Table> listaCalificadores,
+                                                List<Quiz> quizzes, List<Post> listaPosts, List<Resource> recursosDesfasados,
+                                                List<es.ubu.lsi.model.Module> modulosMalFechados, List<CourseModule> listaModulosTareas,
+                                                List<User> listaUsuarios, List<Assignment> tareasConNotas, List<ResponseAnalysis> listaAnalisis,
+                                                List<Survey> listaSurveys, AlertLog registro, double porcentaje){
         double[] puntosComprobaciones = new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
         if(isestaProgresoActivado(listaEstados, registro)){puntosComprobaciones[0]++;}
         if(isHayVariedadFormatos(listaModulos, registro)){puntosComprobaciones[1]++;}
@@ -129,17 +142,37 @@ public class ELearningQAFacade {
         double contadorRealizacion=puntos[13]+puntos[14]+puntos[15]+puntos[16]+puntos[19];
         double contadorEvaluacion=puntos[17]+puntos[18];
         double contadorTotal=contadorDiseno+contadorImplementacion+contadorRealizacion+contadorEvaluacion;
-        String tabla = camposInformeFases[0]+generarCampoRelativo((float)contadorTotal/nroCursos, CHECKS_TOTAL) +
-                camposInformeFases[1]+generarCampoRelativo((float)contadorDiseno/nroCursos, CHECKS_DISENO) +
-                generarFilas(new int[]{2, 0}, 8, puntos, nroCursos)+
-                camposInformeFases[10]+generarCampoRelativo((float)contadorImplementacion/nroCursos, CHECKS_IMPLEMENTACION) +
-                generarFilas(new int[]{11, 8}, 5, puntos, nroCursos)+
-                camposInformeFases[16]+generarCampoRelativo((float)contadorRealizacion/nroCursos, CHECKS_REALIZACION) +
-                generarFilas(new int[]{17, 13}, 4, puntos, nroCursos);
+        StringBuilder tabla= new StringBuilder();
+        tabla.append(camposInformeFases[0]);
+        tabla.append(generarCampoRelativo((float)contadorTotal/nroCursos, CHECKS_TOTAL));
+        tabla.append(camposInformeFases[1]);
+        tabla.append(generarCampoRelativo((float)contadorDiseno/nroCursos, CHECKS_DISENO));
+        tabla.append(generarFilas(new int[]{2, 0}, 8, puntos, nroCursos));
+        tabla.append(camposInformeFases[10]);
+        tabla.append(generarCampoRelativo((float)contadorImplementacion/nroCursos, CHECKS_IMPLEMENTACION));
+        tabla.append(generarFilas(new int[]{11, 8}, 5, puntos, nroCursos));
+        tabla.append(camposInformeFases[16]);
+        tabla.append(generarCampoRelativo((float)contadorRealizacion/nroCursos, CHECKS_REALIZACION));
+        tabla.append(generarFilas(new int[]{17, 13}, 4, puntos, nroCursos));
         
         // Porcentaje de cuestionarios realizados
-        tabla += "</tr><tr onclick=\"openInfo(event, 'estadisticquiz')\" data-bs-toggle=\"tooltip\" title=\"Se comprueba qué porcentaje de alumnos participa en los cuestionarios.\"> <td class=\"tg-ltgr\">Al menos un " + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos responden a los cuestionarios  <button onclick=\"toggleCuestionarios()\">Desplegar</button></td>" +
-                generarCampoRelativoCuestionario((float)puntos[19], 1);
+        tabla = generarInformeCuestionario(tabla, puntos, registro, estadisticasCuestionarios); 
+
+        // Porcentaje de alumnos que participan en los foros
+        tabla = generarInformeForos(tabla, listaPosts, listaUsuarios, registro);
+
+        // Evaluación
+        tabla.append(camposInformeFases[21]+generarCampoRelativo((float)contadorEvaluacion/nroCursos, CHECKS_EVALUACION));
+        tabla.append(generarFilas(new int[]{22, 17}, 2, puntos, nroCursos));
+
+        tabla.append(camposInformeFases[24]);;
+
+        return tabla.toString();
+    }
+
+    public StringBuilder generarInformeCuestionario(StringBuilder tabla, double[] puntos, AlertLog registro, List<QuizSummary> estadisticasCuestionarios) {
+        tabla.append("</tr><tr onclick=\"openInfo(event, 'estadisticquiz')\" data-bs-toggle=\"tooltip\" title=\"Se comprueba qué porcentaje de alumnos participa en los cuestionarios.\"> <td class=\"tg-ltgr\">Al menos un " + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos responden a los cuestionarios  <button onclick=\"toggleCuestionarios()\">Desplegar</button></td>");
+        tabla.append(generarCampoRelativoCuestionario((float)puntos[19], 1));
 
         if(estadisticasCuestionarios != null && !estadisticasCuestionarios.isEmpty()){
             for (QuizSummary quizSummary : estadisticasCuestionarios) {
@@ -147,12 +180,14 @@ public class ELearningQAFacade {
                 if (quizSummary.getTotalAlumnos() > 0 && quizSummary.getAlumnosExaminados() > 0)
                     porcentaje = ((float)(quizSummary.getAlumnosExaminados()*100)/quizSummary.getTotalAlumnos())/100;
 
-                tabla += "</tr><tr class=\"toggle-cuestionarios\" data-bs-toggle=\"tooltip\"> <td class=\"tg-ltgr\"onclick=\"muestraCuestionario(" + quizSummary.getId() + ")\">Cuestionario " + quizSummary.getNombreCuestionario() + " </td>" + generarCampoRelativoCuestionario(porcentaje, 1);
-                // tabla += camposInformeFases[24]+entry.getKey()+camposInformeFases[25]+entry.getValue();
+                tabla.append("</tr><tr class=\"toggle-cuestionarios\" data-bs-toggle=\"tooltip\"> <td class=\"tg-ltgr\"onclick=\"muestraCuestionario(" + quizSummary.getId() + ")\">Cuestionario " + quizSummary.getNombreCuestionario() + " </td>" + generarCampoRelativoCuestionario(porcentaje, 1));
             }
         }
 
-        // Porcentaje de alumnos que participan en los foros
+        return tabla;
+    }
+
+    public StringBuilder generarInformeForos(StringBuilder tabla, List<Post> listaPosts, List<User> listaUsuarios, AlertLog registro) {
         List<EstadisticasForo> foros = porcentajeAlumnosForos(listaPosts, listaUsuarios, registro);
         double porcentaje = 0;
         if (foros != null && !foros.isEmpty()) {
@@ -161,20 +196,14 @@ public class ELearningQAFacade {
             }
             porcentaje = porcentaje / foros.size();
         }
-        tabla += "</tr><tr onclick=\"openInfo(event, 'estadisticforum')\" data-bs-toggle=\"tooltip\" title=\"Se comprueba qué porcentaje de alumnos participa en los foros.\"> <td class=\"tg-ltgr\">Al menos un " + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos participa en los foros  <button onclick=\"toggleForos()\">Desplegar</button></td>" +
-                generarCampoRelativoCuestionario((float)porcentaje/100, 1);
+        tabla.append("</tr><tr onclick=\"openInfo(event, 'estadisticforum')\" data-bs-toggle=\"tooltip\" title=\"Se comprueba qué porcentaje de alumnos participa en los foros.\"> <td class=\"tg-ltgr\">Al menos un " + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos participa en los foros  <button onclick=\"toggleForos()\">Desplegar</button></td>");
+        tabla.append(generarCampoRelativoCuestionario((float)porcentaje/100, 1));
         // Porcentaje de alumnos que participa en cada foro
         if (foros != null && !foros.isEmpty()) {
             for (EstadisticasForo estadisticasForo : foros) {
-                tabla += "</tr><tr class=\"toggle-foros\" data-bs-toggle=\"tooltip\"> <td class=\"tg-ltgr\">Foro " + estadisticasForo.getAsunto() + " </td>" + generarCampoRelativoCuestionario((float)estadisticasForo.getPorcentajeParticipacion()/100, 1);
+                tabla.append("</tr><tr class=\"toggle-foros\" data-bs-toggle=\"tooltip\"> <td class=\"tg-ltgr\">Foro " + estadisticasForo.getAsunto() + " </td>" + generarCampoRelativoCuestionario((float)estadisticasForo.getPorcentajeParticipacion()/100, 1));
             }
         }
-
-        // Evaluación
-        tabla += camposInformeFases[21]+generarCampoRelativo((float)contadorEvaluacion/nroCursos, CHECKS_EVALUACION) +
-                generarFilas(new int[]{22, 17}, 2, puntos, nroCursos);
-
-        tabla += camposInformeFases[24];
 
         return tabla;
     }
@@ -217,12 +246,12 @@ public class ELearningQAFacade {
         return WebServiceClient.obtenerListaPosts(token, courseid, config.getHost());
     }
 
-    public Map<Integer, String> generarInformesCuestionarios(String token, long courseid, List<QuizSummary> quizzes) {
+    public Map<Integer, String> generarInformesCuestionarios(String token, List<QuizSummary> quizzes) {
         Map<Integer, String> informes = new HashMap<>();
         
         // Por cada cuestionario, generamos su informe
         for (QuizSummary quiz : quizzes) {
-            String informe = generarInformeCuestionario(token, courseid, quiz);
+            String informe = generarInformeCuestionario(token, quiz);
             // Creamos una relación entre el id del cuestionario y su informe
             informes.put(quiz.getId(), informe);
         }
@@ -230,7 +259,7 @@ public class ELearningQAFacade {
         return informes;
     }
 
-    public String generarInformeCuestionario(String token, long courseid, QuizSummary quizSummary) {
+    public String generarInformeCuestionario(String token, QuizSummary quizSummary) {
         String informe = "";
 
         if (quizSummary != null) {
@@ -257,7 +286,7 @@ public class ELearningQAFacade {
 
     // Método para obtener la relación entre el id de un cuestionario y las preguntas que lo componen
     public Map<Integer, int[]> generarGraficoPreguntas(String token, List<Quiz> quizzes) {
-        List<EstadisticaNotasPregunta> estadisticas = new ArrayList<>();
+        List<EstadisticaNotasPregunta> estadisticas;
         Map<Integer, int[]> informes = new HashMap<>();
 
         for (Quiz quiz : quizzes) {
@@ -278,7 +307,7 @@ public class ELearningQAFacade {
     
     // Método para obtener la relación entre el id de un cuestionario y las notas medias por pregunta
     public Map<Integer, double[]> generarGraficoNotas(String token, List<Quiz> quizzes) {
-        List<EstadisticaNotasPregunta> estadisticas = new ArrayList<>();
+        List<EstadisticaNotasPregunta> estadisticas;
         Map<Integer, double[]> informes = new HashMap<>();
         for (Quiz quiz : quizzes) {
             if (quiz.isVisible()) {

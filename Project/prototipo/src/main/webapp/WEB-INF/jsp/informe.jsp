@@ -61,7 +61,7 @@
             // Obtener resumenes de cuestionarios
             resumenCuestionarios=fachada.generarListaCuestionarios(token, Integer.parseInt(courseid), quizzes);
             // Generamos los informes de los cuestionarios
-            cuestionarios=fachada.generarInformesCuestionarios(token, Integer.parseInt(courseid), resumenCuestionarios);
+            cuestionarios=fachada.generarInformesCuestionarios(token, resumenCuestionarios);
             // Generamos primer grafico
             // Obtenemos los datos para el grafico
             graficoPreguntas=fachada.generarGraficoPreguntas(token, quizzes);
