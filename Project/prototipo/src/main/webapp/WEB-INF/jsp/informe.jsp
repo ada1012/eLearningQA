@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="java.util.List, java.util.Arrays, java.util.ArrayList, java.util.Map, java.util.HashMap, es.ubu.lsi.ELearningQAFacade, es.ubu.lsi.AlertLog, es.ubu.lsi.RegistryIO, es.ubu.lsi.AnalysisSnapshot, es.ubu.lsi.model.Course, es.ubu.lsi.model.QuizSummary, es.ubu.lsi.model.Quiz, es.ubu.lsi.model.User, es.ubu.lsi.model.Forum, es.ubu.lsi.model.Post, org.apache.logging.log4j.LogManager, org.apache.logging.log4j.Logger" %>
+<%@ page import="java.util.List, java.util.Arrays, java.util.ArrayList, java.util.Map, java.util.HashMap, es.ubu.lsi.ELearningQAFacade, es.ubu.lsi.AlertLog, es.ubu.lsi.RegistryIO, es.ubu.lsi.AnalysisSnapshot, es.ubu.lsi.model.Course, es.ubu.lsi.model.QuizSummary, es.ubu.lsi.model.Quiz, es.ubu.lsi.model.User, es.ubu.lsi.model.Forum, es.ubu.lsi.model.Post, es.ubu.lsi.model.EstadisticasForo, org.apache.logging.log4j.LogManager, org.apache.logging.log4j.Logger" %>
 <html lang="en">
 <head>
     <%String informe="";
@@ -22,7 +22,9 @@
           List<Post> posts = new ArrayList<>();
           Map<Integer, Double> estadisticasCuestionarios = new HashMap<>();
           List<QuizSummary> resumenCuestionarios = new ArrayList<>();
+          List<EstadisticasForo> resumenForos = new ArrayList<>();
           Map<Integer, String> cuestionarios = new HashMap<>();
+          Map<Integer, String> estadisticasForos = new HashMap<>();
 
           // Relación de cuestionarios con sus gráficos
           // graficoPreguntas es un mapa que relaciona el id del cuestionario con un array del id de las preguntas
@@ -50,7 +52,7 @@
             nombreCurso="Informe general de cursos";
             porcentajes=fachada.calcularPorcentajesMatriz(puntosComprobaciones, listaCursos.size());
             matriz=fachada.generarMatrizRolPerspectiva(porcentajes);
-            fases=fachada.generarInformeFases(token, puntosComprobaciones, alertas, resumenCuestionarios, usuarios, foros, listaCursos.size());
+            fases=fachada.generarInformeFases(token, puntosComprobaciones, alertas, resumenCuestionarios, usuarios, foros, resumenForos, listaCursos.size());
           }else{
             Course curso= fachada.getCursoPorId(token, Integer.parseInt(courseid));
             usuarios=fachada.getListaUsuarios(token, curso.getId());
@@ -72,7 +74,11 @@
             puntosComprobaciones = fachada.realizarComprobaciones(token, Integer.parseInt(courseid), alertas, resumenCuestionarios, quizzes, usuarios, posts, foros);
             porcentajes=fachada.calcularPorcentajesMatriz(puntosComprobaciones,1);
             matriz=fachada.generarMatrizRolPerspectiva(porcentajes);
-            fases=fachada.generarInformeFases(token, puntosComprobaciones, alertas, resumenCuestionarios, usuarios, foros, 1);
+            // Obtener resumenes de foros
+            resumenForos=fachada.porcentajeAlumnosForos(token, foros, usuarios, alertas);
+            // Generamos los informes de los foros
+            estadisticasForos=fachada.generarInformesForos(resumenForos);
+            fases=fachada.generarInformeFases(token, puntosComprobaciones, alertas, resumenCuestionarios, usuarios, foros, resumenForos, 1);
             RegistryIO.guardarResultados(host, fullname, courseid,
                        new AnalysisSnapshot(nombreCurso, puntosComprobaciones, porcentajes, alertas.toString()));
             grafico=RegistryIO.generarGraficos(host, fullname, courseid);
@@ -141,56 +147,65 @@
     </style>
 </head>
 <body>
-
-
-      <header class="bg-dark text-white row" style="--bs-gutter-x:0;">
+  <header class="bg-dark text-white row" style="--bs-gutter-x:0;">
         <div class="col m-3 text-center">
           <img src="FullLogo.png" width="200" height="32" alt="eLearningQA">
         </div>
         <div class="btn-group col" role="group">
           <button class="tablink btn btn-primary active" style="box-shadow: none;" onclick="openTab(event, 'Fases')">Informe de fases</button>
           <button class="tablink btn btn-primary" style="box-shadow: none;" onclick="openTab(event, 'Matriz')">Evolución del rendimiento</button>
-        </div><div class="col m-3 text-center"><a target="_blank" href=<%=vinculo%>><%=nombreCurso%></a></div></header>
-                  <div class="d-flex justify-content-center" style="height:85vh;background-image: url('atardecer.jpg');">
-                    <div id="Fases" class="tabcontent w-100 p-0" style="display:flex">
-                <div class="card m-2 me-0 p-1" style="width: 60%;overflow:auto;">
-                    <%=fases%>
-                </div>
-                <div class="card m-2 ms-0 p-1 alertas" style="width: 40%;overflow:auto;">
-                  <%=alertas%>
-                </div>
-                <div class="card m-2 ms-0 p-1 cuestionarios" style="width: 40%;overflow:auto;">
-                  <% for (Map.Entry<Integer, String> entry : cuestionarios.entrySet()) { %>
-                    <% if (entry.getValue() instanceof String) { %>
-                      <%= entry.getValue() %>
-                      <div class="cuestionario" id="grafico<%=entry.getKey()%>">
-                        <script>
-                          var idPreguntas = <%=Arrays.toString(graficoPreguntas.get(entry.getKey()))%>;
-                          var notasMedias = <%=Arrays.toString(graficoNotas.get(entry.getKey()))%>;
+        </div>
+        <div class="col m-3 text-center">
+          <a target="_blank" href=<%=vinculo%>><%=nombreCurso%></a>
+        </div>
+      </header>
+      <div class="d-flex justify-content-center" style="height:85vh;background-image: url('atardecer.jpg');">
+        <div id="Fases" class="tabcontent w-100 p-0" style="display:flex">
+          <div class="card m-2 me-0 p-1" style="width: 60%;overflow:auto;">
+              <%=fases%>
+          </div>
+          <div class="card m-2 ms-0 p-1 alertas" style="width: 40%;overflow:auto;">
+            <%=alertas%>
+          </div>
+          <div class="card m-2 ms-0 p-1 cuestionarios" style="width: 40%;overflow:auto;">
+            <% for (Map.Entry<Integer, String> entry : cuestionarios.entrySet()) { %>
+              <% if (entry.getValue() instanceof String) { %>
+                <%= entry.getValue() %>
+                <div class="cuestionario" id="grafico<%=entry.getKey()%>">
+                  <script>
+                    var idPreguntas = <%=Arrays.toString(graficoPreguntas.get(entry.getKey()))%>;
+                    var notasMedias = <%=Arrays.toString(graficoNotas.get(entry.getKey()))%>;
 
-                          // Crea los datos para el gráfico de barras
-                          var data = [{
-                            type: 'bar',
-                            x: idPreguntas,
-                            y: notasMedias
-                          }];
+                    // Crea los datos para el gráfico de barras
+                    var data = [{
+                      type: 'bar',
+                      x: idPreguntas,
+                      y: notasMedias
+                    }];
 
-                          // Crea el diseño del gráfico
-                          var layout = {
-                            title: 'Gráfico de barras de los alumnos con calificación',
-                            xaxis: { title: 'ID de Pregunta' },
-                            yaxis: { title: 'Porcentaje Nota Media' }
-                          };
-                          
-                          if (idPreguntas.length > 0) {
-                            // Crea el gráfico
-                            Plotly.newPlot('grafico<%=entry.getKey()%>', data, layout);
-                          }
-                        </script>
-                      </div>
-                    <% } %>
-                  <% } %>
+                    // Crea el diseño del gráfico
+                    var layout = {
+                      title: 'Gráfico de barras de los alumnos con calificación',
+                      xaxis: { title: 'ID de Pregunta' },
+                      yaxis: { title: 'Porcentaje Nota Media' }
+                    };
+                    
+                    if (idPreguntas.length > 0) {
+                      // Crea el gráfico
+                      Plotly.newPlot('grafico<%=entry.getKey()%>', data, layout);
+                    }
+                  </script>
                 </div>
+              <% } %>
+            <% } %>
+          </div>
+          <div class="card m-2 ms-0 p-1 foros" style="width: 40%;overflow:auto;">
+            <% for (Map.Entry<Integer, String> entry : estadisticasForos.entrySet()) { %>
+              <% if (entry.getValue() instanceof String) { %>
+                <%= entry.getValue() %>
+              <% } %>
+            <% } %>
+          </div>
         </div>
         <div id="Matriz" class="tabcontent w-100 p-0" style="display:none">
             <div class="card m-3 p-3 w-100">
@@ -219,6 +234,10 @@
             for (i = 0; i < cuestionariosDiv.length; i++) {
               cuestionariosDiv[i].style.display = "none";
             }
+            const forosDiv = document.getElementsByClassName('foros');
+            for (i = 0; i < forosDiv.length; i++) {
+              forosDiv[i].style.display = "none";
+            }
 
             tabcontent = document.getElementsByClassName("tabcontent");
             for (i = 0; i < tabcontent.length; i++) {
@@ -232,11 +251,18 @@
             evt.currentTarget.className += " active";
           }
 
+
+
           function openInfo(evt, category) {
             // Oculta los cuestionarios
             const cuestionarios = document.getElementsByClassName('cuestionarios');
             for (i = 0; i < cuestionarios.length; i++) {
               cuestionarios[i].style.display = "none";
+            }
+            // Oculta los foros
+            const foros = document.getElementsByClassName('foros');
+            for (i = 0; i < foros.length; i++) {
+              foros[i].style.display = "none";
             }
             // Muestra las alertas
             const alertas = document.getElementsByClassName('alertas');
@@ -260,6 +286,8 @@
             evt.currentTarget.className += " active";
           }
 
+
+
           function toggleCuestionarios() {
             const cuestionarios = document.querySelectorAll('.toggle-cuestionarios');
             for (let i = 0; i < cuestionarios.length; i++) {
@@ -271,6 +299,8 @@
               }
             }
           }
+
+
 
           function toggleForos() {
             const foros = document.querySelectorAll('.toggle-foros');
@@ -284,11 +314,18 @@
             }
           }
 
+
+
           function muestraCuestionario(idCuestionario) {
             // Oculta todas las alertas
             const alertas = document.getElementsByClassName('alertas');
             for (i = 0; i < alertas.length; i++) {
               alertas[i].style.display = "none";
+            }
+            // Oculta todos los foros
+            const foros = document.getElementsByClassName('foros');
+            for (i = 0; i < foros.length; i++) {
+              foros[i].style.display = "none";
             }
 
             // Muestra el componente de cuestionarios
@@ -307,6 +344,35 @@
             // Muestra el gráfico del cuestionario seleccionado
             const grafico = document.getElementById("grafico"+idCuestionario);
             grafico.style.display = "block";
+          }
+
+
+
+          function muestraForo(idForo) {
+            // Oculta todas las alertas
+            const alertas = document.getElementsByClassName('alertas');
+            for (i = 0; i < alertas.length; i++) {
+              alertas[i].style.display = "none";
+            }
+            // Oculta todos los cuestionarios
+            const cuestionarios = document.getElementsByClassName('cuestionarios');
+            for (i = 0; i < cuestionarios.length; i++) {
+              cuestionarios[i].style.display = "none";
+            }
+
+            // Muestra el componente de foros
+            const forosDiv = document.getElementsByClassName('foros');
+            for (i = 0; i < forosDiv.length; i++) {
+              forosDiv[i].style.display = "block";
+            }
+            // Oculta todos los foros
+            const foros = document.getElementsByClassName('foro');
+            for (i = 0; i < foros.length; i++) {
+              foros[i].style.display = "none";
+            }
+            // Muestra el foro seleccionado
+            const foro = document.getElementById(idForo);
+            foro.style.display = "block";
           }
           </script>
           <script>
