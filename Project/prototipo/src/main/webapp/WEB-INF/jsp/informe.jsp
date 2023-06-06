@@ -371,7 +371,7 @@
               foros[i].style.display = "none";
             }
             // Muestra el foro seleccionado
-            const foro = document.getElementById(idForo);
+            const foro = document.getElementById("foro"+idForo);
             foro.style.display = "block";
           }
           </script>

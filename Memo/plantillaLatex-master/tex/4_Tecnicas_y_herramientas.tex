@@ -1,1 +1,73 @@
 \capitulo{4}{Técnicas y herramientas}
+\section{Desarrollo ágil}
+Durante la realización de esta segunda versión se ha mantenido la metodogía de desarrollo ágil siguiendo la línea de una evolución constante, permitiendo la obtención del feedback entre alumno y profesor de forma continua.
+\subsection{Desarrollo iterativo}
+El desarrollo consiste en la revisión cíclica sobre un mismo trabajo. En este caso se han realizado sprints de entre 7 y 14 días en los que se establecía una reunión en la plataforma Microsoft Teams al final del sprint mostrando los resultados y recibiendo una retroalimentación de los errores, posibles mejoras y características interesantes de implementar de cara al siguiente sprint.
+\subsection{Desarrollo incremental}
+El desarrollo incremental sigue la dinámica del desarrollo iterativo buscando la continua mejora gracias al feedback obtenido. Con este procedimiento se han ido realizando varias release a lo largo del trabajo. Una release es una nueva versión del sistema que se está desarrollando\cite{releasedefinition}.
+\subsection{Control de versiones}
+El control de versiones es un sistema que se utiliza para gestionar y controlar los cambios realizados en los archivos y documentos de un proyecto o sistema de software a lo largo del tiempo. Permite realizar un seguimiento de las modificaciones, controlar quién ha realizado cada cambio, revertir a versiones anteriores y colaborar de manera efectiva en el desarrollo de software.
+
+El control de versiones es especialmente importante en el desarrollo de software, donde múltiples personas trabajan en el mismo proyecto y realizan cambios en los archivos de código fuente. Con un sistema de control de versiones, los desarrolladores pueden guardar y compartir las versiones de su código, fusionar los cambios realizados por diferentes personas y resolver conflictos que puedan surgir.
+\subsection{GitHub}
+GitHub es la plataforma web de alojamiento y colaboración para proyectos de desarrollo de software que se ha utilizado para este proyecto. Proporciona un sistema de control de versiones distribuido utilizando Git y ofrece herramientas y funcionalidades adicionales para la gestión de proyectos y el trabajo en equipo.
+\subsection{Extensión de Visual Studio Code - Git Graph}
+Git Graph es una extensión del editor de texto Visual Studio Code que proporciona una interfaz gráfica interactiva para visualizar y navegar por la historia de un repositorio de Git. Permite a los desarrolladores ver de manera intuitiva el historial de cambios, las ramas, las fusiones y las etiquetas de un proyecto Git.
+
+Esta extensión muestra un gráfico visual en forma de árbol que representa la estructura del historial de commits del repositorio. Cada commit se muestra como un nodo en el gráfico y las líneas conectan los nodos para mostrar la relación entre ellos. Además, Git Graph proporciona información adicional sobre cada commit, como el autor, el mensaje de commit y la fecha.\imagen{GitGraph.png}{Extensión de Visual Studio Code - Git Graph}
+\subsection{Publicaciones frecuentes}
+Una publiación o release consiste en desplegar una aplicación funcional que permite la interacción de los usuarios con dicho producto. Durante el desarrollo del proyecto se han publicado 3 versiones.
+\subsection{Refactorización}
+La refactorización es el proceso de modificar el diseño interno de un código fuente sin cambiar su comportamiento externo. Se trata de mejorar la estructura y la calidad del código sin añadir nuevas funcionalidades o alterar su funcionalidad existente. El objetivo principal de la refactorización es hacer que el código sea más legible, mantenible y eficiente. En este proyecto se ha implementado SonarCloud para realizar dichas refactorizaciones.
+\subsection{Uso de test unitarios}
+Un test unitario es una técnica de pruebas en el desarrollo de software que tiene como objetivo verificar el correcto funcionamiento de una unidad de código, por lo general, una función, método o clase, de forma aislada e independiente del resto del sistema. En esta aplicación se ha utilizado jUnit para ejecutar los test.
+\subsubsection{JUnit}
+JUnit es un framework para la realización de tests en Java. Es compatible con varios entornos de desarrollo integrados e incluso se puede usar mediante linea de comandos.
+\subsection{Construcción automática}
+La construcción automática es el uso de herramientas como Maven o Gradle para automatizar procesos como la compilación, la ejecución de tests y el empaquetado del software.
+\subsubsection{Maven}
+Maven es una herramienta para la construcción de proyectos software. Utiliza un archivo definido dentro del proyecto llamado ``pom.xml'' para definir la configuración necesaria para construir el proyecto como las dependencias o el formato al que compilar.
+\subsection{Integración continua}
+La integración continua  es una práctica de desarrollo de software que consiste en fusionar y probar los cambios realizados en el código fuente de forma frecuente y automatizada. 
+El proyecto contiene un archivo yml que especifica las acciones a seguir para la construcción automática del proyecto y el análisis de calidad de SonarCloud tras cada \textit{push} a la rama \textit{develop} del repositorio.
+\subsection{Herramienta de calidad de código: SonarCloud}
+SonarCloud es un servicio en la nube de análisis de código que detecta code smells, bugs, y vulnerabilidades de seguridad. Se encuentra integrado en el ciclo de integración continua. Permite definir un ``Quality gate'' para que la integración continua falle en caso de no cumplirse alguna de las condiciones definidas sobre la calidad del código.
+También, al ser SonarCloud una herramienta de control de calidad, ha servido de inspiración al implementar la lista de aspectos a mejorar incluida en los informes que genera la aplicación.
+Se puede ver la evolución de la calidad del código en la figura \ref{fig:sonarcloud} y en \url{https://sonarcloud.io/project/activity?category=QUALITY_GATE&id=ada1012_eLearningQA}.
+
+\section{Herramientas de desarrollo}
+\subsection{Entorno de desarrollo integrado: Eclipse y Visual Studio Code}
+Por motivos personales en este trabajo se ha trabajado con 2 entornos de desarrollo, Eclipse y Visual Studio Code. Esta decisión se ha tomado por la comodidad de configuración de archivos de Eclipse y la interfaz amigable de Visual Studio Code. Este último permite instalar varias extensiones como Git Graph o GitHub Copilot que hacen la programación mucho más amena.
+\subsection{Extensión de Visual Studio Code - GitHub Copilot}
+GitHub Copilot es una herramienta desarrollada por GitHub y OpenAI que utiliza inteligencia artificial (IA) para proporcionar sugerencias y autocompletar código mientras se escribe en diferentes lenguajes de programación. Funciona como una extensión para el editor de código y aprovecha los modelos de lenguaje generativos de OpenAI, como GPT-3, para ofrecer recomendaciones de código en tiempo real.
+Esto permite obtener recomendaciones de código sin necesidad de acudir al navegador.
+\subsection{Framework CSS: Bootstrap}
+Bootstrap es un conjunto de librerías de CSS y javascript de código abierto creado por empleados de Twitter. Ofrece cantidad de recursos que facilitan la disposición de elementos en pantalla y contiene elementos como acordeones y carruseles ya implementados.
+\subsection{Librería de generación de gráficos: Plotly}
+Plotly es una librería de generación de gráficos para el lenguaje de programación Python que también tiene una versión para Javascript. Se ha elegido por estar recomendada por W3Schools, una página web de tutoriales de desarrollo web creada en 1998, y por ser capaz de dibujar líneas independientes entre si al usar pares de coordenadas \textit{x} e \textit{y} y no tablas de valores.
+
+\section{Herramientas de documentación}
+\subsection{Redacción de memoria y anexos: Overleaf}
+Overleaf es una herramienta en línea de colaboración y edición de documentos LaTeX. Permite a los usuarios crear, editar y compilar documentos LaTeX en un entorno en la nube, sin necesidad de instalar software adicional. Overleaf es especialmente popular entre la comunidad académica y científica, ya que facilita la colaboración en tiempo real y simplifica el proceso de escritura de documentos técnicos y científicos.
+\subsection{Generación de tablas: TablesGenerator.com}
+TablesGenerator.com es una página que permite crear una tabla con facilidad y puede convertirla a distintos formatos (LaTeX, HTML, texto simple...). Se ha utilizado para diseñar las tablas utilizadas en la aplicación y las tablas en memoria y anexos.
+\subsection{Generación de diagramas UML: ArgoUML}
+ArgoUML es una herramienta de dibujo de diagramas UML. Se ha utilizado para todos los diagramas de los anexos. Se ha utilizado para realizar diagramas de clases, de secuencia, y de casos de uso.
+
+\section{Patrón de diseño: Fachada}
+El patrón de diseño fachada consiste en crear una clase que haga de intermediario entre el cliente y uno o varios subsistemas de la aplicación con varios propósitos: Simplificar y centralizar el control, actuar como elemento de seguridad restringiendo el acceso a ciertas partes, y separar responsabilidades de los subsistemas. Un mismo sistema podría tener varias fachadas distintas que den un mismo servicio de distintas formas, por ejemplo, en este caso, la fachada se utiliza para generar parte del contenido de la aplicación web, pero si se quisiera trasladar la aplicación a una aplicación de escritorio solo se tendría que crear una nueva fachada dejando los sistemas subyacentes intactos \cite{gamma1995design}. Para más información sobre el uso concreto que se le da a este patrón de diseño, consultar el apartado C.4 de los anexos.
+
+ \section{Herramientas para acceder a la información}
+En este apartado se va a explicar cómo se ha accedido a la información de los cursos de Moodle y las opciones que se han barajado durante las reuniones con los tutores.
+\subsection{Opción elegida - Web services}
+Web services son conjuntos de protocolos y estándares que permiten la comunicación y el intercambio de datos entre diferentes aplicaciones o sistemas a través de la web. Utilizando HTTP como protocolo de transporte, los web services permiten que las aplicaciones se comuniquen y compartan información de manera interoperable e independiente de la plataforma.
+
+Los web services de Moodle, un sistema de gestión de aprendizaje en línea, proporcionan interfaces de programación (API) que permiten la integración de Moodle con otras aplicaciones. Estos web services permiten realizar operaciones como la autenticación de usuarios, el acceso a recursos y actividades del curso y la obtención de datos relacionados con los usuarios, cursos y calificaciones.
+\subsection{Opción planteada - Web scraping}
+Web scraping es una técnica automatizada que consiste en extraer y recopilar datos de manera estructurada de sitios web. Esta técnica implica el uso de software o scripts para acceder a las páginas web, analizar su contenido y extraer la información deseada, como texto, imágenes, enlaces u otros datos relevantes.
+Al final no se eligió esta opción ya que la mayoría de información que requería la aplicación ya la ofrecía Moodle a través de sus web services.
+
+\section{Framework de desarrollo web}
+En este apartado se ha heredado el framework ya implementado Spring.
+\subsection{Spring}
+Spring es un framework de desarrollo de aplicaciones empresariales para la plataforma Java. Proporciona una infraestructura completa y coherente que facilita la creación de aplicaciones escalables y de alta calidad. Spring se basa en los principios de inversión de control (IoC) y la inyección de dependencias (DI), lo que permite una mayor modularidad, flexibilidad y facilita las pruebas unitarias. Además, Spring ofrece una amplia gama de módulos y funcionalidades que abarcan desde la creación de servicios web hasta la integración con bases de datos y la seguridad.

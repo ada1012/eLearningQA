@@ -4,7 +4,6 @@ import es.ubu.lsi.model.*;
 import es.ubu.lsi.model.Date;
 import org.springframework.web.client.RestTemplate;
 
-
 import java.time.Instant;
 import java.util.*;
 
@@ -1000,6 +999,7 @@ public class WebServiceClient {
             usuariosUnicos = 0;
             porcentaje += estadisticasForo.getPorcentajeParticipacion();
             estadisticasForo = new EstadisticasForo();
+            estadisticasDiscusiones = new ArrayList<>();
         }
 
         // Si el porcentaje de alumnos que han participado en los foros es menor que el porcentaje mínimo, se guarda la alerta

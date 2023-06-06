@@ -1,1 +1,55 @@
 \capitulo{6}{Trabajos relacionados}
+
+En este capítulo se describirán los estudios y proyectos de terceros relacionados con la garantía y control de calidad de los procesos de enseñanza y aprendizaje en cursos en linea. Al final se hará una tabla de comparación de dicho proyecto con otros mencionados. Respecto a esta segunda versión se matendrán los trabajos ya mencionados en la anterior versión y se implementarán después los nuevos.
+
+\subsection{Automated e-learning quality evaluation}
+Un articulo presentado por Rositsa Doneva y Silvia Gaftandzhieva en la conferencia internacional del e-learning celebrada en Berlin en septiembre de 2015.
+En este artículo se llevan a cabo dos experimentos para probar la factibilidad de implementar un sistema automático de evaluación de la calidad en Moodle. El primer experimento consiste en integrar UBIS-Jaspersoft, un sistema de business intelligence para universidades, con la base de datos de Moodle para analizar los resultados de las respuestas de los alumnos en un modulo de feedback de Moodle. El segundo experimento consiste en la creación de cuatro servicios web para ser utilizados en la evaluación de distintos indicadores de la calidad \cite{doneva2015automated}.
+
+\subsection{Perceived Service Quality and Student Loyalty in an Online University}
+Un artículo presentado por María-Jesús Martínez-Argüelles y Josep-Maria Batalla-Busquets en la revista IRRODL en 2016.
+Este artículo estudia la relación entre todos los aspectos de la enseñanza (incluida la interfaz de usuario en el e-learning) y la percepción de calidad del servicio por parte del estudiante, y entre esta última y la lealtad y la disposición a la recomendación por parte de este. El estudio llega a la conclusión de que hay una relación directa y no solo indirecta entre estas variables \cite{martinez2016perceived}.
+
+\subsection{Dashboard for Evaluating the Quality of Open Learning Courses}
+Un artículo presentado por Gina Mejía-Madrid, Faraón Llorens-Largo, y Rafael Molina-Carmona en la revista Sustainability en 2020.
+Este artículo presenta un modelo para la evaluación de la calidad de los cursos de Open Learning y un \textit{dashboard} creado a partir de resultados de encuestas y entrevistas. La palabra ``dashboard'' se podría traducir como el panel de instrumentos de un coche u otro vehiculo, la analogía viene de qué el tipo de \textit{dashboard} al que nos estamos refiriendo es un conjunto de tablas y gráficos fáciles de leer que permiten a aquel que lo mira entender la información de forma rápida y tomar decisiones. En el artículo también se habla de forma muy breve de automatizar la obtención de datos para generar el \textit{dashboard} pero sin llegar a definir si pretenden automatizar las encuestas o obtener los datos de forma automática por otros medios \cite{mejia2020dashboard}.
+
+\subsection{A Hierarchical Model to Evaluate the Quality of Web-Based E-Learning Systems}
+Un artículo presentado por Muhammad Abdul Hafeez y otros seis autores en la revista Sustainability en 2020.
+Este artículo presenta un modelo para definir la calidad de los sistemas de e-learning generado a partir de una serie de encuestas que les permitieron identificar los factores clave para la calidad según su importancia. El resultado es un modelo con forma de árbol en el que los nodos hoja son los aspectos a evaluar y que se encuentran ordenados por su relevancia dentro de su nodo padre \cite{muhammad2020hierarchical}.
+
+\subsection{Data Analysis for Evaluation on Course Design and Improvement of “Cyberethics” Moodle Online Courses}
+Un artículo presentado por Motonori Nakamura y Hiroshi Ueda en la revista Procedia Computer Science en 2017.
+En este artículo se crea un sistema de recolección de datos con el objetivo de analizar los resultados en la recepción por parte de los estudiantes en un curso Moodle de ciberética de Japón para poder ver los efectos de los cambios realizados en el diseño del curso a lo largo de los años. El artículo concluye que los cambios conllevaron resultados concretos \cite{ueda2017data}.
+
+\subsection{Guía práctica: gestión, producción, infraestructura y control de calidad para MOOC}
+Una guía práctica presentada por Alejandra Meléndez, Mariela Román y Rossana Pinillos.
+La presente guía da a conocer las bases necesarias para gestionar, producir y evaluar un MOOC. Inicialmente se abordan los aspectos de producción, gestión e infraestructura hasta llegar al control de calidad.\cite{guiapractica2016}
+
+\subsection{Moodle Course Checker Plugin}
+Un plugin para Moodle que permite realizar una serie de comprobaciones mediante un conjunto de comprobadores independientes que se pueden ejecutar de forma individual \cite{coursechecker-2021}.
+
+\subsection{Course Checks Block Plugin}
+Otro plugin para Moodle que permite realizar una serie de comprobaciones automáticas \cite{coursechecksblock-2018}.
+
+\subsection{Comparativa de herramientas relacionadas}
+Este proyecto adapta un marco de calidad de cursos de e-learning a una serie de comprobaciones sobre cursos Moodle y es capaz de generar informes que además de mostrar los resultados de dichas comprobaciones. Muestra la traslación de estos a las responsabilidades de cada fase, rol, y perspectiva descritos en el marco y señala qué elementos se pueden cambiar para mejorar los resultados.
+
+\begin{table}[H]
+\resizebox{\textwidth}{!}{%
+	\begin{tabular}{l|ccc}
+		\hline
+		\rowcolor[HTML]{FFFFFF} 
+		\textbf{Característica}                                                                 & \textbf{eLearningQA} & \textbf{Course Checker}                                                        & \textbf{\begin{tabular}[c]{@{}c@{}}Course Checks\\ Block\end{tabular}}         \\ \hline
+		\rowcolor[HTML]{EFEFEF} 
+		Idiomas                                                                                 & Español           & \begin{tabular}[c]{@{}c@{}}Español, inglés,\\ alemán, y portugués\end{tabular} & \begin{tabular}[c]{@{}c@{}}Español, inglés,\\ portugués, y griego\end{tabular} \\
+		Nº de comprobaciones                                                                    & \textcolor{blue}{21}                & 10                                                                             & 7                                                                              \\
+		\rowcolor[HTML]{EFEFEF} 
+		\begin{tabular}[c]{@{}l@{}}Ejecución independiente\\ de comprobaciones\end{tabular}     & No                & Sí                                                                             & No                                                                             \\
+		\begin{tabular}[c]{@{}l@{}}Contiene enlaces para\\ solventar los problemas\end{tabular} & Sí                & Sí                                                                             & No                                                                             \\
+		\rowcolor[HTML]{EFEFEF} 
+		\begin{tabular}[c]{@{}l@{}}Versiones de Moodle\\ compatibles\end{tabular}               & \textcolor{blue}{v4.1+}             & v3.6+                                                                          & v2.6+                                                                          \\
+		Tipo                                                                                    & Aplicación web    & Plugin                                                                         & Plugin                                                                         \\ \hline
+	\end{tabular}%
+}
+\end{table}

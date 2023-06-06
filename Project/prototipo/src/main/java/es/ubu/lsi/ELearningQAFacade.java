@@ -288,6 +288,8 @@ public class ELearningQAFacade {
         Map<Integer, String> informes = new HashMap<>();
         
         for (EstadisticasForo foro : foros) {
+            System.out.println(foro.getIdForo());
+            System.out.println(foro.getNombre());
             String informe = generarInformeForo(foro);
             informes.put(foro.getIdForo(), informe);
         }
@@ -299,13 +301,16 @@ public class ELearningQAFacade {
         String informe = "";
 
         if (foro != null) {
-            informe += "<div class=\"foro\" id=\"" + foro.getIdForo() + "\">";
+            System.out.println("Llega: " + foro.getIdForo());
+            informe += "<div class=\"foro\" id=\"foro" + foro.getIdForo() + "\">";
             informe += "<h1>Foro " + foro.getIdForo() + " - " + foro.getNombre() + "</h1>";
             informe += "<p>Número de alumnos que participan: " + foro.getUsuariosUnicos() + "</p>";
-            informe += "<h3>Estadísticas de los hilos</h3>";
-            for (EstadisticasDiscusion discusion : foro.getEstadisticasDiscusiones()) {
-                informe += "<p>Hilo: " + discusion.getAsunto() + "</p>";
-                informe += "<p>Mensajes totales del hilo: " + discusion.getNumeroMensajes() + "</p><br>";
+            if (!foro.getEstadisticasDiscusiones().isEmpty()) {
+                informe += "<h3>Estadísticas de los hilos</h3>";
+                for (EstadisticasDiscusion discusion : foro.getEstadisticasDiscusiones()) {
+                    informe += "<p>Hilo: " + discusion.getAsunto() + "</p>";
+                    informe += "<p>Mensajes totales del hilo: " + discusion.getNumeroMensajes() + "</p><br>";
+                }
             }
             informe += "</div>";
 
