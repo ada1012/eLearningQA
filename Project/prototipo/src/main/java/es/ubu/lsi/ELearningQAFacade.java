@@ -135,8 +135,8 @@ public class ELearningQAFacade {
         return puntosComprobaciones;
     }
 
-    public String generarInformeFases(String token, double[] puntos, AlertLog registro, List<QuizSummary> estadisticasCuestionarios, List<User> listaUsuarios,
-                                    List<Forum> listaForos, List<EstadisticasForo> estadisticasForos, int nroCursos) {
+    public String generarInformeFases(double[] puntos, List<QuizSummary> estadisticasCuestionarios,
+                                    List<EstadisticasForo> estadisticasForos, int nroCursos) {
         double contadorDiseno=puntos[0]+puntos[1]+puntos[2]+puntos[3]+puntos[4]+puntos[5]+puntos[6]+puntos[7];
         double contadorImplementacion=puntos[8]+puntos[9]+puntos[10]+puntos[11]+puntos[12];
         double contadorRealizacion=puntos[13]+puntos[14]+puntos[15]+puntos[16]+puntos[19];
@@ -159,7 +159,7 @@ public class ELearningQAFacade {
         tabla = generarInformeCuestionario(tabla, puntos, estadisticasCuestionarios); 
 
         // Porcentaje de alumnos que participan en los foros
-        tabla = generarInformeForos(token, tabla, listaForos, estadisticasForos, listaUsuarios, registro);
+        tabla = generarInformeForos(tabla, estadisticasForos);
 
         // Evaluación
         tabla.append(camposInformeFases[21]+generarCampoRelativo((float)contadorEvaluacion/nroCursos, CHECKS_EVALUACION));
@@ -187,8 +187,7 @@ public class ELearningQAFacade {
         return tabla;
     }
 
-    public StringBuilder generarInformeForos(String token, StringBuilder tabla, List<Forum> listaForos, List<EstadisticasForo> foros,
-                                            List<User> listaUsuarios, AlertLog registro) {
+    public StringBuilder generarInformeForos(StringBuilder tabla, List<EstadisticasForo> foros) {
         double porcentaje = 0;
         if (foros != null && !foros.isEmpty()) {
             for (EstadisticasForo estadisticasForo : foros) {
@@ -242,7 +241,7 @@ public class ELearningQAFacade {
     }
 
     // Obtener la lista de posts de un curso
-    public List<Post> getListaPosts(String token, long courseid, List<Forum> listaForos) {
+    public List<Post> getListaPosts(String token, List<Forum> listaForos) {
         return WebServiceClient.obtenerListaPosts(token, config.getHost(), listaForos);
     }
 
@@ -288,8 +287,6 @@ public class ELearningQAFacade {
         Map<Integer, String> informes = new HashMap<>();
         
         for (EstadisticasForo foro : foros) {
-            System.out.println(foro.getIdForo());
-            System.out.println(foro.getNombre());
             String informe = generarInformeForo(foro);
             informes.put(foro.getIdForo(), informe);
         }
@@ -301,7 +298,6 @@ public class ELearningQAFacade {
         String informe = "";
 
         if (foro != null) {
-            System.out.println("Llega: " + foro.getIdForo());
             informe += "<div class=\"foro\" id=\"foro" + foro.getIdForo() + "\">";
             informe += "<h1>Foro " + foro.getIdForo() + " - " + foro.getNombre() + "</h1>";
             informe += "<p>Número de alumnos que participan: " + foro.getUsuariosUnicos() + "</p>";

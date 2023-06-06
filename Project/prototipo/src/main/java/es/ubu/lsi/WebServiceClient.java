@@ -931,7 +931,7 @@ public class WebServiceClient {
             attempts.clear();
         }
         for (int idPregunta : notas.keySet()) {
-            double notaMediaPregunta = notas.get(idPregunta) / intentos;
+            double notaMediaPregunta = intentos > 0 ? notas.get(idPregunta) / intentos : 0;
             double puntuacionMaxima = notasMaximas.get(idPregunta);
             EstadisticaNotasPregunta estadisticaNotasPregunta = new EstadisticaNotasPregunta();
             estadisticaNotasPregunta.setIdPregunta(idPregunta);

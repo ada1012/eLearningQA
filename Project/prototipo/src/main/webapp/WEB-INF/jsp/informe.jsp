@@ -42,7 +42,7 @@
             for(Course curso:listaCursos){
               usuarios=fachada.getListaUsuarios(token, curso.getId());
               foros=fachada.getListaForos(token, curso.getId());
-              posts=fachada.getListaPosts(token, curso.getId(), foros);
+              posts=fachada.getListaPosts(token, foros);
               alertas.guardarTitulo(curso.getFullname());
               puntosCurso = fachada.realizarComprobaciones(token, curso.getId(), alertas, resumenCuestionarios, quizzes, usuarios, posts, foros);
               for(int i=0;i<puntosComprobaciones.length;i++){
@@ -52,12 +52,12 @@
             nombreCurso="Informe general de cursos";
             porcentajes=fachada.calcularPorcentajesMatriz(puntosComprobaciones, listaCursos.size());
             matriz=fachada.generarMatrizRolPerspectiva(porcentajes);
-            fases=fachada.generarInformeFases(token, puntosComprobaciones, alertas, resumenCuestionarios, usuarios, foros, resumenForos, listaCursos.size());
+            fases=fachada.generarInformeFases(puntosComprobaciones, resumenCuestionarios, resumenForos, listaCursos.size());
           }else{
             Course curso= fachada.getCursoPorId(token, Integer.parseInt(courseid));
             usuarios=fachada.getListaUsuarios(token, curso.getId());
             foros=fachada.getListaForos(token, curso.getId());
-            posts=fachada.getListaPosts(token, curso.getId(), foros);
+            posts=fachada.getListaPosts(token, foros);
             alertas.setCourseid(Integer.parseInt(courseid));
             nombreCurso=curso.getFullname();
             session.setAttribute("coursename",nombreCurso);
@@ -78,7 +78,7 @@
             resumenForos=fachada.porcentajeAlumnosForos(token, foros, usuarios, alertas);
             // Generamos los informes de los foros
             estadisticasForos=fachada.generarInformesForos(resumenForos);
-            fases=fachada.generarInformeFases(token, puntosComprobaciones, alertas, resumenCuestionarios, usuarios, foros, resumenForos, 1);
+            fases=fachada.generarInformeFases(puntosComprobaciones, resumenCuestionarios, resumenForos, 1);
             RegistryIO.guardarResultados(host, fullname, courseid,
                        new AnalysisSnapshot(nombreCurso, puntosComprobaciones, porcentajes, alertas.toString()));
             grafico=RegistryIO.generarGraficos(host, fullname, courseid);
