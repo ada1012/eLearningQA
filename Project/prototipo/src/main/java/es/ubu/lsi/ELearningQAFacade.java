@@ -136,7 +136,7 @@ public class ELearningQAFacade {
     }
 
     public String generarInformeFases(String token, double[] puntos, AlertLog registro, List<QuizSummary> estadisticasCuestionarios, List<User> listaUsuarios,
-                                    List<Forum> listaForos, int nroCursos) {
+                                    List<Forum> listaForos, List<EstadisticasForo> estadisticasForos, int nroCursos) {
         double contadorDiseno=puntos[0]+puntos[1]+puntos[2]+puntos[3]+puntos[4]+puntos[5]+puntos[6]+puntos[7];
         double contadorImplementacion=puntos[8]+puntos[9]+puntos[10]+puntos[11]+puntos[12];
         double contadorRealizacion=puntos[13]+puntos[14]+puntos[15]+puntos[16]+puntos[19];
@@ -159,7 +159,7 @@ public class ELearningQAFacade {
         tabla = generarInformeCuestionario(tabla, puntos, estadisticasCuestionarios); 
 
         // Porcentaje de alumnos que participan en los foros
-        tabla = generarInformeForos(token, tabla, listaForos, listaUsuarios, registro);
+        tabla = generarInformeForos(token, tabla, listaForos, estadisticasForos, listaUsuarios, registro);
 
         // Evaluación
         tabla.append(camposInformeFases[21]+generarCampoRelativo((float)contadorEvaluacion/nroCursos, CHECKS_EVALUACION));
@@ -187,8 +187,8 @@ public class ELearningQAFacade {
         return tabla;
     }
 
-    public StringBuilder generarInformeForos(String token, StringBuilder tabla, List<Forum> listaForos, List<User> listaUsuarios, AlertLog registro) {
-        List<EstadisticasForo> foros = porcentajeAlumnosForos(token, listaForos, listaUsuarios, registro);
+    public StringBuilder generarInformeForos(String token, StringBuilder tabla, List<Forum> listaForos, List<EstadisticasForo> foros,
+                                            List<User> listaUsuarios, AlertLog registro) {
         double porcentaje = 0;
         if (foros != null && !foros.isEmpty()) {
             for (EstadisticasForo estadisticasForo : foros) {
@@ -201,7 +201,7 @@ public class ELearningQAFacade {
         // Porcentaje de alumnos que participa en cada foro
         if (foros != null && !foros.isEmpty()) {
             for (EstadisticasForo estadisticasForo : foros) {
-                tabla.append("</tr><tr class=\"toggle-foros\" data-bs-toggle=\"tooltip\"> <td class=\"tg-ltgr\">Foro " + estadisticasForo.getNombre() + " </td>" + generarCampoRelativoCuestionario((float)estadisticasForo.getPorcentajeParticipacion()/100, 1));
+                tabla.append("</tr><tr class=\"toggle-foros\" data-bs-toggle=\"tooltip\"> <td class=\"tg-ltgr\" onclick=\"muestraForo(" + estadisticasForo.getIdForo() + ")\">Foro " + estadisticasForo.getNombre() + " </td>" + generarCampoRelativoCuestionario((float)estadisticasForo.getPorcentajeParticipacion()/100, 1));
             }
         }
 
@@ -277,6 +277,40 @@ public class ELearningQAFacade {
             if (quizSummary.getAlumnosExaminados() > 3) {
                 informe += "<p>Skewness (para las mejores calificaciones): " + ((int)(quizSummary.getSkewness() * 100)) / 100.00 + "</p>";
                 informe += "<p>Kurtosis (para las mejores calificaciones): " + ((int)(quizSummary.getKurtosis() * 100)) / 100.00 + "</p>";
+            }
+            informe += "</div>";
+
+        }
+        return informe;
+    }
+
+    public Map<Integer, String> generarInformesForos(List<EstadisticasForo> foros) {
+        Map<Integer, String> informes = new HashMap<>();
+        
+        for (EstadisticasForo foro : foros) {
+            System.out.println(foro.getIdForo());
+            System.out.println(foro.getNombre());
+            String informe = generarInformeForo(foro);
+            informes.put(foro.getIdForo(), informe);
+        }
+
+        return informes;
+    }
+
+    public String generarInformeForo(EstadisticasForo foro) {
+        String informe = "";
+
+        if (foro != null) {
+            System.out.println("Llega: " + foro.getIdForo());
+            informe += "<div class=\"foro\" id=\"foro" + foro.getIdForo() + "\">";
+            informe += "<h1>Foro " + foro.getIdForo() + " - " + foro.getNombre() + "</h1>";
+            informe += "<p>Número de alumnos que participan: " + foro.getUsuariosUnicos() + "</p>";
+            if (!foro.getEstadisticasDiscusiones().isEmpty()) {
+                informe += "<h3>Estadísticas de los hilos</h3>";
+                for (EstadisticasDiscusion discusion : foro.getEstadisticasDiscusiones()) {
+                    informe += "<p>Hilo: " + discusion.getAsunto() + "</p>";
+                    informe += "<p>Mensajes totales del hilo: " + discusion.getNumeroMensajes() + "</p><br>";
+                }
             }
             informe += "</div>";
 
