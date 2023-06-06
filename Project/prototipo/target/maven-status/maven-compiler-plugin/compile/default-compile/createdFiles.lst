@@ -1,12 +1,16 @@
 es\ubu\lsi\model\StatusList.class
 es\ubu\lsi\model\Contentsinfo.class
+es\ubu\lsi\model\ResponseFileArea.class
 es\ubu\lsi\Application.class
 es\ubu\lsi\ELearningQAFacade.class
 es\ubu\lsi\model\TableList.class
 es\ubu\lsi\model\DiscussionList.class
 es\ubu\lsi\AlertLog.class
+es\ubu\lsi\model\EstadisticaNotasPregunta.class
+es\ubu\lsi\model\File.class
 es\ubu\lsi\model\Capabilities.class
 es\ubu\lsi\model\Post.class
+es\ubu\lsi\model\QuizList.class
 es\ubu\lsi\model\MoodleObject.class
 es\ubu\lsi\model\Anonattempt.class
 es\ubu\lsi\model\Preference.class
@@ -14,7 +18,10 @@ es\ubu\lsi\model\Urls.class
 es\ubu\lsi\model\Group.class
 es\ubu\lsi\model\Survey.class
 es\ubu\lsi\model\Advancedgrading.class
+es\ubu\lsi\model\EstadisticasForo.class
 es\ubu\lsi\model\Itemname.class
+es\ubu\lsi\model\EstadisticasDiscusion.class
+es\ubu\lsi\model\AttemptReviewList.class
 es\ubu\lsi\model\Ratinginfo.class
 es\ubu\lsi\model\Assignment.class
 es\ubu\lsi\model\Completiondata.class
@@ -29,7 +36,9 @@ es\ubu\lsi\AnalysisSnapshot.class
 es\ubu\lsi\model\Detail.class
 es\ubu\lsi\model\CourseList.class
 es\ubu\lsi\model\Rulevalue.class
+es\ubu\lsi\model\Question.class
 es\ubu\lsi\model\CourseModule.class
+es\ubu\lsi\model\Quiz.class
 es\ubu\lsi\model\Introattachment.class
 es\ubu\lsi\model\Feedback.class
 es\ubu\lsi\WebServiceClient.class
@@ -39,6 +48,7 @@ es\ubu\lsi\model\Course.class
 es\ubu\lsi\model\Role.class
 es\ubu\lsi\model\Contentfile.class
 es\ubu\lsi\model\Date.class
+es\ubu\lsi\model\QuizSummary.class
 es\ubu\lsi\model\Response.class
 es\ubu\lsi\FacadeConfig.class
 es\ubu\lsi\model\Introfile.class
@@ -55,7 +65,9 @@ es\ubu\lsi\model\Table.class
 es\ubu\lsi\model\Attempt.class
 es\ubu\lsi\model\Discussion.class
 es\ubu\lsi\model\Forum.class
+es\ubu\lsi\model\Warning.class
 es\ubu\lsi\model\Tag.class
+es\ubu\lsi\model\AttemptList.class
 es\ubu\lsi\model\Leader.class
 es\ubu\lsi\model\Config.class
 es\ubu\lsi\model\Section.class

@@ -4,6 +4,7 @@ D:\universidad\2022-2023\TFG\eLearningQA\Project\prototipo\src\main\java\es\ubu\
 D:\universidad\2022-2023\TFG\eLearningQA\Project\prototipo\src\main\java\es\ubu\lsi\model\MoodleObject.java
 D:\universidad\2022-2023\TFG\eLearningQA\Project\prototipo\src\main\java\es\ubu\lsi\model\Rulevalue.java
 D:\universidad\2022-2023\TFG\eLearningQA\Project\prototipo\src\main\java\es\ubu\lsi\FacadeConfig.java
+D:\universidad\2022-2023\TFG\eLearningQA\Project\prototipo\src\main\java\es\ubu\lsi\model\EstadisticasDiscusion.java
 D:\universidad\2022-2023\TFG\eLearningQA\Project\prototipo\src\main\java\es\ubu\lsi\model\CourseModule.java
 D:\universidad\2022-2023\TFG\eLearningQA\Project\prototipo\src\main\java\es\ubu\lsi\model\StatusList.java
 D:\universidad\2022-2023\TFG\eLearningQA\Project\prototipo\src\main\java\es\ubu\lsi\model\CourseModuleWrapper.java
@@ -36,6 +37,7 @@ D:\universidad\2022-2023\TFG\eLearningQA\Project\prototipo\src\main\java\es\ubu\
 D:\universidad\2022-2023\TFG\eLearningQA\Project\prototipo\src\main\java\es\ubu\lsi\model\Post.java
 D:\universidad\2022-2023\TFG\eLearningQA\Project\prototipo\src\main\java\es\ubu\lsi\model\Question.java
 D:\universidad\2022-2023\TFG\eLearningQA\Project\prototipo\src\main\java\es\ubu\lsi\model\Author.java
+D:\universidad\2022-2023\TFG\eLearningQA\Project\prototipo\src\main\java\es\ubu\lsi\model\EstadisticasForo.java
 D:\universidad\2022-2023\TFG\eLearningQA\Project\prototipo\src\main\java\es\ubu\lsi\model\Section.java
 D:\universidad\2022-2023\TFG\eLearningQA\Project\prototipo\src\main\java\es\ubu\lsi\model\Assignment.java
 D:\universidad\2022-2023\TFG\eLearningQA\Project\prototipo\src\main\java\es\ubu\lsi\model\AttemptList.java
