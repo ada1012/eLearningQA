@@ -45,6 +45,9 @@ A continuación mostraré un resumen de dichos sprints:
 \subsection{Sprint 8 (18/05/2023 - 25/05/2023)}
 	En esta reunión se incorporó el profesor Carlos López por lo que los primeros minutos fueron para ver el progreso en el proyecto, después aporto una serie de mejoras y fallos que no habíamos contemplado. Los cambios que se implementaron durante este sprint fueron principalmente arreglar los métodos que realizaban cálculos sobre las estadísticas de los cuestionarios, se consiguió implementar correctamente el gráfico (a falta de normalizar el valor de cada pregunta ya que se llegó a la conclusión de que habría preguntas de diferente puntuación) y se generó una release con el tema de los cuestionarios terminado. La parte de los foros se aplazó al siguiente sprint por falta de tiempo ya que quedaban apenas dos semanas para los exámenes finales.
 
+\subsection{Sprint 9 (25/05/2023 - 02/06/2023)}
+	Durante este sprint se pulieron algunos fallos detectados por los profesores como la normalización de las notas, el número de intentos y agregar el formato de notas en español (se usan comas en vez de puntos). Luego se agregaron los porcentajes de participación en los foros, se redujo el número de llamadas a la API de Moodle. También se avanzo en la redacción de los anexos. En esta reunión se decidió que si queríamos llegar a tiempo tendría que formalizarse un borrador de la memoria, de los anexos, generar una release totalmente funcional con todos los cambios e implementar los actions de github como es el de ejecutar SonarCloud cada vez que se haga un push a la rama develop.
+
 \section{Estudio de viabilidad}
 
 \subsection{Viabilidad económica}
@@ -112,14 +115,11 @@ A partir de estos costes obtenemos el coste total del proyecto:
 	}
 \end{table}
 
-Para hacer rentable el desarrollo de la aplicación teniendo en cuenta que es de código abierto se podría adoptar un modelo SaaS (Software as a Service) en el que los clientes paguen una suscripción al dueño del software y este a su vez se encargue del hosting y mantenimiento de la aplicación.
-Se podrían ofrecer subscripciones a varios niveles ofreciendo distintos niveles de funcionalidad y servicios a distintos precios.\cite{previotfganexos}
+Para rentabilizar la aplicación web se podrían tener en cuenta varias posibles soluciones como ofrecer un sistema freenium dejando parte del contenido de forma gratuita mientras que otras otros apartados serían premium ocasionando un coste como es el caso de Spotify. Otra posible solución es la que comenta mi compañero Roberto en la versión previa mencionando una suscripción menusal los que implicaría unos ingresos continuos\cite{previotfganexos}.
 
 \subsection{Viabilidad legal}
 \subsubsection{Licencias de software}
-Respecto a la viabilidad legal en esta segunda versión no se ha incorporado ninguna librería ni se han utilizado nuevos frameworks por lo que se mantendrá esta sección exactamente igual que en la versión anterior.
-
-Para determinar la licencia software que va a utilizar la aplicación hay que tener en cuenta las licencias utilizadas por las dependencias que utiliza la aplicación.
+Respecto a la viabilidad legal en esta segunda versión solo se ha incorporado GitHub Copilot el cual no ofrece ningún problema legal ya que sus suscripción mensual permite el libre manejo del código generado. A continuación se mostrarán los frameworks y librerías con sus respectivas licencias.
 
 \begin{table}[H]
 	\caption{Licencias del software utilizado}
@@ -134,22 +134,20 @@ Para determinar la licencia software que va a utilizar la aplicación hay que te
 			Apache Log4j        & Librería para registro de logs                                                                                               & Apache 2.0        \\ \hline
 			Bootstrap           & \begin{tabular}[c]{@{}c@{}}Librerías CSS y JavaScript para \\ páginas web\end{tabular}                                       & MIT               \\ \hline
 			Plotly.js           & \begin{tabular}[c]{@{}c@{}}Librería JavaScript de \\ generación de gráficos\end{tabular}                                     & MIT               \\ \hline
+			GitHub Copilot           & \begin{tabular}[c]{@{}c@{}}GitHub Copilot es una\\ herramienta de inteligencia artificial\end{tabular}                                     & GitHub, Inc.               \\ \hline
 		\end{tabular}%
 	}
 \end{table}
-La licencia pública de Eclipse (EPL) es compatible con estas licencias, a continuación se mencionan sus posibilidades y obligaciones.
+La licencia pública de Eclipse (EPL) es compatible con estas licencias sin contar GitHub Copilot, a continuación se mencionan sus posibilidades y obligaciones.
 \begin{itemize}
 	\item\textbf{Permite:} uso, reproducción, distribución, modificación, uso comercial y uso de patentes.
 	\item\textbf{Obliga a:} revelar la fuente y el autor, mantener la misma licencia al redistribuir el software, distribuir el software libre de regalías.
 	\item\textbf{No permite:} responsabilizar al autor o contribuidores por posibles daños, utilizar marcas propiedad del autor para promoción o publicidad.
 \end{itemize}
-\subsubsection{Uso del nombre ``Moodle'' en la aplicación}
-Debido a que Moodle es una marca registrada y no soy un partner registrado de Moodle, tengo que atenerme a una serie de restricciones con respecto al uso de la palabra ``Moodle'' \cite{moodletrademark-2022}:
-\begin{itemize}
-	\item No puedo usar logos de ``Moodle'' sin consentimiento escrito de Moodle.
-	\item No puedo usar ``Moodle'' en el nombre de mi software, ni en el de mi dominio ni en el de mi empresa.
-	\item No puedo usar ``Moodle'' en palabras clave relacionadas con la publicidad.
-	\item No puedo usar ``Moodle'' para describir servicios alrededor de Moodle de forma que la gente piense que estoy asociado a Moodle cuando no es así.
-\end{itemize}
 
-Al enterarme de esto a mitad del desarrollo he tenido que cambiar a ``eLearningQA'' el nombre del proyecto, el del repositorio, el del despliegue en Heroku para que el dominio deje de contener ``Moodle'', y he aclarado en el readme del proyecto y en la memoria que no estoy asociado con Moodle.\cite{previotfganexos}
+GitHub Copilot es una herramienta de programación desarrollada por GitHub y OpenAI. Utiliza la tecnología de inteligencia artificial de GPT-3 para ofrecer sugerencias de código en tiempo real mientras escribes. Copilot analiza el contexto del código que estás escribiendo y genera automáticamente fragmentos de código relevantes y útiles para completar tus líneas de código.
+Tiene 2 tarifas:
+\begin{itemize}
+	\item 10 dólares al mes para uso personal.
+	\item 19 dólares al mes por persona para uso empresarial.
+\end{itemize}
