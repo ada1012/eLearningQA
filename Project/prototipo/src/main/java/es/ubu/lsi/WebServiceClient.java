@@ -297,8 +297,13 @@ public class WebServiceClient {
         RestTemplate restTemplate = new RestTemplate();
         String url= host + "/webservice/rest/server.php?wsfunction=mod_forum_get_forums_by_courses&moodlewsrestformat=json&wstoken=" + token + COURSEIDS_0 +courseid;
         Forum[] arrayForos= restTemplate.getForObject(url, Forum[].class);
+
         if (arrayForos==null){return new ArrayList<>();}
-        return new ArrayList<>(Arrays.asList(arrayForos));
+        List<Forum> listaForos= new ArrayList<>(Arrays.asList(arrayForos));
+        // Eliminamos los foros que no son de tipo general
+        listaForos.removeIf(foro -> foro.getType().equals("news"));
+
+        return listaForos;
     }
 
     public static boolean usaSurveys(List<Survey> listaEncuestas, AlertLog registro){
