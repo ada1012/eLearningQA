@@ -482,7 +482,7 @@ public class ELearningQAFacade {
         float resultado= numerador/denominador;
         String campoAMedias="<meter value=\""+numerador+"\" min=\"0\" max=\""+denominador+"\"></meter>"+
                 String.format("%.1f",porcentajeFraccion(numerador, denominador))+"%"+"</td>";
-        if (resultado<config.getMinQuizAnswerPercentage() * 100){return "<td class=\"tg-pred\">"+campoAMedias;}
+        if (resultado<config.getMinQuizAnswerPercentage()){return "<td class=\"tg-pred\">"+campoAMedias;}
         else{return "<td class=\"tg-pgre\">"+campoAMedias;}
     }
 
