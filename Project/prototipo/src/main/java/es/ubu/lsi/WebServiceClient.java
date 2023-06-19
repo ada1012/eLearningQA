@@ -997,7 +997,7 @@ public class WebServiceClient {
                 estadisticasDiscusion = new EstadisticasDiscusion();
             }
             estadisticasForo.setUsuariosUnicos(usuariosUnicos);
-            estadisticasForo.setPorcentajeParticipacion((double) usuariosUnicos / alumnos.size() * 100);
+            estadisticasForo.setPorcentajeParticipacion((double) (usuariosUnicos / alumnos.size()) * 100);
             estadisticasForo.setEstadisticasDiscusiones(estadisticasDiscusiones);
             estadisticasForos.add(estadisticasForo);
 
