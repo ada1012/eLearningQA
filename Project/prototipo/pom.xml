@@ -75,9 +75,6 @@
 				<version>3.0.7</version>
 				<configuration>
 			        <appName>elearningqaquizandforums</appName>
-                    <processTypes>
-                        <web>java $JAVA_OPTS -cp target/classes:target/dependency/* target/prototipo-0.7-SNAPSHOT.war</web>
-                    </processTypes>
 			    </configuration>
 			</plugin>
         </plugins>
