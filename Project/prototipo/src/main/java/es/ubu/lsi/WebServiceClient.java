@@ -751,8 +751,22 @@ public class WebServiceClient {
     // Método para obtener los datos resumidos de un cuestionario
     public static QuizSummary obtenerResumenCuestionario(String token, long courseId, String host, Quiz quiz) {
         QuizSummary quizSummary = new QuizSummary();
-        // Obtener los usuarios del curso
-        List<User> usuarios = obtenerUsuarios(token, courseId, host);
+        // Obtener los usuarios del curso y eliminar los que no son estudiantes
+        List<User> alumnos = obtenerUsuarios(token, courseId, host);
+        List<User> usuarios = new ArrayList<>();
+        for (User alumno : alumnos) {
+            boolean esEstudiante = false;
+            for (Role role : alumno.getRoles()) {
+                if (role.getShortname().equals("student")) {
+                    esEstudiante = true;
+                    break;
+                }
+            }
+            if (esEstudiante) {
+                usuarios.add(alumno);
+            } 
+        }
+
         int contadorIntentos = 0;
         int totalPreguntas = 0;
         double nota = 0;
@@ -879,9 +893,9 @@ public class WebServiceClient {
 
         Map<Integer, Double> notas = new HashMap<>();
         Map<Integer, Double> notasMaximas = new HashMap<>();
-        Map<Integer, Double> notasAuxiliar = new HashMap<>();
 
         for (User usuario : usuarios) {
+            Map<Integer, Double> notasAuxiliar = new HashMap<>();
             int userId = usuario.getId();
             double nota = 0;
             attempts.addAll(getUserQuizAttempts(quiz.getId(), userId, host, token));
@@ -935,6 +949,7 @@ public class WebServiceClient {
             }
             attempts.clear();
         }
+        System.out.println("Quiz " + quiz.getName() + " - Intentos: " + intentos);
         for (int idPregunta : notas.keySet()) {
             double notaMediaPregunta = intentos > 0 ? notas.get(idPregunta) / intentos : 0;
             double puntuacionMaxima = notasMaximas.get(idPregunta);

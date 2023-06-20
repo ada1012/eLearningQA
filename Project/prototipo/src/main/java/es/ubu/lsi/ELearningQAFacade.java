@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -274,8 +275,9 @@ public class ELearningQAFacade {
             informe += "<p>Nota media del último intento (Solo alumnos que han realizado el examen): " + ((int)(quizSummary.getNotaMediaUltimoIntentoAlumnosConNota() * 100)) / 100.00 + "</p>";
             informe += "<p>Nota media del último intento (Todos los alumnos): " + ((int)(quizSummary.getNotaMediaUltimoIntentoTotalAlumnos() * 100)) / 100.00 + "</p>";
             if (quizSummary.getAlumnosExaminados() > 3) {
-                informe += "<p>Skewness (para las mejores calificaciones): " + ((int)(quizSummary.getSkewness() * 100)) / 100.00 + "</p>";
-                informe += "<p>Kurtosis (para las mejores calificaciones): " + ((int)(quizSummary.getKurtosis() * 100)) / 100.00 + "</p>";
+                DecimalFormat decimalFormat = new DecimalFormat("#.####");
+                informe += "<p>Skewness (para las mejores calificaciones): " + decimalFormat.format(quizSummary.getSkewness()) + "</p>";
+                informe += "<p>Kurtosis (para las mejores calificaciones): " + decimalFormat.format(quizSummary.getKurtosis()) + "</p>";
             }
             informe += "</div>";
 
