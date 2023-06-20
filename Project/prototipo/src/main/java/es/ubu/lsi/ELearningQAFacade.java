@@ -451,7 +451,25 @@ public class ELearningQAFacade {
 
     // Devuelve el porcentaje de alumnos que participan en los foros, sino se devuelve 0 y se añade un registro de alerta
     public List<EstadisticasForo> porcentajeAlumnosForos(String token, List<Forum> listaForos, List<User> alumnos, AlertLog registro) {
-        return WebServiceClient.calculaPorcentajeAlumnosForos(token, listaForos, alumnos, registro, config);
+        // Eliminar al profesor de la lista de alumnos
+        List<User> alumnosEstudiantes = new ArrayList<>();
+        List<String> usuariosNoAlumnos = new ArrayList<>();
+        for (User alumno : alumnos) {
+            boolean esEstudiante = false;
+            for (Role role : alumno.getRoles()) {
+                if (role.getShortname().equals("student")) {
+                    esEstudiante = true;
+                    break;
+                }
+            }
+            if (esEstudiante) {
+                alumnosEstudiantes.add(alumno);
+            } else {
+                usuariosNoAlumnos.add(alumno.getFullname());
+            }
+        }
+
+        return WebServiceClient.calculaPorcentajeAlumnosForos(token, listaForos, alumnosEstudiantes, usuariosNoAlumnos, registro, config);
     }
 
     public float porcentajeFraccion(float numerador, float denominador){

@@ -956,7 +956,7 @@ public class WebServiceClient {
     }
 
     // Método que calcula el porcentaje de alumnos que han respondido a un foro
-    public static List<EstadisticasForo> calculaPorcentajeAlumnosForos(String token, List<Forum> listaForos, List<User> alumnos, AlertLog registro, FacadeConfig config){
+    public static List<EstadisticasForo> calculaPorcentajeAlumnosForos(String token, List<Forum> listaForos, List<User> alumnos, List<String>usuariosNoAlumnos, AlertLog registro, FacadeConfig config){
         List<EstadisticasForo> estadisticasForos = new ArrayList<>();
         List<EstadisticasDiscusion> estadisticasDiscusiones = new ArrayList<>();
         EstadisticasForo estadisticasForo = new EstadisticasForo();
@@ -986,7 +986,7 @@ public class WebServiceClient {
                 List<Post> listaPostsDiscusion = obtenerListaPostsPorDebate(token, discusion, config.getHost());
                 for (Post post : listaPostsDiscusion) {
                     mensajes++;
-                    if (!listaAlumnos.contains(post.getAuthor().getId())) {
+                    if (!listaAlumnos.contains(post.getAuthor().getId()) && !usuariosNoAlumnos.contains(post.getAuthor().getFullname())) {
                         listaAlumnos.add(post.getAuthor().getId());
                         usuariosUnicos++;
                     }
@@ -1005,6 +1005,7 @@ public class WebServiceClient {
             porcentaje += estadisticasForo.getPorcentajeParticipacion();
             estadisticasForo = new EstadisticasForo();
             estadisticasDiscusiones = new ArrayList<>();
+            listaAlumnos = new ArrayList<>();
         }
 
         // Si el porcentaje de alumnos que han participado en los foros es menor que el porcentaje mínimo, se guarda la alerta
