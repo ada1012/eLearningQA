@@ -428,7 +428,7 @@ public class WebServiceClient {
                 if (rango.equals("")){
                     rango=tabledata.getRange().getContent();
                 }
-                if (rango != null && !rango.equals(tabledata.getRange().getContent())){
+                if (tabledata.getRange().getContent() != null && !rango.equals(tabledata.getRange().getContent())){
                     registro.guardarAlerta("design consistentmaxgrade","Las calificaciones máximas de las actividades y categorías son inconsistentes");
                     return false;
                 }

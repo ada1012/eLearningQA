@@ -47,7 +47,7 @@ public class ELearningQAFacade {
         List<Course> listaCursos= getListaCursos(token);
         StringBuilder listaEnTabla= new StringBuilder("<table>");
         for (Course curso: listaCursos) {
-            listaEnTabla.append("<tr><td><a target=\"_blank\" href=\"./cargando?courseid=").append(curso.getId())
+            listaEnTabla.append("<tr><td><a target=\"_blank\" href=\"./loading?courseid=").append(curso.getId())
                     .append("\">").append(curso.getFullname())
                     .append(" ("+curso.getCoursecategory()+")").append("</a></td></tr>");
         }
@@ -98,11 +98,9 @@ public class ELearningQAFacade {
             porcentaje = sum / estadisticasCuestionarios.size();
         }
 
-        double[] puntosComprobaciones = asignarPuntosComprobaciones(curso, listaEstados, listaModulos, listaGrupos, listaTareas, listaCalificadores,
-                quizzes, listaForos, listaPosts, recursosDesfasados, modulosMalFechados, listaModulosTareas, listaUsuarios, tareasConNotas, listaAnalisis,
-                listaSurveys, registro, porcentaje);
-
-        return puntosComprobaciones;
+        return asignarPuntosComprobaciones(curso, listaEstados, listaModulos, listaGrupos, listaTareas, listaCalificadores,
+        quizzes, listaForos, listaPosts, recursosDesfasados, modulosMalFechados, listaModulosTareas, listaUsuarios, tareasConNotas, listaAnalisis,
+        listaSurveys, registro, porcentaje);
     }
 
     public double[] asignarPuntosComprobaciones(Course curso, StatusList listaEstados, List<es.ubu.lsi.model.Module> listaModulos,
