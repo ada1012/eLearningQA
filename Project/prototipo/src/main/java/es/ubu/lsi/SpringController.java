@@ -48,6 +48,11 @@ public class SpringController{
         return "error";
     }
 
+    @GetMapping("/cargando")
+    public String cargando() {
+        return "cargando";
+    }
+
     @GetMapping(
             value = "/cabecera.jpg",
             produces = MediaType.IMAGE_JPEG_VALUE

@@ -949,7 +949,7 @@ public class WebServiceClient {
             }
             attempts.clear();
         }
-        System.out.println("Quiz " + quiz.getName() + " - Intentos: " + intentos);
+        
         for (int idPregunta : notas.keySet()) {
             double notaMediaPregunta = intentos > 0 ? notas.get(idPregunta) / intentos : 0;
             double puntuacionMaxima = notasMaximas.get(idPregunta);

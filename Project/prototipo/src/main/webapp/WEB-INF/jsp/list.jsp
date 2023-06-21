@@ -36,7 +36,7 @@
     height: 100vh;">
 
           <div class="card w-100 m-3 p-3" style="overflow:auto">
-                    <a target="_blank" href="./informe">Informe general</a>
+                    <a target="_blank" href="./cargando">Informe general</a>
                     <input style="max-width:300px" type="text" id="myInput" onkeyup="filter()" placeholder="Busca un curso.." title="Buscador cursos">
                     <%=respuesta%>
           </div>
