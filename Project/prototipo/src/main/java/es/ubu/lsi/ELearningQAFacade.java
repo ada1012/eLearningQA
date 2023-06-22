@@ -304,8 +304,10 @@ public class ELearningQAFacade {
             if (!foro.getEstadisticasDiscusiones().isEmpty()) {
                 informe += "<h3>Estadísticas de los hilos</h3>";
                 for (EstadisticasDiscusion discusion : foro.getEstadisticasDiscusiones()) {
+                    informe += "<div class=\"alert alert-danger p-0 infoline overall foros\">";
                     informe += "<p>Hilo: " + discusion.getAsunto() + "</p>";
-                    informe += "<p>Mensajes totales del hilo: " + discusion.getNumeroMensajes() + "</p><br>";
+                    informe += "<p>Mensajes totales del hilo: " + discusion.getNumeroMensajes() + "</p>";
+                    informe += "</div>";
                 }
             }
             informe += "</div>";

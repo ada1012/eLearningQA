@@ -35,34 +35,22 @@
     }
   </style>
   <% String course_id = request.getParameter("courseid"); %>
-  <script>
-    var informe = ""
-    <% if (course_id != null) { %>
-      informe = "./informe?courseid=" + <%=course_id%>
-    <% } else { %>
-      informe = "./informe"
-    <% } %>
-    // Código JavaScript para cargar la página del informe de forma asíncrona
-    fetch(informe)
-      .then(function(response) {
-        if (response.ok) {
-          return response.text();
-        } else {
-          throw new Error('Error al cargar el informe');
-        }
-      })
-      .then(function(data) {
-        window.location.href = informe;
-      })
-      .catch(function(error) {
-        window.location.href = informe;
-      });
-  </script>
 </head>
 <body>
     <div id="spinnerContainer" class="spinner-container">
         <div class="spinner"></div>
         <p>Cargando...</p>
     </div>
+    <script>
+      var informe = "";
+      <% if (course_id != null) { %>
+        informe = "./informe?courseid=" + <%=course_id%>
+      <% } else { %>
+        informe = "./informe"
+      <% } %>
+  
+      // redirigir a la página del informe
+      window.location.href = informe;
+    </script>
 </body>
 </html>
