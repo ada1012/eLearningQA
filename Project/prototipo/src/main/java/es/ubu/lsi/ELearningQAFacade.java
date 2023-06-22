@@ -296,25 +296,23 @@ public class ELearningQAFacade {
     }
 
     public String generarInformeForo(EstadisticasForo foro) {
-        String informe = "";
-
+        StringBuilder informe = new StringBuilder();
         if (foro != null) {
-            informe += "<div class=\"foro\" id=\"foro" + foro.getIdForo() + "\">";
-            informe += "<h1>Foro " + foro.getIdForo() + " - " + foro.getNombre() + "</h1>";
-            informe += "<p>Número de alumnos que participan: " + foro.getUsuariosUnicos() + "</p>";
+            informe.append("<div class=\"foro\" id=\"foro").append(foro.getIdForo()).append("\">");
+            informe.append("<h1>Foro ").append(foro.getIdForo()).append(" - ").append(foro.getNombre()).append("</h1>");
+            informe.append("<p>Número de alumnos que participan: ").append(foro.getUsuariosUnicos()).append("</p>");
             if (!foro.getEstadisticasDiscusiones().isEmpty()) {
-                informe += "<h3>Estadísticas de los hilos</h3>";
+                informe.append("<h3>Estadísticas de los hilos</h3>");
                 for (EstadisticasDiscusion discusion : foro.getEstadisticasDiscusiones()) {
-                    informe += "<div class=\"alert alert-danger p-0 infoline overall foros\">";
-                    informe += "<p>Hilo: " + discusion.getAsunto() + "</p>";
-                    informe += "<p>Mensajes totales del hilo: " + discusion.getNumeroMensajes() + "</p>";
-                    informe += "</div>";
+                    informe.append("<div class=\"alert alert-danger p-0 infoline overall foros\">");
+                    informe.append("<p>Hilo: ").append(discusion.getAsunto()).append("</p>");
+                    informe.append("<p>Mensajes totales del hilo: ").append(discusion.getNumeroMensajes()).append("</p>");
+                    informe.append("</div>");
                 }
             }
-            informe += "</div>";
-
+            informe.append("</div>");
         }
-        return informe;
+        return informe.toString();
     }
 
     // Método para obtener la relación entre el id de un cuestionario y las preguntas que lo componen

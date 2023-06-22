@@ -141,31 +141,44 @@ public class WebServiceClient {
         }
     }
 
-    public static boolean estaCorregidoATiempo(List<Assignment> tareasConNotas, List<User> listaUsuarios, AlertLog registro, FacadeConfig config){
-        StringBuilder detalles=new StringBuilder();
-        if(tareasConNotas.isEmpty()){
+    public static boolean estaCorregidoATiempo(List<Assignment> tareasConNotas, List<User> listaUsuarios, AlertLog registro, FacadeConfig config) {
+        StringBuilder detalles = new StringBuilder();
+    
+        if (tareasConNotas.isEmpty()) {
             registro.guardarAlerta("realization assignmentsgraded", "El curso no tiene tareas");
             return false;
         }
+    
         for (Assignment tarea : tareasConNotas) {
             List<Grade> notas = tarea.getGrades();
-            if(notas==null){notas=new ArrayList<>();}
+    
+            if (notas == null) {
+                notas = new ArrayList<>();
+            }
+    
             for (Grade nota : notas) {
-                if(Objects.equals(nota.getGradeValue(), "")){nota.setGradeValue("-1.00000");}
-                if (tieneRelevancia(tarea.getDuedate(), nota.getTimemodified(),
-                        config.getAssignmentGradingTime(), config.getAssignmentRelevancePeriod()) ||
-                        (System.currentTimeMillis() / 1000L) - tarea.getDuedate() > config.getAssignmentGradingTime() && Float.parseFloat(nota.getGradeValue()) < 0) {
-                    detalles.append("La entrega en "+tarea.getName()+" por "+
-                            (obtenerUsuarioPorId(listaUsuarios,nota.getUserid()).getFullname()!=null?obtenerUsuarioPorId(listaUsuarios,nota.getUserid()).getFullname():"Alumno desmatriculado")+
-                            "<br>");
+                if (Objects.equals(nota.getGradeValue(), "")) {
+                    nota.setGradeValue("-1.00000");
+                }
+    
+                if (tieneRelevancia(tarea.getDuedate(), nota.getTimemodified(), config.getAssignmentGradingTime(), config.getAssignmentRelevancePeriod())
+                        || (System.currentTimeMillis() / 1000L) - tarea.getDuedate() > config.getAssignmentGradingTime()
+                        && Float.parseFloat(nota.getGradeValue()) < 0) {
+                    detalles.append("La entrega en ").append(tarea.getName()).append(" por ")
+                            .append((obtenerUsuarioPorId(listaUsuarios, nota.getUserid()).getFullname() != null
+                                    ? obtenerUsuarioPorId(listaUsuarios, nota.getUserid()).getFullname()
+                                    : "Alumno desmatriculado"))
+                            .append("<br>");
                 }
             }
         }
-        if(!detalles.toString().equals("")){
+    
+        if (detalles.length() > 0) {
             registro.guardarAlertaDesplegable("realization assignmentsgraded",
-                    "Hay entregas sin corregir", "Entregas sin corregir <a href=\""+config.getHost()+"/mod/assign/index.php?id="+registro.getCourseid()+"\">(tareas)</a>", detalles.toString());
+                    "Hay entregas sin corregir", "Entregas sin corregir <a href=\"" + config.getHost() + "/mod/assign/index.php?id=" + registro.getCourseid() + "\">(tareas)</a>", detalles.toString());
             return false;
         }
+    
         return true;
     }
 
@@ -382,37 +395,40 @@ public class WebServiceClient {
         return false;
     }
 
-    public static boolean hayRetroalimentacion(List<Table> listaCalificadores, AlertLog registro, FacadeConfig config){
-        int contadorRetroalimentacion=0;
-        int contadorTuplasComentables=0;
+    public static boolean hayRetroalimentacion(List<Table> listaCalificadores, AlertLog registro, FacadeConfig config) {
+        int contadorRetroalimentacion = 0;
+        int contadorTuplasComentables = 0;
         GradeTableField feedback;
         final String category = "realization assignmentfeedback";
-        if (listaCalificadores.isEmpty()){
-            registro.guardarAlerta(category,"No hay calificadores que comprobar");
+    
+        if (listaCalificadores.isEmpty()) {
+            registro.guardarAlerta(category, "No hay calificadores que comprobar");
             return false;
         }
-        for (Table calificador:listaCalificadores) {
-            for (Tabledata tabledata:calificador.getTabledata()) {
-            	if (tabledata.getItemname() != null &&
-	                tabledata.getItemname().getMyclass().contains("item ")&&
-                    tabledata.getGrade()!=null&&!tabledata.getGrade().getContent().matches("[- ]")){
-                    
+    
+        for (Table calificador : listaCalificadores) {
+            for (Tabledata tabledata : calificador.getTabledata()) {
+                if (tabledata.getItemname() != null && tabledata.getItemname().getMyclass().contains("item ") &&
+                        tabledata.getGrade() != null && !tabledata.getGrade().getContent().matches("[- ]")) {
                     contadorTuplasComentables++;
-                    feedback=tabledata.getFeedback();
-                    if (feedback!=null && feedback.getContent().length()>6){
+                    feedback = tabledata.getFeedback();
+                    if (feedback != null && feedback.getContent().length() > 6) {
                         contadorRetroalimentacion++;
                     }
-            	}
+                }
             }
         }
-        if(contadorTuplasComentables==0){
-            registro.guardarAlerta(category,"No hay actividades que comentar");
+    
+        if (contadorTuplasComentables == 0) {
+            registro.guardarAlerta(category, "No hay actividades que comentar");
             return false;
         }
-        if((float)contadorRetroalimentacion/(float)contadorTuplasComentables> config.getMinCommentPercentage()){
+    
+        float percentage = (float) contadorRetroalimentacion / (float) contadorTuplasComentables;
+        if (percentage > config.getMinCommentPercentage()) {
             return true;
-        }else{
-            registro.guardarAlerta(category,"No se hacen suficientes comentarios a las entregas de los alumnos");
+        } else {
+            registro.guardarAlerta(category, "No se hacen suficientes comentarios a las entregas de los alumnos");
             return false;
         }
     }
