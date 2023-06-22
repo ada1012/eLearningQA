@@ -16,7 +16,7 @@ public class ELearningQAFacade {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final int CHECKS_DISENO =8;
     private static final int CHECKS_IMPLEMENTACION =5;
-    private static final int CHECKS_REALIZACION =5;
+    private static final int CHECKS_REALIZACION =6;
     private static final int CHECKS_EVALUACION =2;
     private static final int CHECKS_TOTAL = CHECKS_DISENO + CHECKS_IMPLEMENTACION + CHECKS_REALIZACION + CHECKS_EVALUACION;
     protected static String[] camposInformeFases;
@@ -135,7 +135,7 @@ public class ELearningQAFacade {
     }
 
     public String generarInformeFases(double[] puntos, List<QuizSummary> estadisticasCuestionarios,
-                                    List<EstadisticasForo> estadisticasForos, int nroCursos) {
+                                    List<EstadisticasForo> estadisticasForos, int nroCursos, boolean esGeneral) {
         double contadorDiseno=puntos[0]+puntos[1]+puntos[2]+puntos[3]+puntos[4]+puntos[5]+puntos[6]+puntos[7];
         double contadorImplementacion=puntos[8]+puntos[9]+puntos[10]+puntos[11]+puntos[12];
         double contadorRealizacion=puntos[13]+puntos[14]+puntos[15]+puntos[16]+puntos[19];
@@ -143,7 +143,7 @@ public class ELearningQAFacade {
         double contadorTotal=contadorDiseno+contadorImplementacion+contadorRealizacion+contadorEvaluacion;
         StringBuilder tabla= new StringBuilder();
         tabla.append(camposInformeFases[0]);
-        tabla.append(generarCampoRelativo((float)contadorTotal/nroCursos, CHECKS_TOTAL));
+        tabla.append(generarCampoRelativo((float)contadorTotal/nroCursos, esGeneral ? CHECKS_TOTAL - 2 : CHECKS_TOTAL));
         tabla.append(camposInformeFases[1]);
         tabla.append(generarCampoRelativo((float)contadorDiseno/nroCursos, CHECKS_DISENO));
         tabla.append(generarFilas(new int[]{2, 0}, 8, puntos, nroCursos));
@@ -151,15 +151,16 @@ public class ELearningQAFacade {
         tabla.append(generarCampoRelativo((float)contadorImplementacion/nroCursos, CHECKS_IMPLEMENTACION));
         tabla.append(generarFilas(new int[]{11, 8}, 5, puntos, nroCursos));
         tabla.append(camposInformeFases[16]);
-        tabla.append(generarCampoRelativo((float)contadorRealizacion/nroCursos, CHECKS_REALIZACION));
+        tabla.append(generarCampoRelativo((float)contadorRealizacion/nroCursos, esGeneral ? CHECKS_REALIZACION - 2 : CHECKS_REALIZACION));
         tabla.append(generarFilas(new int[]{17, 13}, 4, puntos, nroCursos));
-        
-        // Porcentaje de cuestionarios realizados
-        tabla = generarInformeCuestionario(tabla, puntos, estadisticasCuestionarios); 
 
-        // Porcentaje de alumnos que participan en los foros
-        tabla = generarInformeForos(tabla, estadisticasForos);
+        if (!esGeneral) {
+            // Porcentaje de cuestionarios realizados
+            tabla = generarInformeCuestionario(tabla, puntos, estadisticasCuestionarios); 
 
+            // Porcentaje de alumnos que participan en los foros
+            tabla = generarInformeForos(tabla, estadisticasForos);
+        }
         // Evaluación
         tabla.append(camposInformeFases[21]+generarCampoRelativo((float)contadorEvaluacion/nroCursos, CHECKS_EVALUACION));
         tabla.append(generarFilas(new int[]{22, 17}, 2, puntos, nroCursos));

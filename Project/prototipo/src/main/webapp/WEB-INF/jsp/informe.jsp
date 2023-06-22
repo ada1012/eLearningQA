@@ -52,7 +52,7 @@
             nombreCurso="Informe general de cursos";
             porcentajes=fachada.calcularPorcentajesMatriz(puntosComprobaciones, listaCursos.size());
             matriz=fachada.generarMatrizRolPerspectiva(porcentajes);
-            fases=fachada.generarInformeFases(puntosComprobaciones, resumenCuestionarios, resumenForos, listaCursos.size());
+            fases=fachada.generarInformeFases(puntosComprobaciones, resumenCuestionarios, resumenForos, listaCursos.size(), true);
           }else{
             Course curso= fachada.getCursoPorId(token, Integer.parseInt(courseid));
             usuarios=fachada.getListaUsuarios(token, curso.getId());
@@ -78,7 +78,7 @@
             resumenForos=fachada.porcentajeAlumnosForos(token, foros, usuarios, alertas);
             // Generamos los informes de los foros
             estadisticasForos=fachada.generarInformesForos(resumenForos);
-            fases=fachada.generarInformeFases(puntosComprobaciones, resumenCuestionarios, resumenForos, 1);
+            fases=fachada.generarInformeFases(puntosComprobaciones, resumenCuestionarios, resumenForos, 1, false);
             RegistryIO.guardarResultados(host, fullname, courseid,
                        new AnalysisSnapshot(nombreCurso, puntosComprobaciones, porcentajes, alertas.toString()));
             grafico=RegistryIO.generarGraficos(host, fullname, courseid);
