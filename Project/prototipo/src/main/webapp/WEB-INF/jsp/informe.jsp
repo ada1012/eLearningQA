@@ -43,6 +43,7 @@
               usuarios=fachada.getListaUsuarios(token, curso.getId());
               foros=fachada.getListaForos(token, curso.getId());
               posts=fachada.getListaPosts(token, foros);
+              quizzes=fachada.getQuizzes(token, Integer.parseInt(courseid));
               alertas.guardarTitulo(curso.getFullname());
               puntosCurso = fachada.realizarComprobaciones(token, curso.getId(), alertas, resumenCuestionarios, quizzes, usuarios, posts, foros);
               for(int i=0;i<puntosComprobaciones.length;i++){
