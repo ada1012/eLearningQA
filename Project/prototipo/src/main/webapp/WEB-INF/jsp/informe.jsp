@@ -37,15 +37,15 @@
           String courseid= request.getParameter("courseid");
           vinculo+=courseid;
           if(courseid==null){
-            puntosComprobaciones=new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+            puntosComprobaciones=new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
             List<Course> listaCursos=fachada.getListaCursos(token);
             for(Course curso:listaCursos){
               usuarios=fachada.getListaUsuarios(token, curso.getId());
               foros=fachada.getListaForos(token, curso.getId());
               posts=fachada.getListaPosts(token, foros);
-              quizzes=fachada.getQuizzes(token, Integer.parseInt(courseid));
+              quizzes=fachada.getQuizzes(token, curso.getId());
               alertas.guardarTitulo(curso.getFullname());
-              puntosCurso = fachada.realizarComprobaciones(token, curso.getId(), alertas, resumenCuestionarios, quizzes, usuarios, posts, foros);
+              puntosCurso = fachada.realizarComprobaciones(token, curso.getId(), alertas, resumenCuestionarios, quizzes, resumenForos, usuarios, posts, foros, true);
               for(int i=0;i<puntosComprobaciones.length;i++){
                 puntosComprobaciones[i]+=puntosCurso[i];
               }
@@ -72,13 +72,13 @@
             // Obtenemos los datos para el grafico
             graficoPreguntas=fachada.generarGraficoPreguntas(token, quizzes);
             graficoNotas=fachada.generarGraficoNotas(token, quizzes);
-            puntosComprobaciones = fachada.realizarComprobaciones(token, Integer.parseInt(courseid), alertas, resumenCuestionarios, quizzes, usuarios, posts, foros);
-            porcentajes=fachada.calcularPorcentajesMatriz(puntosComprobaciones,1);
-            matriz=fachada.generarMatrizRolPerspectiva(porcentajes);
             // Obtener resumenes de foros
             resumenForos=fachada.porcentajeAlumnosForos(token, foros, usuarios, alertas);
             // Generamos los informes de los foros
             estadisticasForos=fachada.generarInformesForos(resumenForos);
+            puntosComprobaciones = fachada.realizarComprobaciones(token, Integer.parseInt(courseid), alertas, resumenCuestionarios, quizzes, resumenForos, usuarios, posts, foros, false);
+            porcentajes=fachada.calcularPorcentajesMatriz(puntosComprobaciones,1);
+            matriz=fachada.generarMatrizRolPerspectiva(porcentajes);
             fases=fachada.generarInformeFases(puntosComprobaciones, resumenCuestionarios, resumenForos, 1, false);
             RegistryIO.guardarResultados(host, fullname, courseid,
                        new AnalysisSnapshot(nombreCurso, puntosComprobaciones, porcentajes, alertas.toString()));

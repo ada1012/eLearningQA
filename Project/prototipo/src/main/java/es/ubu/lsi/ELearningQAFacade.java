@@ -69,7 +69,8 @@ public class ELearningQAFacade {
     }
 
     public double[] realizarComprobaciones(String token, long courseid, AlertLog registro, List<QuizSummary> estadisticasCuestionarios, List<Quiz> quizzes,
-                                            List<User> listaUsuarios, List<Post> listaPosts, List<Forum> listaForos) {
+                                            List<EstadisticasForo> estadisticasForos, List<User> listaUsuarios, List<Post> listaPosts, List<Forum> listaForos,
+                                            boolean esGeneral) {
         Course curso= getCursoPorId(token, courseid);
         StatusList listaEstados=WebServiceClient.obtenerListaEstados(token, courseid, listaUsuarios, config.getHost());
         List<es.ubu.lsi.model.Module> listaModulos=WebServiceClient.obtenerListaModulos(token, courseid, config.getHost());
@@ -98,9 +99,11 @@ public class ELearningQAFacade {
             porcentaje = sum / estadisticasCuestionarios.size();
         }
 
+        double porcentajeForos = porcentajeForosContestados(estadisticasForos);
+
         return asignarPuntosComprobaciones(curso, listaEstados, listaModulos, listaGrupos, listaTareas, listaCalificadores,
         quizzes, listaForos, listaPosts, recursosDesfasados, modulosMalFechados, listaModulosTareas, listaUsuarios, tareasConNotas, listaAnalisis,
-        listaSurveys, registro, porcentaje);
+        listaSurveys, registro, porcentaje, porcentajeForos, esGeneral);
     }
 
     public double[] asignarPuntosComprobaciones(Course curso, StatusList listaEstados, List<es.ubu.lsi.model.Module> listaModulos,
@@ -108,8 +111,9 @@ public class ELearningQAFacade {
                                                 List<Quiz> quizzes, List<Forum> listaForos, List<Post> listaPosts, List<Resource> recursosDesfasados,
                                                 List<es.ubu.lsi.model.Module> modulosMalFechados, List<CourseModule> listaModulosTareas,
                                                 List<User> listaUsuarios, List<Assignment> tareasConNotas, List<ResponseAnalysis> listaAnalisis,
-                                                List<Survey> listaSurveys, AlertLog registro, double porcentaje){
-        double[] puntosComprobaciones = new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+                                                List<Survey> listaSurveys, AlertLog registro, double porcentaje, double porcentajeForos,
+                                                boolean esGeneral){
+        double[] puntosComprobaciones = new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
         if(isestaProgresoActivado(listaEstados, registro)){puntosComprobaciones[0]++;}
         if(isHayVariedadFormatos(listaModulos, registro)){puntosComprobaciones[1]++;}
         if(isTieneGrupos(listaGrupos, registro)){puntosComprobaciones[2]++;}
@@ -127,9 +131,15 @@ public class ELearningQAFacade {
         if(isHayRetroalimentacion(listaCalificadores, registro)){puntosComprobaciones[14]++;}
         if(isEstaCorregidoATiempo(tareasConNotas,listaUsuarios, registro)){puntosComprobaciones[15]++;}
         if(isCalificadorMuestraPonderacion(listaCalificadores, registro)){puntosComprobaciones[16]++;}
-        if(isRespondenFeedbacks(listaAnalisis,listaUsuarios, registro)){puntosComprobaciones[17]++;}
-        if(isUsaSurveys(listaSurveys, registro)){puntosComprobaciones[18]++;}
-        puntosComprobaciones[19] = porcentajeCuestionariosContestados(quizzes, porcentaje, registro);
+        if (!esGeneral) {
+            puntosComprobaciones[17] = porcentajeCuestionariosContestados(quizzes, porcentaje, registro);
+            puntosComprobaciones[18] = porcentajeForos / 100;
+        } else {
+            puntosComprobaciones[17] = 0;
+            puntosComprobaciones[18] = 0;
+        }
+        if(isRespondenFeedbacks(listaAnalisis,listaUsuarios, registro)){puntosComprobaciones[19]++;}
+        if(isUsaSurveys(listaSurveys, registro)){puntosComprobaciones[20]++;}
 
         return puntosComprobaciones;
     }
@@ -138,8 +148,8 @@ public class ELearningQAFacade {
                                     List<EstadisticasForo> estadisticasForos, int nroCursos, boolean esGeneral) {
         double contadorDiseno=puntos[0]+puntos[1]+puntos[2]+puntos[3]+puntos[4]+puntos[5]+puntos[6]+puntos[7];
         double contadorImplementacion=puntos[8]+puntos[9]+puntos[10]+puntos[11]+puntos[12];
-        double contadorRealizacion=puntos[13]+puntos[14]+puntos[15]+puntos[16]+puntos[19];
-        double contadorEvaluacion=puntos[17]+puntos[18];
+        double contadorRealizacion=puntos[13]+puntos[14]+puntos[15]+puntos[16]+puntos[17]+puntos[18];
+        double contadorEvaluacion=puntos[19]+puntos[20];
         double contadorTotal=contadorDiseno+contadorImplementacion+contadorRealizacion+contadorEvaluacion;
         StringBuilder tabla= new StringBuilder();
         tabla.append(camposInformeFases[0]);
@@ -159,11 +169,11 @@ public class ELearningQAFacade {
             tabla = generarInformeCuestionario(tabla, puntos, estadisticasCuestionarios); 
 
             // Porcentaje de alumnos que participan en los foros
-            tabla = generarInformeForos(tabla, estadisticasForos);
+            tabla = generarInformeForos(tabla, puntos, estadisticasForos);
         }
         // Evaluación
         tabla.append(camposInformeFases[21]+generarCampoRelativo((float)contadorEvaluacion/nroCursos, CHECKS_EVALUACION));
-        tabla.append(generarFilas(new int[]{22, 17}, 2, puntos, nroCursos));
+        tabla.append(generarFilas(new int[]{22, 19}, 2, puntos, nroCursos));
 
         tabla.append(camposInformeFases[24]);
 
@@ -172,7 +182,7 @@ public class ELearningQAFacade {
 
     public StringBuilder generarInformeCuestionario(StringBuilder tabla, double[] puntos, List<QuizSummary> estadisticasCuestionarios) {
         tabla.append("</tr><tr onclick=\"openInfo(event, 'estadisticquiz')\" data-bs-toggle=\"tooltip\" title=\"Se comprueba qué porcentaje de alumnos participa en los cuestionarios.\"> <td class=\"tg-ltgr\">Al menos un " + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos responden a los cuestionarios  <button onclick=\"toggleCuestionarios()\">Desplegar</button></td>");
-        tabla.append(generarCampoRelativoCuestionario((float)puntos[19], 1));
+        tabla.append(generarCampoRelativoCuestionario((float)puntos[17], 1));
 
         if(estadisticasCuestionarios != null && !estadisticasCuestionarios.isEmpty()){
             for (QuizSummary quizSummary : estadisticasCuestionarios) {
@@ -187,7 +197,7 @@ public class ELearningQAFacade {
         return tabla;
     }
 
-    public StringBuilder generarInformeForos(StringBuilder tabla, List<EstadisticasForo> foros) {
+    public double porcentajeForosContestados(List<EstadisticasForo> foros) {
         double porcentaje = 0;
         if (foros != null && !foros.isEmpty()) {
             for (EstadisticasForo estadisticasForo : foros) {
@@ -195,8 +205,13 @@ public class ELearningQAFacade {
             }
             porcentaje = porcentaje / foros.size();
         }
+
+        return porcentaje;
+    }
+
+    public StringBuilder generarInformeForos(StringBuilder tabla, double[] puntos, List<EstadisticasForo> foros) {
         tabla.append("</tr><tr onclick=\"openInfo(event, 'estadisticforum')\" data-bs-toggle=\"tooltip\" title=\"Se comprueba qué porcentaje de alumnos participa en los foros.\"> <td class=\"tg-ltgr\">Al menos un " + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos participa en los foros  <button onclick=\"toggleForos()\">Desplegar</button></td>");
-        tabla.append(generarCampoRelativoCuestionario((float)porcentaje/100, 1));
+        tabla.append(generarCampoRelativoCuestionario((float)puntos[18], 1));
         // Porcentaje de alumnos que participa en cada foro
         if (foros != null && !foros.isEmpty()) {
             for (EstadisticasForo estadisticasForo : foros) {
@@ -506,9 +521,11 @@ public class ELearningQAFacade {
     }
 
     public float[] calcularPorcentajesMatriz(double[] puntos,int numeroCursos){
-        double[][] matrizPuntos=new double[][]{
+        int[][] matrizPuntos=new int[][]{
                 {3,1,0,0,0,0,0,0,0},
                 {3,1,1,3,1,1,0,0,0},
+                {3,1,1,0,0,0,0,0,0},
+                {3,1,1,0,0,0,0,0,0},
                 {3,1,1,0,0,0,0,0,0},
                 {3,1,1,0,0,0,0,0,0},
                 {3,1,1,0,0,0,0,0,0},
@@ -523,10 +540,12 @@ public class ELearningQAFacade {
                 {1,3,1,1,3,1,0,0,0},
                 {1,3,1,1,3,1,0,0,0},
                 {1,1,3,1,1,3,1,1,3},
+                {1,1,3,0,0,0,0,0,0},
+                {1,1,3,0,0,0,0,0,0},
                 {1,1,3,1,1,3,1,1,3}
         };
         float[] porcentajes=new float[9];
-        double[] puntuacionesMax=new double[]{34*numeroCursos,26*numeroCursos,19*numeroCursos,17*numeroCursos,20*numeroCursos,17*numeroCursos,6*numeroCursos,3*numeroCursos,10*numeroCursos};
+        int[] puntuacionesMax=new int[]{42*numeroCursos,30*numeroCursos,27*numeroCursos,17*numeroCursos,20*numeroCursos,17*numeroCursos,6*numeroCursos,3*numeroCursos,10*numeroCursos};
         for(int i=0;i<matrizPuntos.length;i++){
             for(int j=0;j<porcentajes.length;j++){
                 porcentajes[j]+= (float) (matrizPuntos[i][j] * puntos[i]) /puntuacionesMax[j];
