@@ -435,7 +435,7 @@ public class WebServiceClient {
 
     public static boolean esNotaMaxConsistente(List<Table> listaCalificadores, AlertLog registro){
         String rango="";
-        if (listaCalificadores.isEmpty()){
+        if (listaCalificadores == null || listaCalificadores.isEmpty()){
             registro.guardarAlerta("design consistentmaxgrade","Los calificadores están vacíos");
             return false;
         }
