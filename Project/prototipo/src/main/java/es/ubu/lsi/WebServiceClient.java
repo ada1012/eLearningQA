@@ -375,7 +375,7 @@ public class WebServiceClient {
     }
 
     public static boolean anidamientoCalificadorAceptable(List<Table> listaCalificadores, AlertLog registro, FacadeConfig config){
-        if (listaCalificadores.isEmpty()){
+        if (listaCalificadores == null || listaCalificadores.isEmpty()){
             registro.guardarAlerta("implementation nesting","No hay calificadores");
             return false;
         }

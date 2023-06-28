@@ -227,12 +227,10 @@
                 <% if (estadisticasForo.getTexto() != "") { %>
                   <script>
                     query({ "inputs": "<%= estadisticasForo.getTexto() %>"}).then((response) => {
-                      console.log(response);
                       const firstLabel = response[0][0].label;
                       const estrellas = parseInt(firstLabel, 10);
                       let mensaje = "";
 
-                      console.log("Número de estrellas del primer label:", estrellas);
                       switch (estrellas) {
                         case 1:
                           mensaje = "La mayoría de mensajes son negativos";
