@@ -8,13 +8,15 @@ public class EstadisticasForo {
     private List<EstadisticasDiscusion> estadisticasDiscusiones;
     private int usuariosUnicos;
     private double porcentajeParticipacion;
+    private String texto;
 
-    public EstadisticasForo(int idForo, String nombre, List<EstadisticasDiscusion> estadisticasDiscusiones, int usuariosUnicos, double porcentajeParticipacion) {
+    public EstadisticasForo(int idForo, String nombre, List<EstadisticasDiscusion> estadisticasDiscusiones, int usuariosUnicos, double porcentajeParticipacion, String texto) {
         this.idForo = idForo;
         this.nombre = nombre;
         this.estadisticasDiscusiones = estadisticasDiscusiones;
         this.usuariosUnicos = usuariosUnicos;
         this.porcentajeParticipacion = porcentajeParticipacion;
+        this.texto = texto;
     }
 
     public EstadisticasForo() {
@@ -58,5 +60,13 @@ public class EstadisticasForo {
 
     public void setPorcentajeParticipacion(double porcentajeParticipacion) {
         this.porcentajeParticipacion = porcentajeParticipacion;
+    }
+
+    public String getTexto() {
+        return texto;
+    }
+
+    public void setTexto(String texto) {
+        this.texto = texto;
     }
 }

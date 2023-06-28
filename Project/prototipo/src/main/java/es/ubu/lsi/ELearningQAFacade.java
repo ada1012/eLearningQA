@@ -316,6 +316,7 @@ public class ELearningQAFacade {
             informe.append("<div class=\"foro\" id=\"foro").append(foro.getIdForo()).append("\">");
             informe.append("<h1>Foro ").append(foro.getIdForo()).append(" - ").append(foro.getNombre()).append("</h1>");
             informe.append("<p>Número de alumnos que participan: ").append(foro.getUsuariosUnicos()).append("</p>");
+            informe.append("<p class=\"sentimientos\"></p>");
             if (!foro.getEstadisticasDiscusiones().isEmpty()) {
                 informe.append("<h3>Estadísticas de los hilos</h3>");
                 for (EstadisticasDiscusion discusion : foro.getEstadisticasDiscusiones()) {

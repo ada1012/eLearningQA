@@ -7,6 +7,11 @@ import org.springframework.web.client.RestTemplate;
 import java.time.Instant;
 import java.util.*;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 public class WebServiceClient {
 
 
@@ -1008,6 +1013,9 @@ public class WebServiceClient {
             estadisticasForo.setIdForo(foro.getId());
             estadisticasForo.setNombre(foro.getName());
 
+            // Mensajes del foro
+            String texto = "";
+
             List<Discussion> listaDiscusiones = obtenerListaDebates(token, foro, config.getHost());
 
             for (Discussion discusion : listaDiscusiones) {
@@ -1021,6 +1029,7 @@ public class WebServiceClient {
                         listaAlumnos.add(post.getAuthor().getId());
                         usuariosUnicos++;
                     }
+                    texto += post.getMessage();
                 }
                 estadisticasDiscusion.setNumeroMensajes(mensajes);
                 estadisticasDiscusiones.add(estadisticasDiscusion);
@@ -1030,6 +1039,7 @@ public class WebServiceClient {
             estadisticasForo.setUsuariosUnicos(usuariosUnicos);
             estadisticasForo.setPorcentajeParticipacion(((double) usuariosUnicos / alumnos.size()) * 100);
             estadisticasForo.setEstadisticasDiscusiones(estadisticasDiscusiones);
+            estadisticasForo.setTexto(parseHtmlToString(texto));
             estadisticasForos.add(estadisticasForo);
 
             usuariosUnicos = 0;
@@ -1044,6 +1054,25 @@ public class WebServiceClient {
             registro.guardarAlerta("realization estadisticforum","Menos de un " + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos participa en los foros");
         
         return estadisticasForos;
+    }
+
+    public static String parseHtmlToString (String html) {
+        // Parsear el texto HTML
+        Document doc = Jsoup.parse(html);
+        
+        // Obtener todos los elementos de texto
+        Elements elementosTexto = doc.select(":not(*:has(*))");
+        
+        // Recorrer los elementos de texto y obtener su contenido
+        StringBuilder textoCompleto = new StringBuilder();
+        for (Element elemento : elementosTexto) {
+            String texto = elemento.text();
+            textoCompleto.append(texto).append(" ");
+        }
+        
+        String textoFinal = textoCompleto.toString().trim();
+
+        return textoFinal;
     }
     
 }

@@ -200,11 +200,67 @@
               <% } %>
             <% } %>
           </div>
+          <script>
+            async function query(data) {
+                const response = await fetch(
+                    "https://api-inference.huggingface.co/models/nlptown/bert-base-multilingual-uncased-sentiment",
+                    {
+                        headers: { Authorization: "Bearer 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" },
+                        method: "POST",
+                        body: JSON.stringify(data),
+                    }
+                );
+                const result = await response.json();
+                return result;
+            }
+
+            
+          </script>
           <div class="card m-2 ms-0 p-1 foros" style="width: 40%;overflow:auto;">
             <% for (Map.Entry<Integer, String> entry : estadisticasForos.entrySet()) { %>
               <% if (entry.getValue() instanceof String) { %>
                 <%= entry.getValue() %>
               <% } %>
+            <% } %>
+            <% for (EstadisticasForo estadisticasForo : resumenForos) { %>
+              <div class="foro" id="foro<%=estadisticasForo.getIdForo()%>">
+                <% if (estadisticasForo.getTexto() != "") { %>
+                  <script>
+                    query({ "inputs": "<%= estadisticasForo.getTexto() %>"}).then((response) => {
+                      console.log(response);
+                      const firstLabel = response[0][0].label;
+                      const estrellas = parseInt(firstLabel, 10);
+                      let mensaje = "";
+
+                      console.log("Número de estrellas del primer label:", estrellas);
+                      switch (estrellas) {
+                        case 1:
+                          mensaje = "La mayoría de mensajes son negativos";
+                          break;
+                        case 2:
+                          mensaje = "Parte de los mensajes son negativos";
+                          break;
+                        case 3:
+                          mensaje = "Hay un lenguaje equilibrado";
+                          break;
+                        case 4:
+                          mensaje = "Parte de los mensajes son positivos";
+                          break;
+                        case 5:
+                          mensaje = "La mayoría de mensajes son positivos";
+                          break;
+                        default:
+                          mensaje = "No se ha podido analizar el foro";
+                          break;
+                      }
+
+                      const foro = document.getElementById("foro<%=estadisticasForo.getIdForo()%>");
+                      const etiquetaMensajes = foro.querySelector("p.sentimientos");
+                      etiquetaMensajes.innerHTML = mensaje;
+                    });
+                  </script>
+                <% } %>
+              </div>
             <% } %>
           </div>
         </div>
