@@ -7,13 +7,22 @@
   <link rel="icon" type="image/x-icon" href="Logo.png">
   <style>
     /* Estilos CSS para la página de carga */
+    body {
+      margin: 0;
+    }
+
+    header {
+      height: 32px;
+      padding: 16px;
+      background-color: rgba(33,37,41,1);
+    }
+
     .spinner-container {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(255, 255, 255, 0.8);
         z-index: 9999;
         text-align: center;
     }
@@ -37,20 +46,25 @@
   <% String course_id = request.getParameter("courseid"); %>
 </head>
 <body>
-    <div id="spinnerContainer" class="spinner-container">
-        <div class="spinner"></div>
-        <p>Cargando...</p>
+  <header class="bg-dark text-white row" style="--bs-gutter-x:0;">
+    <div class="col m-3 text-center">
+      <img src="FullLogo.png" width="200" height="32" alt="eLearningQA">
     </div>
-    <script>
-      var informe = "";
-      <% if (course_id != null) { %>
-        informe = "./informe?courseid=" + <%=course_id%>
-      <% } else { %>
-        informe = "./informe"
-      <% } %>
-  
-      // redirigir a la página del informe
-      window.location.href = informe;
-    </script>
+  </header>
+  <div id="spinnerContainer" class="spinner-container">
+    <div class="spinner"></div>
+    <p>Cargando...</p>
+  </div>
+  <script>
+    var informe = "";
+    <% if (course_id != null) { %>
+      informe = "./informe?courseid=" + <%=course_id%>
+    <% } else { %>
+      informe = "./informe"
+    <% } %>
+
+    // redirigir a la página del informe
+    window.location.href = informe;
+  </script>
 </body>
 </html>
