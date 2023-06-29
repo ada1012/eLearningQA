@@ -3,6 +3,7 @@ package es.ubu.lsi.model;
 public class QuizSummary {
     private int id;
     private String nombreCuestionario;
+	private String URL;
     private int totalAlumnos;
     private int alumnosExaminados;
     private int totalPreguntas;
@@ -15,6 +16,27 @@ public class QuizSummary {
     private int totalIntentos;
 	private double skewness;
 	private double kurtosis;
+
+	public QuizSummary(int id, String nombreCuestionario, String URL, int totalAlumnos, int alumnosExaminados, int totalPreguntas, double notaMaxima, double notaMediaMejorIntentoAlumnosConNota, double notaMediaMejorIntentoTotalAlumnos, double notaMediaUltimoIntentoAlumnosConNota, double notaMediaUltimoIntentoTotalAlumnos, int maxIntentos, int totalIntentos, double skewness, double kurtosis) {
+		this.id = id;
+		this.nombreCuestionario = nombreCuestionario;
+		this.URL = URL;
+		this.totalAlumnos = totalAlumnos;
+		this.alumnosExaminados = alumnosExaminados;
+		this.totalPreguntas = totalPreguntas;
+		this.notaMaxima = notaMaxima;
+		this.notaMediaMejorIntentoAlumnosConNota = notaMediaMejorIntentoAlumnosConNota;
+		this.notaMediaMejorIntentoTotalAlumnos = notaMediaMejorIntentoTotalAlumnos;
+		this.notaMediaUltimoIntentoAlumnosConNota = notaMediaUltimoIntentoAlumnosConNota;
+		this.notaMediaUltimoIntentoTotalAlumnos = notaMediaUltimoIntentoTotalAlumnos;
+		this.maxIntentos = maxIntentos;
+		this.totalIntentos = totalIntentos;
+		this.skewness = skewness;
+		this.kurtosis = kurtosis;
+	}
+
+	public QuizSummary() {
+	}
     
 	public int getId() {
 		return id;
@@ -27,6 +49,12 @@ public class QuizSummary {
 	}
 	public void setNombreCuestionario(String nombreCuestionario) {
 		this.nombreCuestionario = nombreCuestionario;
+	}
+	public String getURL() {
+		return URL;
+	}
+	public void setURL(String URL) {
+		this.URL = URL;
 	}
 	public int getTotalAlumnos() {
 		return totalAlumnos;

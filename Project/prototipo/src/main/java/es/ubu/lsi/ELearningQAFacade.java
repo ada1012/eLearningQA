@@ -278,7 +278,7 @@ public class ELearningQAFacade {
 
         if (quizSummary != null) {
             informe += "<div class=\"cuestionario\" id=\"" + quizSummary.getId() + "\">";
-            informe += "<h1>Cuestionario " + quizSummary.getId() + " - " + quizSummary.getNombreCuestionario() + "</h1>";
+            informe += "<h1><a target=\"_blank\" href=\"" + quizSummary.getURL() + "\">Cuestionario " + quizSummary.getId() + " - " + quizSummary.getNombreCuestionario() + "</a></h1>";
             informe += "<p>Número de alumnos: " + quizSummary.getTotalAlumnos() + "</p>";
             informe += "<p>Número de alumnos examinados: " + quizSummary.getAlumnosExaminados() + "</p>";
             informe += "<p>Total de intentos: " + quizSummary.getTotalIntentos() + "</p>";
@@ -314,7 +314,7 @@ public class ELearningQAFacade {
         StringBuilder informe = new StringBuilder();
         if (foro != null) {
             informe.append("<div class=\"foro\" id=\"foro").append(foro.getIdForo()).append("\">");
-            informe.append("<h1>Foro ").append(foro.getIdForo()).append(" - ").append(foro.getNombre()).append("</h1>");
+            informe.append("<h1><a target=\"_blank\" href=\"").append(foro.getURL()).append("\">Foro ").append(foro.getIdForo()).append(" - ").append(foro.getNombre()).append("</a></h1>");
             informe.append("<p>Número de alumnos que participan: ").append(foro.getUsuariosUnicos()).append("</p>");
             informe.append("<p class=\"sentimientos\"></p>");
             if (!foro.getEstadisticasDiscusiones().isEmpty()) {

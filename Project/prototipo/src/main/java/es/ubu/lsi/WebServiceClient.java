@@ -827,6 +827,7 @@ public class WebServiceClient {
     
         quizSummary.setId(quiz.getId());
         quizSummary.setNombreCuestionario(quiz.getName());
+        quizSummary.setURL(host + "/mod/quiz/view.php?id=" + quiz.getCoursemodule());
         quizSummary.setNotaMaxima(quiz.getGrade());
         quizSummary.setMaxIntentos(quiz.getAttempts());
         
@@ -1012,6 +1013,7 @@ public class WebServiceClient {
         for (Forum foro : listaForos) {
             estadisticasForo.setIdForo(foro.getId());
             estadisticasForo.setNombre(foro.getName());
+            estadisticasForo.setURL(config.getHost() + "/mod/forum/view.php?id=" + foro.getCmid());
 
             // Mensajes del foro
             String texto = "";
