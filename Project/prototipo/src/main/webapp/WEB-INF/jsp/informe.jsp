@@ -273,7 +273,7 @@
 
             <a target="_blank" href="./manual">Manual de usuario</a>
             <a target="_blank" href="./about">Acerca de</a>
-            <a href="mailto:rab1002@alu.ubu.es">Contacto</a>
+            <a href="mailto:ada1012@alu.ubu.es">Contacto</a>
           </footer>
           <script>
           <%=grafico%>
