@@ -1,3 +1,56 @@
 \capitulo{7}{Conclusiones y Líneas de trabajo futuras}
 \section{Conclusiones}
-	
+Con la implementación de esta segunda versión y gracias al trabajo ya realizado previamente, he comprendido la cantidad de carga de trabajo y de necesidad de administración que hay en un curso, por eso he visto muy importante el desarrollo de un proyecto como este. En mi caso he decidido resaltar el área de cuestionarios y foros porque es donde veo una interacción muy cercana con los alumnos. Este tema me ha preocupado desde que llegué a la universidad ya que muchas veces veía una brecha entre el alumno y el profesor, mucho más grande a medida que subían de categoría los estudios y más en la enseñanza a distancia.
+
+En mi caso no es la primera toma de contacto con el e-Learning puesto que cursé el grado superior de Desarrollo de Aplicaciones Multiplataforma (DAM) a distancia y el grado superior de Desarrollo de Aplicaciones Web (DAW) de manera presencial. Por otro lado, cursé primero y segundo de carrera de manera presencial y tercero y cuarto en la modalidad online. Con esto creo que puedo comprender mejor que otras personas las diferencias que hay entre las distintas modalidades y la necesidad de hacer una aplicación que facilite dicha interacción.
+
+Respecto a los objetivos quiero hacer una pequeña recapitulación:
+\begin{enumerate}
+    \item Definir los modelos y sus respectivos atributos de los cuestionarios, intentos y foros.
+
+    Objetivo ampliamente cumplido ya que todos los datos obtenidos de los web services de Moodle se almacenan en modelos y las estadísticas generadas con los datos recibidos se almacenan en unos modelos especializados para dichos datos.
+    
+    \item Combinar los servicios Web de Moodle para adaptar los datos obtenidos a las nuevas funcionalidades.
+
+    También conseguido, se han podido obtener todas las estadísticas que queríamos a falta de la aleatoriedad de la nota de la pregunta ya que vimos que era necesario implementar web scraping en la aplicación.
+    
+    \item Adaptar la información de los cuestionarios y foros a la interfaz ya creada para mantener el aspecto amigable y funcional.
+
+    Creo que este objetivo también se ha conseguido, la interfaz es fácil de entender y hemos dado varias revisiones a la forma de mostrar los datos para que sean intuitivos.
+    
+    \item Aplicar los frameworks internacionales de calidad en e-learning a los datos que reproducirá el proyecto.
+
+    Otro objetivo alcanzado, todos los cambios introducidos han ido siempre en base a dichos frameworks de calidad.
+    
+    \item Diseñar indicadores cualitativos y cuantitativos de calidad de cada fase de diseño instruccional del curso en línea (diseño, implementación, realización y evaluación)\cite{previotfg}
+
+    Se ha logrado alcanzar este objetivo al implementar en el plan de calidad indicadores cualitativos para cada una de las verificaciones realizadas. A partir de estos indicadores, se han generado otros que resumen el rendimiento en cada una de las etapas.
+\end{enumerate}
+
+Ha sido muy interesante volver a trabajar con JSP como hice hace unos años cuando empecé en la informática y haber salido de mi zona de comfort acostumbrado a trabajar con React, Python y Flask.
+
+Por otro lado, los tutores me han guiado bastante bien porque en algunos puntos no sabía muy bien como cubrir ciertas características, obtener los datos o trabajar con ellos. También han sido capaces de adaptarse a mi disponibilidad y en algunos casos falta de tiempo siendo flexibles a la hora de realizar cambios en la aplicación por lo que estoy agradecido con ellos.
+
+\section{Líneas de trabajo futuras}
+En este punto quisiera dejar lo que escribió mi compañero \cite{previotfg} y agregando las posibles mejoras que descubrí a lo largo de estos meses trabajando en esta aplicación.
+
+Aunque la aplicación desarrollada en este TFG es funcionalmente completa existen múltiples factores que hacen que pueda necesitar de futuras adaptaciones. Se considera interesante tener en cuenta factores como: la subjetividad intrínseca asociada a los procesos de calidad y las fuentes tecnológicas para definir controles de calidad automáticos, las diferencias en la distribución de responsabilidades de roles académicos, el tamaño de las instituciones académicas y las diferentes soluciones tecnológicas de implementación de cursos en línea. El análisis detallado de cada factor hace que surjan muchas líneas de trabajo futuras, a continuación se enumeran algunas que se han considerado interesantes.
+\begin{itemize}
+	\item
+	El método que utiliza la aplicación para realizar la comprobación de si el profesor responde a las dudas de los alumnos es una solución preliminar e incompleta. Se tiene como objetivo a futuro encontrar una forma más fiable de determinar qué es una duda y cuándo ha sido resuelta.
+	El uso de modelos basados en el procesamiento del lenguaje natural puede ser un campo exploratorio que permita poder clasificar un mensaje del foro como una respuesta de dudas de un profesor. Pensamos que el diseño experimental y el posterior análisis de un clasificador con este cometido es suficientemente complejo para ser considerado un TFG por sí mismo. Otro problema son las situaciones en las que la duda del alumno ha sido respondida por otro alumno y no hace falta responderla o se resuelve la duda en un comentario independiente en el mismo foro y no se detecte como respuesta.
+	\item
+	En este apartado voy a modificar lo que dijo mi compañero ya que habla de los cuestionarios y esto es algo que se ha implementado con éxito aunque coincido con él en que se puede seguir profundizando en ellos como una optimización de las llamadas o el uso de web scraping para obtener los datos que no ofrece Moodle como la aleatoriedad de la nota previamente mencionada.
+	\item
+	Por el momento la aplicación solo integra cursos Moodle, pero sería conveniente que la aplicación permitiera analizar cursos online de otros LMS como Blackboard o Edmodo. Sin embargo, realizar los cambios para esto supondría adaptarse a las APIs de servicios correspondientes suponiendo que sean lo suficientemente parecidas, y en caso de no poder acceder a la información necesaria mediante servicios web, habría que implementar otras formas de acceder a la información necesaria.
+	\item
+	Los plugin de Moodle con los que comparo la aplicación tienen más idiomas disponibles, esto se debe a que están dispuestos de forma que cualquiera pueda aportar sus propias traducciones, sin embargo, el internacionalizar la aplicación la haría más competitiva.
+	\item
+	La lista de cursos que muestra la aplicación es la lista de los cursos en los que se encuentra matriculado el usuario con independencia de su rol o los permisos que tenga. Sería interesante seguir mostrando los mismos cursos pero sin resaltar en caso de que no se tengan los permisos necesarios para realizar las consultas para poder contactar al administrador en caso de problemas con los permisos.
+	\item
+	Sería muy interesante poder activar y desactivar las diferentes consultas desde los archivos de configuración si tenemos en cuenta que algunas consultas no aplican para algunos tipos de curso. Sin embargo, a la hora de calcular las estadísticas posteriores habría que adaptarse según las consultas que estén activadas, algo que es difícil teniendo en cuenta que la matriz Rol-Responsabilidad del informe se obtiene multiplicando un vector con los puntos obtenidos de cada consulta por una matriz que contiene la cantidad de puntos que supone el cumplimiento de cada comprobación para cada combinación de rol y perspectiva. El objetivo sería buscar otra forma de realizar el cálculo para facilitar la implementación de lo primero.
+	\item
+	Implementar una estructura de directorios mejor es algo necesario a largo plazo, la mantenibilidad del proyecto se verá afectada dentro de poco si el número de clases aumenta o el propio controlador se convertirá en una clase imposible de entender por las miles de líneas de código.
+	\item
+	Obtener la información en tiempo real. Con los puntos de comprobaciones veo importante recibir la información antes de cargar el informe pero hay componentes como las estadísticas de los cuestionarios y foros que podrían pedir la información en tiempo real evitando una saturación en el tiempo de carga. Otra solución sería investigar la asincronía que implementa Spring.
+\end{itemize}

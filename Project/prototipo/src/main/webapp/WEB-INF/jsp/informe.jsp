@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="java.util.List, es.ubu.lsi.ELearningQAFacade, es.ubu.lsi.AlertLog, es.ubu.lsi.RegistryIO, es.ubu.lsi.AnalysisSnapshot, es.ubu.lsi.model.Course, org.apache.logging.log4j.LogManager, org.apache.logging.log4j.Logger" %>
+<%@ page import="java.util.List, java.util.Arrays, java.util.ArrayList, java.util.Map, java.util.HashMap, es.ubu.lsi.ELearningQAFacade, es.ubu.lsi.AlertLog, es.ubu.lsi.RegistryIO, es.ubu.lsi.AnalysisSnapshot, es.ubu.lsi.model.Course, es.ubu.lsi.model.QuizSummary, es.ubu.lsi.model.Quiz, es.ubu.lsi.model.User, es.ubu.lsi.model.Forum, es.ubu.lsi.model.Post, es.ubu.lsi.model.EstadisticasForo, org.apache.logging.log4j.LogManager, org.apache.logging.log4j.Logger" %>
 <html lang="en">
 <head>
     <%String informe="";
@@ -14,18 +14,38 @@
           String grafico="";
           float[] porcentajes;
           AlertLog alertas= new AlertLog();
-          int[] puntosComprobaciones;
-          int[] puntosCurso;
+          double[] puntosComprobaciones;
+          double[] puntosCurso;
+          List<Quiz> quizzes = new ArrayList<>();
+          List<User> usuarios = new ArrayList<>();
+          List<Forum> foros = new ArrayList<>();
+          List<Post> posts = new ArrayList<>();
+          Map<Integer, Double> estadisticasCuestionarios = new HashMap<>();
+          List<QuizSummary> resumenCuestionarios = new ArrayList<>();
+          List<EstadisticasForo> resumenForos = new ArrayList<>();
+          Map<Integer, String> cuestionarios = new HashMap<>();
+          Map<Integer, String> estadisticasForos = new HashMap<>();
+
+          // Relación de cuestionarios con sus gráficos
+          // graficoPreguntas es un mapa que relaciona el id del cuestionario con un array del id de las preguntas
+          // graficoNotas es un mapa que relaciona el id del cuestionario con un array de las notas de las preguntas
+          Map<Integer, int[]> graficoPreguntas = new HashMap<>();
+          Map<Integer, double[]> graficoNotas = new HashMap<>();
+
           String vinculo=(String)session.getAttribute("host")+"/course/view.php?id=";
           try{ELearningQAFacade fachada=(ELearningQAFacade)session.getAttribute("fachada");
           String courseid= request.getParameter("courseid");
           vinculo+=courseid;
           if(courseid==null){
-            puntosComprobaciones=new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+            puntosComprobaciones=new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
             List<Course> listaCursos=fachada.getListaCursos(token);
             for(Course curso:listaCursos){
+              usuarios=fachada.getListaUsuarios(token, curso.getId());
+              foros=fachada.getListaForos(token, curso.getId());
+              posts=fachada.getListaPosts(token, foros);
+              quizzes=fachada.getQuizzes(token, curso.getId());
               alertas.guardarTitulo(curso.getFullname());
-              puntosCurso = fachada.realizarComprobaciones(token, curso.getId(), alertas);
+              puntosCurso = fachada.realizarComprobaciones(token, curso.getId(), alertas, resumenCuestionarios, quizzes, resumenForos, usuarios, posts, foros, true);
               for(int i=0;i<puntosComprobaciones.length;i++){
                 puntosComprobaciones[i]+=puntosCurso[i];
               }
@@ -33,16 +53,33 @@
             nombreCurso="Informe general de cursos";
             porcentajes=fachada.calcularPorcentajesMatriz(puntosComprobaciones, listaCursos.size());
             matriz=fachada.generarMatrizRolPerspectiva(porcentajes);
-            fases=fachada.generarInformeFases(puntosComprobaciones,listaCursos.size());
+            fases=fachada.generarInformeFases(puntosComprobaciones, resumenCuestionarios, resumenForos, listaCursos.size(), true);
           }else{
             Course curso= fachada.getCursoPorId(token, Integer.parseInt(courseid));
+            usuarios=fachada.getListaUsuarios(token, curso.getId());
+            foros=fachada.getListaForos(token, curso.getId());
+            posts=fachada.getListaPosts(token, foros);
             alertas.setCourseid(Integer.parseInt(courseid));
             nombreCurso=curso.getFullname();
             session.setAttribute("coursename",nombreCurso);
-            puntosComprobaciones = fachada.realizarComprobaciones(token, Integer.parseInt(courseid), alertas);
+            // Obtener cuestionarios
+            quizzes=fachada.getQuizzes(token, Integer.parseInt(courseid));
+            // Obtener resumenes de cuestionarios
+            resumenCuestionarios=fachada.generarListaCuestionarios(token, Integer.parseInt(courseid), quizzes);
+            // Generamos los informes de los cuestionarios
+            cuestionarios=fachada.generarInformesCuestionarios(resumenCuestionarios);
+            // Generamos primer grafico
+            // Obtenemos los datos para el grafico
+            graficoPreguntas=fachada.generarGraficoPreguntas(token, quizzes);
+            graficoNotas=fachada.generarGraficoNotas(token, quizzes);
+            // Obtener resumenes de foros
+            resumenForos=fachada.porcentajeAlumnosForos(token, foros, usuarios, alertas);
+            // Generamos los informes de los foros
+            estadisticasForos=fachada.generarInformesForos(resumenForos);
+            puntosComprobaciones = fachada.realizarComprobaciones(token, Integer.parseInt(courseid), alertas, resumenCuestionarios, quizzes, resumenForos, usuarios, posts, foros, false);
             porcentajes=fachada.calcularPorcentajesMatriz(puntosComprobaciones,1);
             matriz=fachada.generarMatrizRolPerspectiva(porcentajes);
-            fases=fachada.generarInformeFases(puntosComprobaciones,1);
+            fases=fachada.generarInformeFases(puntosComprobaciones, resumenCuestionarios, resumenForos, 1, false);
             RegistryIO.guardarResultados(host, fullname, courseid,
                        new AnalysisSnapshot(nombreCurso, puntosComprobaciones, porcentajes, alertas.toString()));
             grafico=RegistryIO.generarGraficos(host, fullname, courseid);
@@ -94,28 +131,136 @@
     .accordion-button:not(.collapsed){
       color:#842029;background-color:#f8d7da;border-color:#f5c2c7
     }
+
+    .toggle-cuestionarios, .cuestionarios, .cuestionario, .toggle-foros, .foros{
+      display: none;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    p {
+      margin-bottom: 5px;
+    }
     </style>
 </head>
 <body>
-
-
-      <header class="bg-dark text-white row" style="--bs-gutter-x:0;">
+  <header class="bg-dark text-white row" style="--bs-gutter-x:0;">
         <div class="col m-3 text-center">
           <img src="FullLogo.png" width="200" height="32" alt="eLearningQA">
         </div>
         <div class="btn-group col" role="group">
           <button class="tablink btn btn-primary active" style="box-shadow: none;" onclick="openTab(event, 'Fases')">Informe de fases</button>
           <button class="tablink btn btn-primary" style="box-shadow: none;" onclick="openTab(event, 'Matriz')">Evolución del rendimiento</button>
-        </div><div class="col m-3 text-center"><a target="_blank" href=<%=vinculo%>><%=nombreCurso%></a></div></header>
-                  <div class="d-flex justify-content-center" style="height:85vh;background-image: url('atardecer.jpg');">
-                    <div id="Fases" class="tabcontent w-100 p-0" style="display:flex">
-                <div class="card m-2 me-0 p-1" style="width: 60%;overflow:auto;">
-                    <%=fases%>
-                </div>
-                              <div class="card m-2 ms-0 p-1" style="width: 40%;overflow:auto;">
-                                <%=alertas%>
+        </div>
+        <div class="col m-3 text-center">
+          <a target="_blank" href=<%=vinculo%>><%=nombreCurso%></a>
+        </div>
+      </header>
+      <div class="d-flex justify-content-center" style="height:85vh;background-image: url('atardecer.jpg');">
+        <div id="Fases" class="tabcontent w-100 p-0" style="display:flex">
+          <div class="card m-2 me-0 p-1" style="width: 60%;overflow:auto;">
+              <%=fases%>
+          </div>
+          <div class="card m-2 ms-0 p-1 alertas" style="width: 40%;overflow:auto;">
+            <%=alertas%>
+          </div>
+          <div class="card m-2 ms-0 p-1 cuestionarios" style="width: 40%;overflow:auto;">
+            <% for (Map.Entry<Integer, String> entry : cuestionarios.entrySet()) { %>
+              <% if (entry.getValue() instanceof String) { %>
+                <%= entry.getValue() %>
+                <div class="cuestionario" id="grafico<%=entry.getKey()%>">
+                  <script>
+                    var idPreguntas = <%=Arrays.toString(graficoPreguntas.get(entry.getKey()))%>;
+                    var notasMedias = <%=Arrays.toString(graficoNotas.get(entry.getKey()))%>;
 
+                    // Crea los datos para el gráfico de barras
+                    var data = [{
+                      type: 'bar',
+                      x: idPreguntas,
+                      y: notasMedias
+                    }];
+
+                    // Crea el diseño del gráfico
+                    var layout = {
+                      title: 'Índice de dificultad por pregunta',
+                      xaxis: { title: 'ID de Pregunta' },
+                      yaxis: { title: 'Índice de dificultad' }
+                    };
+                    
+                    if (idPreguntas.length > 0) {
+                      // Crea el gráfico
+                      Plotly.newPlot('grafico<%=entry.getKey()%>', data, layout);
+                    }
+                  </script>
                 </div>
+              <% } %>
+            <% } %>
+          </div>
+          <script>
+            async function query(data) {
+                const response = await fetch(
+                    "https://api-inference.huggingface.co/models/nlptown/bert-base-multilingual-uncased-sentiment",
+                    {
+                        headers: { Authorization: "Bearer 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" },
+                        method: "POST",
+                        body: JSON.stringify(data),
+                    }
+                );
+                const result = await response.json();
+                return result;
+            }
+
+            
+          </script>
+          <div class="card m-2 ms-0 p-1 foros" style="width: 40%;overflow:auto;">
+            <% for (Map.Entry<Integer, String> entry : estadisticasForos.entrySet()) { %>
+              <% if (entry.getValue() instanceof String) { %>
+                <%= entry.getValue() %>
+              <% } %>
+            <% } %>
+            <% for (EstadisticasForo estadisticasForo : resumenForos) { %>
+              <div class="foro" id="foro<%=estadisticasForo.getIdForo()%>">
+                <% if (estadisticasForo.getTexto() != "") { %>
+                  <script>
+                    query({ "inputs": "<%= estadisticasForo.getTexto() %>"}).then((response) => {
+                      const firstLabel = response[0][0].label;
+                      const estrellas = parseInt(firstLabel, 10);
+                      let mensaje = "";
+
+                      switch (estrellas) {
+                        case 1:
+                          mensaje = "La mayoría de mensajes son negativos";
+                          break;
+                        case 2:
+                          mensaje = "Parte de los mensajes son negativos";
+                          break;
+                        case 3:
+                          mensaje = "Hay un lenguaje equilibrado";
+                          break;
+                        case 4:
+                          mensaje = "Parte de los mensajes son positivos";
+                          break;
+                        case 5:
+                          mensaje = "La mayoría de mensajes son positivos";
+                          break;
+                        default:
+                          mensaje = "No se ha podido analizar el foro";
+                          break;
+                      }
+
+                      const foro = document.getElementById("foro<%=estadisticasForo.getIdForo()%>");
+                      const etiquetaMensajes = foro.querySelector("p.sentimientos");
+                      etiquetaMensajes.innerHTML = mensaje;
+                    });
+                  </script>
+                <% } %>
+              </div>
+            <% } %>
+          </div>
         </div>
         <div id="Matriz" class="tabcontent w-100 p-0" style="display:none">
             <div class="card m-3 p-3 w-100">
@@ -128,13 +273,27 @@
 
             <a target="_blank" href="./manual">Manual de usuario</a>
             <a target="_blank" href="./about">Acerca de</a>
-            <a href="mailto:rab1002@alu.ubu.es">Contacto</a>
+            <a href="mailto:ada1012@alu.ubu.es">Contacto</a>
           </footer>
           <script>
           <%=grafico%>
 
           function openTab(evt, tab) {
             var i, tabcontent, tablinks;
+
+            const alertas = document.getElementsByClassName('alertas');
+            for (i = 0; i < alertas.length; i++) {
+              alertas[i].style.display = "block";
+            }
+            const cuestionariosDiv = document.getElementsByClassName('cuestionarios');
+            for (i = 0; i < cuestionariosDiv.length; i++) {
+              cuestionariosDiv[i].style.display = "none";
+            }
+            const forosDiv = document.getElementsByClassName('foros');
+            for (i = 0; i < forosDiv.length; i++) {
+              forosDiv[i].style.display = "none";
+            }
+
             tabcontent = document.getElementsByClassName("tabcontent");
             for (i = 0; i < tabcontent.length; i++) {
               tabcontent[i].style.display = "none";
@@ -147,7 +306,25 @@
             evt.currentTarget.className += " active";
           }
 
+
+
           function openInfo(evt, category) {
+            // Oculta los cuestionarios
+            const cuestionarios = document.getElementsByClassName('cuestionarios');
+            for (i = 0; i < cuestionarios.length; i++) {
+              cuestionarios[i].style.display = "none";
+            }
+            // Oculta los foros
+            const foros = document.getElementsByClassName('foros');
+            for (i = 0; i < foros.length; i++) {
+              foros[i].style.display = "none";
+            }
+            // Muestra las alertas
+            const alertas = document.getElementsByClassName('alertas');
+            for (i = 0; i < alertas.length; i++) {
+              alertas[i].style.display = "block";
+            }
+
             var i, ltgr, infolines, wanted;
             ltgr = document.getElementsByTagName("tr");
             for (i = 0; i < ltgr.length; i++) {
@@ -162,6 +339,95 @@
               wanted[i].style.display = "block";
             }
             evt.currentTarget.className += " active";
+          }
+
+
+
+          function toggleCuestionarios() {
+            const cuestionarios = document.querySelectorAll('.toggle-cuestionarios');
+            for (let i = 0; i < cuestionarios.length; i++) {
+              const cuestionario = cuestionarios[i];
+              if (cuestionario.style.display === 'none') {
+                cuestionario.style.display = 'table-row';
+              } else {
+                cuestionario.style.display = 'none';
+              }
+            }
+          }
+
+
+
+          function toggleForos() {
+            const foros = document.querySelectorAll('.toggle-foros');
+            for (let i = 0; i < foros.length; i++) {
+              const foro = foros[i];
+              if (foro.style.display === 'none') {
+                foro.style.display = 'table-row';
+              } else {
+                foro.style.display = 'none';
+              }
+            }
+          }
+
+
+
+          function muestraCuestionario(idCuestionario) {
+            // Oculta todas las alertas
+            const alertas = document.getElementsByClassName('alertas');
+            for (i = 0; i < alertas.length; i++) {
+              alertas[i].style.display = "none";
+            }
+            // Oculta todos los foros
+            const foros = document.getElementsByClassName('foros');
+            for (i = 0; i < foros.length; i++) {
+              foros[i].style.display = "none";
+            }
+
+            // Muestra el componente de cuestionarios
+            const cuestionariosDiv = document.getElementsByClassName('cuestionarios');
+            for (i = 0; i < cuestionariosDiv.length; i++) {
+              cuestionariosDiv[i].style.display = "block";
+            }
+            // Oculta todos los cuestionarios
+            const cuestionarios = document.getElementsByClassName('cuestionario');
+            for (i = 0; i < cuestionarios.length; i++) {
+              cuestionarios[i].style.display = "none";
+            }
+            // Muestra el cuestionario seleccionado
+            const cuestionario = document.getElementById(idCuestionario);
+            cuestionario.style.display = "block";
+            // Muestra el gráfico del cuestionario seleccionado
+            const grafico = document.getElementById("grafico"+idCuestionario);
+            grafico.style.display = "block";
+          }
+
+
+
+          function muestraForo(idForo) {
+            // Oculta todas las alertas
+            const alertas = document.getElementsByClassName('alertas');
+            for (i = 0; i < alertas.length; i++) {
+              alertas[i].style.display = "none";
+            }
+            // Oculta todos los cuestionarios
+            const cuestionarios = document.getElementsByClassName('cuestionarios');
+            for (i = 0; i < cuestionarios.length; i++) {
+              cuestionarios[i].style.display = "none";
+            }
+
+            // Muestra el componente de foros
+            const forosDiv = document.getElementsByClassName('foros');
+            for (i = 0; i < forosDiv.length; i++) {
+              forosDiv[i].style.display = "block";
+            }
+            // Oculta todos los foros
+            const foros = document.getElementsByClassName('foro');
+            for (i = 0; i < foros.length; i++) {
+              foros[i].style.display = "none";
+            }
+            // Muestra el foro seleccionado
+            const foro = document.getElementById("foro"+idForo);
+            foro.style.display = "block";
           }
           </script>
           <script>

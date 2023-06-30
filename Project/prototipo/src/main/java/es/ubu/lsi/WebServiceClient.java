@@ -2,12 +2,15 @@ package es.ubu.lsi;
 
 import es.ubu.lsi.model.*;
 import es.ubu.lsi.model.Date;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-
 
 import java.time.Instant;
 import java.util.*;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 public class WebServiceClient {
 
@@ -143,31 +146,44 @@ public class WebServiceClient {
         }
     }
 
-    public static boolean estaCorregidoATiempo(List<Assignment> tareasConNotas, List<User> listaUsuarios, AlertLog registro, FacadeConfig config){
-        StringBuilder detalles=new StringBuilder();
-        if(tareasConNotas.isEmpty()){
+    public static boolean estaCorregidoATiempo(List<Assignment> tareasConNotas, List<User> listaUsuarios, AlertLog registro, FacadeConfig config) {
+        StringBuilder detalles = new StringBuilder();
+    
+        if (tareasConNotas.isEmpty()) {
             registro.guardarAlerta("realization assignmentsgraded", "El curso no tiene tareas");
             return false;
         }
+    
         for (Assignment tarea : tareasConNotas) {
             List<Grade> notas = tarea.getGrades();
-            if(notas==null){notas=new ArrayList<>();}
+    
+            if (notas == null) {
+                notas = new ArrayList<>();
+            }
+    
             for (Grade nota : notas) {
-                if(Objects.equals(nota.getGradeValue(), "")){nota.setGradeValue("-1.00000");}
-                if (tieneRelevancia(tarea.getDuedate(), nota.getTimemodified(),
-                        config.getAssignmentGradingTime(), config.getAssignmentRelevancePeriod()) ||
-                        (System.currentTimeMillis() / 1000L) - tarea.getDuedate() > config.getAssignmentGradingTime() && Float.parseFloat(nota.getGradeValue()) < 0) {
-                    detalles.append("La entrega en "+tarea.getName()+" por "+
-                            (obtenerUsuarioPorId(listaUsuarios,nota.getUserid()).getFullname()!=null?obtenerUsuarioPorId(listaUsuarios,nota.getUserid()).getFullname():"Alumno desmatriculado")+
-                            "<br>");
+                if (Objects.equals(nota.getGradeValue(), "")) {
+                    nota.setGradeValue("-1.00000");
+                }
+    
+                if (tieneRelevancia(tarea.getDuedate(), nota.getTimemodified(), config.getAssignmentGradingTime(), config.getAssignmentRelevancePeriod())
+                        || (System.currentTimeMillis() / 1000L) - tarea.getDuedate() > config.getAssignmentGradingTime()
+                        && Float.parseFloat(nota.getGradeValue()) < 0) {
+                    detalles.append("La entrega en ").append(tarea.getName()).append(" por ")
+                            .append((obtenerUsuarioPorId(listaUsuarios, nota.getUserid()).getFullname() != null
+                                    ? obtenerUsuarioPorId(listaUsuarios, nota.getUserid()).getFullname()
+                                    : "Alumno desmatriculado"))
+                            .append("<br>");
                 }
             }
         }
-        if(!detalles.toString().equals("")){
+    
+        if (detalles.length() > 0) {
             registro.guardarAlertaDesplegable("realization assignmentsgraded",
-                    "Hay entregas sin corregir", "Entregas sin corregir <a href=\""+config.getHost()+"/mod/assign/index.php?id="+registro.getCourseid()+"\">(tareas)</a>", detalles.toString());
+                    "Hay entregas sin corregir", "Entregas sin corregir <a href=\"" + config.getHost() + "/mod/assign/index.php?id=" + registro.getCourseid() + "\">(tareas)</a>", detalles.toString());
             return false;
         }
+    
         return true;
     }
 
@@ -261,8 +277,7 @@ public class WebServiceClient {
         return fechaSolucion-fechaOrigen>tiempoLimite&&fechaOrigen+tiempoRelevancia>Instant.now().getEpochSecond();
     }
 
-    public static List<Post> obtenerListaPosts(String token, long courseid, String host) {
-        List<Forum> listaForos= obtenerListaForos(token, courseid, host);
+    public static List<Post> obtenerListaPosts(String token, String host, List<Forum> listaForos) {
         List<Discussion> listaDebates;
         List<Discussion> listaDebatesCompleta= new ArrayList<>();
         for (Forum foro:listaForos) {
@@ -272,13 +287,13 @@ public class WebServiceClient {
         List<Post> listaPostsDebate;
         List<Post> listaPostsCompleta= new ArrayList<>();
         for (Discussion debate: listaDebatesCompleta) {
-            listaPostsDebate = obtenerListaPosts(token, debate, host);
+            listaPostsDebate = obtenerListaPostsPorDebate(token, debate, host);
             listaPostsCompleta.addAll(listaPostsDebate);
         }
         return listaPostsCompleta;
     }
 
-    public static List<Post> obtenerListaPosts(String token, Discussion debate, String host) {
+    public static List<Post> obtenerListaPostsPorDebate(String token, Discussion debate, String host) {
         RestTemplate restTemplate = new RestTemplate();
         PostList listaPostsDebate;
         String url= host + "/webservice/rest/server.php?wsfunction=mod_forum_get_discussion_posts&moodlewsrestformat=json&wstoken=" + token +"&discussionid="+debate.getDiscussionNumber();
@@ -300,8 +315,13 @@ public class WebServiceClient {
         RestTemplate restTemplate = new RestTemplate();
         String url= host + "/webservice/rest/server.php?wsfunction=mod_forum_get_forums_by_courses&moodlewsrestformat=json&wstoken=" + token + COURSEIDS_0 +courseid;
         Forum[] arrayForos= restTemplate.getForObject(url, Forum[].class);
+
         if (arrayForos==null){return new ArrayList<>();}
-        return new ArrayList<>(Arrays.asList(arrayForos));
+        List<Forum> listaForos= new ArrayList<>(Arrays.asList(arrayForos));
+        // Eliminamos los foros que no son de tipo general
+        listaForos.removeIf(foro -> foro.getType().equals("news"));
+
+        return listaForos;
     }
 
     public static boolean usaSurveys(List<Survey> listaEncuestas, AlertLog registro){
@@ -338,7 +358,7 @@ public class WebServiceClient {
     public static List<User> obtenerAlumnosSinGrupo(List<User> listaUsuarios) {
         List<User> listaUsuariosHuerfanos=new ArrayList<>();
         for (User usuario:listaUsuarios) {
-            if (usuario.getGroups().isEmpty()&&esAlumno(listaUsuarios,usuario.getId())){
+            if (usuario.getGroups()!=null && usuario.getGroups().isEmpty() && esAlumno(listaUsuarios,usuario.getId())){
                 listaUsuariosHuerfanos.add(usuario);
             }
         }
@@ -355,7 +375,7 @@ public class WebServiceClient {
     }
 
     public static boolean anidamientoCalificadorAceptable(List<Table> listaCalificadores, AlertLog registro, FacadeConfig config){
-        if (listaCalificadores.isEmpty()){
+        if (listaCalificadores == null || listaCalificadores.isEmpty()){
             registro.guardarAlerta("implementation nesting","No hay calificadores");
             return false;
         }
@@ -380,42 +400,47 @@ public class WebServiceClient {
         return false;
     }
 
-    public static boolean hayRetroalimentacion(List<Table> listaCalificadores, AlertLog registro, FacadeConfig config){
-        int contadorRetroalimentacion=0;
-        int contadorTuplasComentables=0;
+    public static boolean hayRetroalimentacion(List<Table> listaCalificadores, AlertLog registro, FacadeConfig config) {
+        int contadorRetroalimentacion = 0;
+        int contadorTuplasComentables = 0;
         GradeTableField feedback;
         final String category = "realization assignmentfeedback";
-        if (listaCalificadores.isEmpty()){
-            registro.guardarAlerta(category,"No hay calificadores que comprobar");
+    
+        if (listaCalificadores.isEmpty()) {
+            registro.guardarAlerta(category, "No hay calificadores que comprobar");
             return false;
         }
-        for (Table calificador:listaCalificadores) {
-            for (Tabledata tabledata:calificador.getTabledata()) {
-                if (tabledata.getItemname().getMyclass().contains("item ")&&
-                        tabledata.getGrade()!=null&&!tabledata.getGrade().getContent().matches("[- ]")){
+    
+        for (Table calificador : listaCalificadores) {
+            for (Tabledata tabledata : calificador.getTabledata()) {
+                if (tabledata.getItemname() != null && tabledata.getItemname().getMyclass().contains("item ") &&
+                        tabledata.getGrade() != null && !tabledata.getGrade().getContent().matches("[- ]")) {
                     contadorTuplasComentables++;
-                    feedback=tabledata.getFeedback();
-                    if (feedback!=null && feedback.getContent().length()>6){
+                    feedback = tabledata.getFeedback();
+                    if (feedback != null && feedback.getContent().length() > 6) {
                         contadorRetroalimentacion++;
                     }
                 }
             }
         }
-        if(contadorTuplasComentables==0){
-            registro.guardarAlerta(category,"No hay actividades que comentar");
+    
+        if (contadorTuplasComentables == 0) {
+            registro.guardarAlerta(category, "No hay actividades que comentar");
             return false;
         }
-        if((float)contadorRetroalimentacion/(float)contadorTuplasComentables> config.getMinCommentPercentage()){
+    
+        float percentage = (float) contadorRetroalimentacion / (float) contadorTuplasComentables;
+        if (percentage > config.getMinCommentPercentage()) {
             return true;
-        }else{
-            registro.guardarAlerta(category,"No se hacen suficientes comentarios a las entregas de los alumnos");
+        } else {
+            registro.guardarAlerta(category, "No se hacen suficientes comentarios a las entregas de los alumnos");
             return false;
         }
     }
 
     public static boolean esNotaMaxConsistente(List<Table> listaCalificadores, AlertLog registro){
         String rango="";
-        if (listaCalificadores.isEmpty()){
+        if (listaCalificadores == null || listaCalificadores.isEmpty()){
             registro.guardarAlerta("design consistentmaxgrade","Los calificadores están vacíos");
             return false;
         }
@@ -424,11 +449,31 @@ public class WebServiceClient {
                 if (rango.equals("")){
                     rango=tabledata.getRange().getContent();
                 }
-                if (!rango.equals(tabledata.getRange().getContent())){
+                if (tabledata.getRange().getContent() != null && !rango.equals(tabledata.getRange().getContent())){
                     registro.guardarAlerta("design consistentmaxgrade","Las calificaciones máximas de las actividades y categorías son inconsistentes");
                     return false;
                 }
             }
+        }
+        return true;
+    }
+
+    // Método que comprueba si el curso tiene cuestionarios
+    // En este método no se comprueba ningún dato más del cuestionario
+    public static boolean hayCuestionarios(List<Quiz> quizzes, AlertLog registro){
+        if (quizzes != null && quizzes.isEmpty()){
+            registro.guardarAlerta("design consistentminquiz","No hay cuestionarios en el curso");
+            return false;
+        }
+        return true;
+    }
+
+    // Método que comprueba si el curso tiene al menos un foro
+    // En este método no se comprueba ningún dato más del foro
+    public static boolean hayForos(List<Forum> listaForos, AlertLog registro){
+        if (listaForos != null && listaForos.isEmpty()){
+            registro.guardarAlerta("design consistentminforum","No hay foros en el curso");
+            return false;
         }
         return true;
     }
@@ -450,7 +495,7 @@ public class WebServiceClient {
             for (Resource recurso:listaRecursosDesfasados) {
                 archivos=recurso.getContentfiles();
                 for (Contentfile archivo:archivos) {
-                    detalles.append(archivo.getFilename()).append(recurso.getVisible()==1?"":" <img src=\"eye-slash.png\" width=\"16\" height=\"16\" alt=\"No visible\"></td>").append("<br>");
+                    detalles.append(archivo.getFilename()).append(recurso.isVisible() ? "" : " <img src=\"eye-slash.png\" width=\"16\" height=\"16\" alt=\"No visible\"></td>").append("<br>");
                 }
             }
             registro.guardarAlertaDesplegable("implementation resourcesuptodate", "El curso contiene archivos desfasados", "Archivos desfasados <a href=\""+config.getHost()+"/course/resources.php?id="+registro.getCourseid()+"\">(recursos)</a>", detalles.toString());
@@ -614,10 +659,14 @@ public class WebServiceClient {
     }
 
     public static boolean muestraCriterios(List<CourseModule> listaModulosTareas, AlertLog registro){
-        for (CourseModule modulo:listaModulosTareas) {
-            for (Advancedgrading metodoAvanzado: modulo.getAdvancedgrading()) {
-                if (metodoAvanzado.getMethod()!=null){
-                    return true;
+        if (listaModulosTareas != null) {
+            for (CourseModule modulo:listaModulosTareas) {
+                if (modulo != null && modulo.getAdvancedgrading() != null) {
+                    for (Advancedgrading metodoAvanzado: modulo.getAdvancedgrading()) {
+                        if (metodoAvanzado != null && metodoAvanzado.getMethod()!=null){
+                            return true;
+                        }
+                    }
                 }
             }
         }
@@ -640,4 +689,392 @@ public class WebServiceClient {
         }
     }
 
+    // Método para calcular el porcentaje de alumnos que han respondido a un cuestionario
+    public static double calculaPorcentajeCuestionarios(List<Quiz> quizzes, double porcentaje, AlertLog registro, FacadeConfig config){
+
+        if (quizzes.isEmpty()) return 0;
+        
+        if  (porcentaje < (config.getMinQuizAnswerPercentage() * 100))
+            registro.guardarAlerta("realization estadisticquiz","Menos de un " + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos no realiza los cuestionarios");
+        
+        return porcentaje/100;
+    }
+    
+    // Método para obtener los cuestionarios de un curso
+    public static List<Quiz> getQuizzes(long courseId, String host, String token) {
+    	RestTemplate restTemplate = new RestTemplate();
+        String url= host + "/webservice/rest/server.php?wsfunction=mod_quiz_get_quizzes_by_courses&moodlewsrestformat=json&wstoken="
+        		+token+ COURSEIDS_0 +courseId;
+        
+        QuizList listaCuestionarios= restTemplate.getForObject(url, QuizList.class);
+        if (listaCuestionarios==null){return new ArrayList<>();}
+        return listaCuestionarios.getQuizzes();
+    }
+    
+    // Método para obtener los intentos de un usuario para un cuestionario
+    private static List<Attempt> getUserQuizAttempts(int quizId, int userId, String host, String token) {
+        RestTemplate restTemplate = new RestTemplate();
+    	String url = host + "/webservice/rest/server.php?wsfunction=mod_quiz_get_user_attempts&moodlewsrestformat=json&wstoken="
+    			+ token + "&quizid=" + quizId + "&userid=" + userId;
+        
+    	AttemptList attemptList= restTemplate.getForObject(url, AttemptList.class);
+        if (attemptList==null){return new ArrayList<>();}
+        return attemptList.getAttempts();
+    }
+    
+    // Obtener un intento en un cuestionario
+    public static AttemptReviewList getQuizAttempt(int attemptId, String host, String token) {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = host + "/webservice/rest/server.php?wsfunction=mod_quiz_get_attempt_review&moodlewsrestformat=json&wstoken="
+        		+ token + "&attemptid=" + attemptId;
+        
+        AttemptReviewList attemptReviewList= restTemplate.getForObject(url, AttemptReviewList.class);
+        if (attemptReviewList==null){return new AttemptReviewList();}
+
+        return attemptReviewList;
+    }
+
+    // Método para obtener las estadísticas de participación en cuestionarios
+    public static Map<Integer, Double> obtenerEstadisticasCuestionarios(String token, long courseId, String host, List<Quiz> quizzes) {
+        List<User> usuarios = obtenerUsuarios(token, courseId, host);
+        int totalAlumnos = usuarios.size();
+        Map<Integer, Integer> alumnosPorCuestionario = new HashMap<>();
+        List<Integer> quizIds = new ArrayList<>();
+        
+        for (Quiz quiz : quizzes) {
+            quizIds.add(quiz.getId());
+            alumnosPorCuestionario.put(quiz.getId(), 0);
+        }
+    
+        for (User usuario : usuarios) {
+            int userId = usuario.getId();
+            List<Attempt> attempts = new ArrayList<>();
+            for (int quizId : quizIds) {
+                attempts.addAll(getUserQuizAttempts(quizId, userId, host, token));
+                if (!attempts.isEmpty()) {
+                    int contador = alumnosPorCuestionario.get(quizId);
+                    alumnosPorCuestionario.put(quizId, contador + 1);
+                    attempts.clear();
+                }
+            }
+        }
+    
+        Map<Integer, Double> porcentajesRealizados = new HashMap<>();
+        for (int quizId : quizIds) {
+            int alumnosConIntento = alumnosPorCuestionario.get(quizId);
+            double porcentajeRealizado = ((double) alumnosConIntento / totalAlumnos) * 100;
+            porcentajesRealizados.put(quizId, porcentajeRealizado);
+        }
+    
+        return porcentajesRealizados;
+    }
+
+    // Método para obtener los datos resumidos de un cuestionario
+    public static QuizSummary obtenerResumenCuestionario(String token, long courseId, String host, Quiz quiz) {
+        QuizSummary quizSummary = new QuizSummary();
+        // Obtener los usuarios del curso y eliminar los que no son estudiantes
+        List<User> alumnos = obtenerUsuarios(token, courseId, host);
+        List<User> usuarios = new ArrayList<>();
+        for (User alumno : alumnos) {
+            boolean esEstudiante = false;
+            for (Role role : alumno.getRoles()) {
+                if (role.getShortname().equals("student")) {
+                    esEstudiante = true;
+                    break;
+                }
+            }
+            if (esEstudiante) {
+                usuarios.add(alumno);
+            } 
+        }
+
+        int contadorIntentos = 0;
+        int totalPreguntas = 0;
+        double nota = 0;
+        int intentos = 0;
+        double notaIntento = 0;
+        List<Double> notas = new ArrayList<>();
+        List<Double> notasUltimoIntento = new ArrayList<>();
+        int totalAlumnos = usuarios.size();
+        
+        // Obtener los alumnos que participan en el cuestionario
+        for (User usuario : usuarios) {
+            int userId = usuario.getId();
+            List<Attempt> attempts = new ArrayList<>();
+            attempts.addAll(getUserQuizAttempts(quiz.getId(), userId, host, token));
+
+            for (Attempt attempt : attempts) {
+                int attemptId = (int) attempt.getId();
+                AttemptReviewList attemptReviewList = getQuizAttempt(attemptId, host, token);
+                if (attemptReviewList != null){
+                    totalPreguntas = attemptReviewList.getQuestions().size();
+                    notaIntento = attemptReviewList.getGrade() != null ? Double.parseDouble(attemptReviewList.getGrade()) : 0;
+                    if (notaIntento > nota) {
+                        nota = notaIntento;
+                    }
+                }
+                intentos++;
+            }
+            if (!attempts.isEmpty()) {
+                attempts.clear();
+                notasUltimoIntento.add(notaIntento);
+                notas.add(nota);
+                notaIntento = 0;
+                nota = 0;
+                contadorIntentos++;
+            }
+        }
+    
+        quizSummary.setId(quiz.getId());
+        quizSummary.setNombreCuestionario(quiz.getName());
+        quizSummary.setURL(host + "/mod/quiz/view.php?id=" + quiz.getCoursemodule());
+        quizSummary.setNotaMaxima(quiz.getGrade());
+        quizSummary.setMaxIntentos(quiz.getAttempts());
+        
+        quizSummary.setTotalAlumnos(totalAlumnos);
+        quizSummary.setAlumnosExaminados(contadorIntentos);
+        quizSummary.setTotalPreguntas(totalPreguntas);
+        quizSummary.setNotaMediaMejorIntentoAlumnosConNota(notas.stream().mapToDouble(Double::doubleValue).average().orElse(0.0));
+        quizSummary.setNotaMediaUltimoIntentoAlumnosConNota(notasUltimoIntento.stream().mapToDouble(Double::doubleValue).average().orElse(0.0));
+        quizSummary.setNotaMediaMejorIntentoTotalAlumnos(notas.stream().mapToDouble(Double::doubleValue).sum() / totalAlumnos);
+        quizSummary.setNotaMediaUltimoIntentoTotalAlumnos(notasUltimoIntento.stream().mapToDouble(Double::doubleValue).sum() / totalAlumnos);
+        quizSummary.setTotalIntentos(intentos);
+        if (contadorIntentos > 3) {
+            quizSummary.setSkewness(calculaSkewness(notas));
+            quizSummary.setKurtosis(calculaKurtosis(notas));
+        }
+    
+        return quizSummary;
+    }
+
+    // Método para calcula la asimetría o skewness de un cuestionario
+    public static double calculaSkewness(List<Double> notas) {
+        int n = notas.size();
+        double media = calculaMedia(notas);
+
+        double sumaDiferenciam2 = 0.0;
+        double sumaDiferenciam3 = 0.0;
+        for (double nota : notas) {
+            double diferencia = nota - media;
+            sumaDiferenciam2 += Math.pow(diferencia, 2);
+            sumaDiferenciam3 += Math.pow(diferencia, 3);
+        }
+        double m2 = sumaDiferenciam2 / n;
+        double m3 = sumaDiferenciam3 / n;
+        double k2 = (n * m2) / (n - 1);
+        double k3 = (Math.pow(n, 2) * m3) / ((n - 1) * (n - 2));
+        return k3 / Math.pow(k2, (float)3 / 2);
+    }
+
+    // Método para calcular la media de un cuestionario
+    public static double calculaMedia(List<Double> notas) {
+        double suma = 0;
+        for (double nota : notas) {
+            suma += nota;
+        }
+        return suma / notas.size();
+    }
+
+    // Método para calcular la desviación estándar de un cuestionario
+    public static double calculaDesviacionEstandar(List<Double> notas, double media) {
+        double sumaDiferencia = 0.0;
+        for (double nota : notas) {
+            double diferencia = nota - media;
+            sumaDiferencia += diferencia * diferencia;
+        }
+        return Math.sqrt(sumaDiferencia / (notas.size() - 1));
+    }
+
+    // Método para calcular la Kurtosis de un cuestionario
+    public static double calculaKurtosis(List<Double> notas) {
+        int n = notas.size();
+        double media = calculaMedia(notas);
+
+        double sumaDiferenciam2 = 0.0;
+        double sumaDiferenciam4 = 0.0;
+        for (double nota : notas) {
+            double diferencia = nota - media;
+            sumaDiferenciam2 += Math.pow(diferencia, 2);
+            sumaDiferenciam4 += Math.pow(diferencia, 4);
+        }
+        double m2 = sumaDiferenciam2 / n;
+        double m4 = sumaDiferenciam4 / n;
+        double primerArgumento = Math.pow(n, 2) / ((n - 1) * (n - 2) * (n - 3));
+        double segundoArgumento = (n + 1)*m4 - 3 * (n - 1) * Math.pow(m2, 2);
+        double k2 = (n * m2) / (n - 1);
+        double k4 = primerArgumento * segundoArgumento;
+        return k4 / Math.pow(k2, 2);
+    }
+
+    // Método para rellenar los datos del gráfico notas/preguntas de un cuestionario
+    public static List<EstadisticaNotasPregunta> obtenerEstadisticasNotasPregunta(String host, String token, Quiz quiz) {
+        List<EstadisticaNotasPregunta> estadisticasNotasPregunta = new ArrayList<>();
+        List<Attempt> attempts = new ArrayList<>();
+        List<User> usuarios = obtenerUsuarios(token, quiz.getCourse(), host);
+        int intentos = 0;
+
+        Map<Integer, Double> notas = new HashMap<>();
+        Map<Integer, Double> notasMaximas = new HashMap<>();
+
+        for (User usuario : usuarios) {
+            Map<Integer, Double> notasAuxiliar = new HashMap<>();
+            int userId = usuario.getId();
+            double nota = 0;
+            attempts.addAll(getUserQuizAttempts(quiz.getId(), userId, host, token));
+            // Se recorren los intentos de cada alumno
+            for (Attempt attempt : attempts) {
+                int attemptId = (int) attempt.getId();
+                AttemptReviewList attemptReviewList = getQuizAttempt(attemptId, host, token);
+                int idPregunta = 0;
+                double puntuacionMaxima = 0;
+                double notaMediaPregunta = 0;
+
+                if (attempts.size() > 1) {
+                    // Si el cuestionario tiene más de un intento, se almacena la nota del intento con mayor nota
+                    double notaIntento = attemptReviewList.getGrade() != null ? Double.parseDouble(attemptReviewList.getGrade()) : 0;
+                    // Si la nota del intento es mayor que la nota del intento anterior, se almacenan las notas
+                    if (notaIntento > nota) {
+                        nota = notaIntento;
+                        for (Question question : attemptReviewList.getQuestions()) {
+                            String mark = question.getMark();
+                            idPregunta = question.getNumber();
+                            puntuacionMaxima = question.getMaxmark();
+                            if (!question.getMark().equals(""))
+                                mark = question.getMark().replace(",", ".");
+                            notaMediaPregunta = Double.parseDouble((!mark.equals("")) ? mark : "0");
+                            notasAuxiliar.remove(idPregunta);
+                            notasAuxiliar.put(idPregunta, notaMediaPregunta);
+                            notasMaximas.put(idPregunta, puntuacionMaxima);
+                        }
+                    }
+                } else {
+                    // Si el cuestionario tiene un único intento, se almacenan las notas
+                    for (Question question : attemptReviewList.getQuestions()) {
+                        String mark = question.getMark();
+                        idPregunta = question.getNumber();
+                        puntuacionMaxima = question.getMaxmark();
+                        if (!question.getMark().equals(""))
+                            mark = question.getMark().replace(",", ".");
+                        notaMediaPregunta = Double.parseDouble((!mark.equals("")) ? mark : "0");
+                        notas.put(idPregunta, notaMediaPregunta + notas.getOrDefault(idPregunta, 0.0));
+                        notasMaximas.put(idPregunta, puntuacionMaxima);
+                    }
+                    intentos++;
+                }
+            }
+            if (notasAuxiliar.size() > 1) {
+                // Se almacenan las notas del intento con mayor nota
+                for (int idPregunta : notasAuxiliar.keySet()) {
+                    notas.put(idPregunta, notasAuxiliar.get(idPregunta) + notas.getOrDefault(idPregunta, 0.0));
+                }
+                intentos++;
+            }
+            attempts.clear();
+        }
+        
+        for (int idPregunta : notas.keySet()) {
+            double notaMediaPregunta = intentos > 0 ? notas.get(idPregunta) / intentos : 0;
+            double puntuacionMaxima = notasMaximas.get(idPregunta);
+            EstadisticaNotasPregunta estadisticaNotasPregunta = new EstadisticaNotasPregunta();
+            estadisticaNotasPregunta.setIdPregunta(idPregunta);
+            // Normalizar la nota media de la pregunta
+            if (puntuacionMaxima != 0) {
+                double notaNormalizada = notaMediaPregunta / puntuacionMaxima;
+                estadisticaNotasPregunta.setNotaMediaPregunta(notaNormalizada);
+            } else {
+                // Manejar caso especial cuando puntuacionMaxima es 0 (evitar división por 0)
+                estadisticaNotasPregunta.setNotaMediaPregunta(0);
+            }
+            estadisticaNotasPregunta.setPuntuacionMaxima(puntuacionMaxima);
+            estadisticasNotasPregunta.add(estadisticaNotasPregunta);
+        }
+        
+        return estadisticasNotasPregunta;
+    }
+
+    // Método que calcula el porcentaje de alumnos que han respondido a un foro
+    public static List<EstadisticasForo> calculaPorcentajeAlumnosForos(String token, List<Forum> listaForos, List<User> alumnos, List<String>usuariosNoAlumnos, AlertLog registro, FacadeConfig config){
+        List<EstadisticasForo> estadisticasForos = new ArrayList<>();
+        List<EstadisticasDiscusion> estadisticasDiscusiones = new ArrayList<>();
+        EstadisticasForo estadisticasForo = new EstadisticasForo();
+        EstadisticasDiscusion estadisticasDiscusion = new EstadisticasDiscusion();
+        List<Long> listaAlumnos = new ArrayList<>();
+        int mensajes = 0;
+        int usuariosUnicos = 0;
+        double porcentaje = 0;
+
+        // Si no hay foros no hay participación
+        if (listaForos.isEmpty()) {
+            registro.guardarAlerta("realization estadisticforum","Menos de un " + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos participa en los foros");
+            return estadisticasForos;
+        }
+
+        // Se recorren los foros
+        for (Forum foro : listaForos) {
+            estadisticasForo.setIdForo(foro.getId());
+            estadisticasForo.setNombre(foro.getName());
+            estadisticasForo.setURL(config.getHost() + "/mod/forum/view.php?id=" + foro.getCmid());
+
+            // Mensajes del foro
+            String texto = "";
+
+            List<Discussion> listaDiscusiones = obtenerListaDebates(token, foro, config.getHost());
+
+            for (Discussion discusion : listaDiscusiones) {
+                estadisticasDiscusion.setIdDiscusion(discusion.getId());
+                estadisticasDiscusion.setAsunto(discusion.getName());
+
+                List<Post> listaPostsDiscusion = obtenerListaPostsPorDebate(token, discusion, config.getHost());
+                for (Post post : listaPostsDiscusion) {
+                    mensajes++;
+                    if (!listaAlumnos.contains(post.getAuthor().getId()) && !usuariosNoAlumnos.contains(post.getAuthor().getFullname())) {
+                        listaAlumnos.add(post.getAuthor().getId());
+                        usuariosUnicos++;
+                    }
+                    texto += post.getMessage();
+                }
+                estadisticasDiscusion.setNumeroMensajes(mensajes);
+                estadisticasDiscusiones.add(estadisticasDiscusion);
+                mensajes = 0;
+                estadisticasDiscusion = new EstadisticasDiscusion();
+            }
+            estadisticasForo.setUsuariosUnicos(usuariosUnicos);
+            estadisticasForo.setPorcentajeParticipacion(((double) usuariosUnicos / alumnos.size()) * 100);
+            estadisticasForo.setEstadisticasDiscusiones(estadisticasDiscusiones);
+            estadisticasForo.setTexto(parseHtmlToString(texto));
+            estadisticasForos.add(estadisticasForo);
+
+            usuariosUnicos = 0;
+            porcentaje += estadisticasForo.getPorcentajeParticipacion();
+            estadisticasForo = new EstadisticasForo();
+            estadisticasDiscusiones = new ArrayList<>();
+            listaAlumnos = new ArrayList<>();
+        }
+
+        // Si el porcentaje de alumnos que han participado en los foros es menor que el porcentaje mínimo, se guarda la alerta
+        if ((porcentaje / listaForos.size()) < (config.getMinQuizAnswerPercentage() * 100))
+            registro.guardarAlerta("realization estadisticforum","Menos de un " + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos participa en los foros");
+        
+        return estadisticasForos;
+    }
+
+    public static String parseHtmlToString (String html) {
+        // Parsear el texto HTML
+        Document doc = Jsoup.parse(html);
+        
+        // Obtener todos los elementos de texto
+        Elements elementosTexto = doc.select(":not(*:has(*))");
+        
+        // Recorrer los elementos de texto y obtener su contenido
+        StringBuilder textoCompleto = new StringBuilder();
+        for (Element elemento : elementosTexto) {
+            String texto = elemento.text();
+            textoCompleto.append(texto).append(" ");
+        }
+        
+        String textoFinal = textoCompleto.toString().trim();
+
+        return textoFinal;
+    }
+    
 }

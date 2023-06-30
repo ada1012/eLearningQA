@@ -15,6 +15,7 @@ public class FacadeConfig {
     private double minFeedbackAnswerPercentage;
     private int forumRelevancePeriod;
     private int assignmentRelevancePeriod;
+    private double minQuizAnswerPercentage;
     private String host;
 
     public String getHost() {
@@ -40,6 +41,7 @@ public class FacadeConfig {
             minFeedbackAnswerPercentage = Double.parseDouble(properties.getProperty("min_feedback_answer_percentage"));
             forumRelevancePeriod = Integer.parseInt(properties.getProperty("forum_relevance_period"));
             assignmentRelevancePeriod = Integer.parseInt(properties.getProperty("assignment_relevance_period"));
+            minQuizAnswerPercentage = Double.parseDouble(properties.getProperty("min_quiz_answer_percentage"));
         } catch (Exception e) {
             LOGGER.error("exception", e);
         }
@@ -76,4 +78,9 @@ public class FacadeConfig {
     public int getAssignmentRelevancePeriod() {
         return assignmentRelevancePeriod;
     }
+
+    public double getMinQuizAnswerPercentage() {
+        return minQuizAnswerPercentage;
+    }
+
 }

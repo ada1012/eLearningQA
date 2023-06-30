@@ -1,5 +1,231 @@
 \apendice{Documentación de usuario}
 
 \section{Introducción}
-
+En este apéndice se incluyen los detalles de la aplicación que conciernen al usuario, como los requisitos para utilizar la aplicación y un manual de usuario que también existe en formato web y puede ser accedido desde la página de login de la aplicación.
 \section{Requisitos de usuarios}
+Para utilizar la aplicación como usuario se necesita:
+\begin{itemize}
+	\item Una cuenta en un servidor de Moodle con rol de profesor en los cursos a analizar
+	\item Conexión a internet para acceder al despliegue de la aplicación
+\end{itemize}
+\section{Instalación}
+Como se ha mencionado en temas anteriores con Java ya instalado el único requisito es ejecutar el archivo WAR que viene en el código fuente de la aplicación.
+\section{Manual del usuario}
+
+\subsubsection{Pantallas:}
+
+\textbf{Página de login:} la página de login contiene un formulario de
+inicio de sesión, un link ``Acerca de'', un link ``Manual de usuario'' que
+muestra la versión web de este manual, y un link de contacto.
+\imagen{Login.png}{Página de login}
+
+\textbf{Página principal:~}la página principal contiene una cabecera que
+indica el nombre de usuario con el que se ha registrado, un botón para
+desconectarse, un enlace para generar un informe global de todos los
+cursos, y una tabla con una lista de enlaces para generar los informes
+específicos de cada curso con una caja de búsqueda.
+\imagen{ListaCursos.png}{Página principal}
+
+\textbf{Página de informe:} la página de informe genera el informe
+dependiendo de cómo se haya accedido a esta, ya sea mediante el enlace
+``Generar informe global'' o por medio de los enlaces a informes de cursos
+específicos.~
+
+Los informes contienen los siguientes elementos:
+
+\begin{itemize}
+	\item
+	\textbf{Puntuaciones por rol y perspectiva:} el informe contiene una
+	matriz de roles y perspectivas que da distintas puntuaciones a cada
+	uno de los roles (Diseñador, Facilitador, y Proveedor) en cada una de
+	las tres perspectivas definidas (Pedagógica, Tecnológica, y
+	Estratégica) según los resultados del análisis.
+	\item
+	\textbf{Gráfico de evolución:} la aplicación almacena estas puntuaciones cada vez que se carga un informe para generar un gráfico interactivo de la evolución de estos valores.
+	\imagen{Evolucion.png}{Página de evolución del rendimiento}
+	\item
+	\textbf{Informe de fases:} el informe contiene también una tabla que
+	muestra los resultados en cada una de las comprobaciones del análisis y
+	las agrupa en las distintas fases del diseño instruccional (Diseño,
+	Implementación, Realización, y Evaluación) además de dar una
+	puntuación general. En el caso de los cuestionarios y foros tendrán cada uno una lista desplegable en el que se podrá ver un desglose de los mismos con el porcentaje de participación de cada uno y el porcenaje de participación general.
+	\item
+	\textbf{Lista de mejoras:} el informe muestra una lista de
+	motivos concretos que producen resultados negativos en el análisis
+	para subsanarlos o tenerlos en cuenta de cara al futuro. Haciendo clic en las filas de la tabla se puede filtrar la lista de mejoras.
+	\item
+	\textbf{Informe de estadísticas:} por último, el informe muestra una sección de estadísticas de los cuestionarios y foros, en el caso de los cuestionarios se mostrará además un gráfico con el índice de dificultad de las preguntas y en el de los foros una lista con los hilos del mismo.
+	\imagen{InformeFases.png}{Página de informe de fases}
+	\imagen{EstadisticasCuestionario.png}{Estadísticas de un cuestionario}
+	\imagen{EstadisticasForo.png}{Estadísticas de un foro}
+\end{itemize}
+
+El informe especifico muestra los resultados de las comprobaciones en el informe de fases de forma absoluta, es decir, que solo indica si el criterio se cumple o no, sin embargo, en el informe global, se muestra un resultado u otro ~dependiendo de la cantidad de cursos que satisfacen dicho criterio.
+
+
+\subsubsection{Acciones del usuario:}
+
+\begin{itemize}
+	\item
+	\textbf{Login:} para acceder a la aplicación son necesarias las
+	credenciales de acceso a una cuenta de la plataforma Moodle a la que
+	accede la aplicación (en el caso del prototipo es Mount ~Orange
+	School). Debe introducir su usuario y contraseña en los campos
+	``Username'' y ``Password''. Si quiere vaciar los campos pulse el botón
+	``Borrar''. Para acceder a la página principal, pulse el botón ``Entrar''
+	tras haber introducido sus credenciales.
+	\item
+	\textbf{Desconectar:} desde la página principal, si desea finalizar su
+	sesión, pulse el botón ``Desconectar''. Esto invalidará sus credenciales
+	y le impedirá acceder a la aplicación hasta que se registre de nuevo
+	con unas credenciales válidas.
+	\item
+	\textbf{Generar informe específico:} la página principal muestra una
+	tabla con todos los cursos en los que se encuentra matriculado el
+	usuario registrado en formato de enlace. Al clicar un enlace, se
+	generará un informe en una pestaña aparte del navegador que mostrará
+	los resultados del análisis que ha realizado la aplicación sobre el
+	curso correspondiente.
+	\item
+	\textbf{Generar informe global:} en la página principal hay un enlace
+	llamado ``Generar informe global''. Al hacer clic sobre este, se
+	generará un informe en una pestaña aparte del navegador que mostrará
+	un resumen de los análisis de todos los cursos en los que se encuentra
+	matriculado el profesor.
+\end{itemize}
+
+\subsubsection{Explicación de las comprobaciones de los informes:}
+
+Las siguientes comprobaciones están relacionadas con los roles, fases, y
+perspectivas mencionados anteriormente. Los distintos procesos del
+diseño instruccional se encuentran divididos en fases, ~con ciertas
+perspectivas en mente, y son responsabilidad directa o indirecta de
+ciertos roles. Al estar las comprobaciones ligadas a esos procesos se
+muestran agrupadas por fases, y después de la explicación se indican los
+roles responsables e involucrados, además de las perspectivas
+correspondientes.
+
+\textbf{Diseño:}
+
+\begin{itemize}
+	\item
+	\textbf{Las opciones de progreso del estudiante están activadas}: se
+	comprueba que estén habilitadas las opciones de progreso de los
+	estudiantes en el curso.~{Responsable:} Diseñador
+	{Involucrados:} Facilitador {Perspectivas:} Pedagógica
+	\item
+	\textbf{Se proporcionan contenidos en diferentes formatos:} se
+	comprueba que haya variedad de formatos en los recursos del curso.
+	{Responsable:} Diseñador {Involucrados:} Facilitador y
+	Proveedor {Perspectivas:} Pedagógica y Tecnológica
+	\item
+	\textbf{El curso tiene grupos:} se comprueba que existan grupos
+	definidos en el curso. {Responsable:} Diseñador
+	{Involucrados:} Facilitador y Proveedor {Perspectivas:}
+	Pedagógica
+	\item
+	\textbf{El curso tiene actividades grupales:} se comprueba que existan
+	actividades con entrega grupal habilitada en el curso.
+	{Responsable:} Diseñador {Involucrados:} Facilitador y
+	Proveedor {Perspectivas:} Pedagógica
+	\item
+	\textbf{Los estudiantes pueden ver las condiciones necesarias para
+		completar una actividad:} se comprueba que esté habilitada la opción
+	de mostrar las condiciones para completar una actividad en el curso.
+	{Responsable:} Diseñador {Involucrados:} Facilitador y
+	Proveedor {Perspectivas:} Pedagógica
+	\item
+	\textbf{Todas las actividades tienen la misma nota máxima en el
+		calificador:} se comprueba que exista una consistencia en las notas
+	máximas de los items de calificación (tareas, entregas, cuestionarios)
+	del curso. {Responsable:} Diseñador {Involucrados:}
+	Facilitador y Proveedor {Perspectivas:} Pedagógica
+	\textbf{El curso tiene al menos un cuestionario:} se comprueba que exista un cuestionario dentro de la planificación del curso.
+    {Responsable:} Diseñador {Involucrados:} Facilitador y Proveedor {Perspectivas:} Pedagógica
+	\textbf{El curso tiene al menos un foro:} se comprueba que exista un foro dentro de la planificación del curso.
+    {Responsable:} Diseñador {Involucrados:} Facilitador y Proveedor {Perspectivas:} Pedagógica
+\end{itemize}
+
+\textbf{Implementación:}
+
+\begin{itemize}
+	\item
+	\textbf{Los recursos están actualizados:} se comprueba que los
+	recursos del curso tengan una fecha de creación reciente.
+	{Responsable:} Diseñador {Involucrados:} Facilitador y
+	Proveedor {Perspectivas:} Pedagógica y Tecnológica
+	\item
+	\textbf{Fechas de apertura y cierre de tareas son correctas:} se
+	comprueba que las fechas de apertura y cierre de tareas y
+	cuestionarios no se solapen de forma erronea con las fechas de inicio
+	y fin del curso. {Responsable:} Facilitador
+	{Involucrados:} Diseñador y Proveedor {Perspectivas:}
+	Pedagógica y Tecnológica
+	\item
+	\textbf{Se detallan los criterios de evaluación:} se comprueba que
+	exista en al menos una actividad una rúbrica o una guía de calificación
+	en el curso.~{Responsable:} Diseñador {Involucrados:}
+	Facilitador y Proveedor {Perspectivas:} Pedagógica y Tecnológica
+	\item
+	\textbf{El calificador no tiene demasiado anidamiento:} se comprueba
+	que la estructura de las categorías del calificador no sea demasiado
+	enrevesada. {Responsable:} Diseñador {Involucrados:}
+	Facilitador y Proveedor {Perspectivas:} Pedagógica y Estratégica
+	\item
+	\textbf{Todos los alumnos están en algún grupo:} se comprueba que cada
+	alumno pertenezca a un grupo. {Responsable:} Proveedor
+	{Involucrados:} Diseñador {Perspectivas:} Tecnológica y
+	Estratégica
+\end{itemize}
+
+\textbf{Realización:}
+
+\begin{itemize}
+	\item
+	\textbf{El profesor responde en los foros dentro del límite de 48
+		horas lectivas desde que se plantea la duda:} se comprueba que no
+	hayan preguntas por parte de alumnos que estén sin responder en un
+	tiempo razonable. {Responsable:} Facilitador
+	{Involucrados:} Diseñador y Proveedor {Perspectivas:}
+	Pedagógica y Tecnológica
+	\item
+	\textbf{Se ofrece retroalimentación de las tareas:} se comprueba que
+	el profesor deje comentarios en la mayoría de calificaciones que haga.
+	{Responsable:} Facilitador {Involucrados:} Diseñador y
+	Proveedor {Perspectivas:} Pedagógica y Tecnológica
+	\item
+	\textbf{Las tareas están calificadas:} se comprueba que no hayan
+	entregas de alumnos que hayan pasado una semana sin calificación.
+	{Responsable:} Facilitador {Involucrados:} Diseñador y
+	Proveedor {Perspectivas:} Pedagógica y Tecnológica
+	\item
+	\textbf{El calificador muestra cómo ponderan las diferentes tareas:}
+	se comprueba que el calificador muestre los pesos de los items de
+	calificación. {Responsable:} Facilitador {Involucrados:}
+	Diseñador y Proveedor {Perspectivas:} Pedagógica y Tecnológica
+	\item
+	\textbf{Al menos un X \% de los alumnos responden a los cuesionarios:}
+	se comprueba que hay un mínimo de alumnos que interactúan con los cuestionarios propuestos para el desarrollo del curso. {Responsable:} Proveedor {Involucrados:}
+	Diseñador y Facilitador {Perspectivas:} Pedagógica
+	\item
+	\textbf{Al menos un X \% de los alumnos participa en los foros:}
+	se comprueba que hay un mínimo de alumnos que interactúan con los foros propuestos para el desarrollo del curso. {Responsable:} Proveedor {Involucrados:}
+	Diseñador y Facilitador {Perspectivas:} Pedagógica
+\end{itemize}
+
+\textbf{Evaluación:}
+
+\begin{itemize}
+	\item
+	\textbf{La mayoría de alumnos responden a los feedbacks:} se comprueba
+	que no hayan muchos alumnos que no respondan a los feedbacks.
+	{Responsable:} Proveedor {Involucrados:} Diseñador y
+	Facilitador {Perspectivas:} Pedagógica, Tecnológica, y
+	Estratégica
+	\item
+	\textbf{Se utilizan encuestas de opinión:} se comprueba que el curso
+	contenga encuestas de opinión. {Responsable:} Proveedor
+	{Involucrados:} Diseñador y Facilitador {Perspectivas:}
+	Pedagógica, Tecnológica, y Estratégica
+\end{itemize}
+

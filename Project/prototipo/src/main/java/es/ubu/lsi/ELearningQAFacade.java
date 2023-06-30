@@ -6,14 +6,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ELearningQAFacade {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final int CHECKS_DISENO =6;
+    private static final int CHECKS_DISENO =8;
     private static final int CHECKS_IMPLEMENTACION =5;
-    private static final int CHECKS_REALIZACION =4;
+    private static final int CHECKS_REALIZACION =6;
     private static final int CHECKS_EVALUACION =2;
     private static final int CHECKS_TOTAL = CHECKS_DISENO + CHECKS_IMPLEMENTACION + CHECKS_REALIZACION + CHECKS_EVALUACION;
     protected static String[] camposInformeFases;
@@ -44,7 +47,7 @@ public class ELearningQAFacade {
         List<Course> listaCursos= getListaCursos(token);
         StringBuilder listaEnTabla= new StringBuilder("<table>");
         for (Course curso: listaCursos) {
-            listaEnTabla.append("<tr><td><a target=\"_blank\" href=\"./informe?courseid=").append(curso.getId())
+            listaEnTabla.append("<tr><td><a target=\"_blank\" href=\"./loading?courseid=").append(curso.getId())
                     .append("\">").append(curso.getFullname())
                     .append(" ("+curso.getCoursecategory()+")").append("</a></td></tr>");
         }
@@ -60,9 +63,15 @@ public class ELearningQAFacade {
         return WebServiceClient.obtenerNombreCompleto(token, username, config.getHost());
     }
 
-    public int[] realizarComprobaciones(String token, long courseid, AlertLog registro) {
+    // Método para obtener la lista de cuesitonarios de un curso
+    public List<Quiz> getQuizzes(String token, long courseid) {
+        return WebServiceClient.getQuizzes(courseid, config.getHost(), token);
+    }
+
+    public double[] realizarComprobaciones(String token, long courseid, AlertLog registro, List<QuizSummary> estadisticasCuestionarios, List<Quiz> quizzes,
+                                            List<EstadisticasForo> estadisticasForos, List<User> listaUsuarios, List<Post> listaPosts, List<Forum> listaForos,
+                                            boolean esGeneral) {
         Course curso= getCursoPorId(token, courseid);
-        List<User> listaUsuarios= WebServiceClient.obtenerUsuarios(token, courseid, config.getHost());
         StatusList listaEstados=WebServiceClient.obtenerListaEstados(token, courseid, listaUsuarios, config.getHost());
         List<es.ubu.lsi.model.Module> listaModulos=WebServiceClient.obtenerListaModulos(token, courseid, config.getHost());
         List<Group> listaGrupos=WebServiceClient.obtenerListaGrupos(token, courseid, config.getHost(), registro);
@@ -70,52 +79,150 @@ public class ELearningQAFacade {
         List<Table> listaCalificadores=WebServiceClient.obtenerCalificadores(token, courseid, config.getHost());
         List<Resource> listaRecursos=WebServiceClient.obtenerRecursos(token, courseid, config.getHost());
         List<CourseModule> listaModulosTareas=WebServiceClient.obtenerModulosTareas(token, listaTareas, config.getHost());
-        List<Post> listaPosts=WebServiceClient.obtenerListaPosts(token, courseid, config.getHost());
         Map<Integer, Long> mapaFechasLimite=WebServiceClient.generarMapaFechasLimite(listaTareas);
         List<Assignment> tareasConNotas=WebServiceClient.obtenerTareasConNotas(token,mapaFechasLimite, config.getHost(), listaTareas);
         List<ResponseAnalysis> listaAnalisis=WebServiceClient.obtenerAnalisis(token, courseid, config.getHost());
         List<Survey> listaSurveys=WebServiceClient.obtenerSurveys(token, courseid, config.getHost());
         List<es.ubu.lsi.model.Module> modulosMalFechados=WebServiceClient.obtenerModulosMalFechados(curso, listaModulos);
         List<Resource> recursosDesfasados=WebServiceClient.obtenerRecursosDesfasados(curso, listaRecursos);
-        int[] puntosComprobaciones = new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+
+        // Calculamos los porcentajes
+        double porcentaje;
+        double sum = 0;
+        if (estadisticasCuestionarios == null || estadisticasCuestionarios.isEmpty()) {
+            porcentaje = 0;
+        } else {
+            for (QuizSummary quizSummary : estadisticasCuestionarios) {
+                if (quizSummary.getTotalAlumnos() > 0 && quizSummary.getAlumnosExaminados() > 0)
+                    sum += ((double)(quizSummary.getAlumnosExaminados()*100)/quizSummary.getTotalAlumnos());
+            }
+            porcentaje = sum / estadisticasCuestionarios.size();
+        }
+
+        double porcentajeForos = porcentajeForosContestados(estadisticasForos);
+
+        return asignarPuntosComprobaciones(curso, listaEstados, listaModulos, listaGrupos, listaTareas, listaCalificadores,
+        quizzes, listaForos, listaPosts, recursosDesfasados, modulosMalFechados, listaModulosTareas, listaUsuarios, tareasConNotas, listaAnalisis,
+        listaSurveys, registro, porcentaje, porcentajeForos, esGeneral);
+    }
+
+    public double[] asignarPuntosComprobaciones(Course curso, StatusList listaEstados, List<es.ubu.lsi.model.Module> listaModulos,
+                                                List<Group> listaGrupos, List<Assignment> listaTareas, List<Table> listaCalificadores,
+                                                List<Quiz> quizzes, List<Forum> listaForos, List<Post> listaPosts, List<Resource> recursosDesfasados,
+                                                List<es.ubu.lsi.model.Module> modulosMalFechados, List<CourseModule> listaModulosTareas,
+                                                List<User> listaUsuarios, List<Assignment> tareasConNotas, List<ResponseAnalysis> listaAnalisis,
+                                                List<Survey> listaSurveys, AlertLog registro, double porcentaje, double porcentajeForos,
+                                                boolean esGeneral){
+        double[] puntosComprobaciones = new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
         if(isestaProgresoActivado(listaEstados, registro)){puntosComprobaciones[0]++;}
         if(isHayVariedadFormatos(listaModulos, registro)){puntosComprobaciones[1]++;}
         if(isTieneGrupos(listaGrupos, registro)){puntosComprobaciones[2]++;}
         if(isHayTareasGrupales(listaTareas, registro)){puntosComprobaciones[3]++;}
         if(isSonVisiblesCondiciones(curso, registro)){puntosComprobaciones[4]++;}
         if(isEsNotaMaxConsistente(listaCalificadores, registro)){puntosComprobaciones[5]++;}
-        if(isEstanActualizadosRecursos(recursosDesfasados, registro)){puntosComprobaciones[6]++;}
-        if(isSonFechasCorrectas(modulosMalFechados, registro)){puntosComprobaciones[7]++;}
-        if(isMuestraCriterios(listaModulosTareas, registro)){puntosComprobaciones[8]++;}
-        if(isAnidamientoCalificadorAceptable(listaCalificadores, registro)){puntosComprobaciones[9]++;}
-        if(isAlumnosEnGrupos(listaUsuarios, registro)){puntosComprobaciones[10]++;}
-        if(isRespondeATiempo(listaUsuarios,listaPosts, registro)){puntosComprobaciones[11]++;}
-        if(isHayRetroalimentacion(listaCalificadores, registro)){puntosComprobaciones[12]++;}
-        if(isEstaCorregidoATiempo(tareasConNotas,listaUsuarios, registro)){puntosComprobaciones[13]++;}
-        if(isCalificadorMuestraPonderacion(listaCalificadores, registro)){puntosComprobaciones[14]++;}
-        if(isRespondenFeedbacks(listaAnalisis,listaUsuarios, registro)){puntosComprobaciones[15]++;}
-        if(isUsaSurveys(listaSurveys, registro)){puntosComprobaciones[16]++;}
+        if(isHayCuestionarios(quizzes, registro)){puntosComprobaciones[6]++;}
+        if(isHayForos(listaForos, registro)){puntosComprobaciones[7]++;}
+        if(isEstanActualizadosRecursos(recursosDesfasados, registro)){puntosComprobaciones[8]++;}
+        if(isSonFechasCorrectas(modulosMalFechados, registro)){puntosComprobaciones[9]++;}
+        if(isMuestraCriterios(listaModulosTareas, registro)){puntosComprobaciones[10]++;}
+        if(isAnidamientoCalificadorAceptable(listaCalificadores, registro)){puntosComprobaciones[11]++;}
+        if(isAlumnosEnGrupos(listaUsuarios, registro)){puntosComprobaciones[12]++;}
+        if(isRespondeATiempo(listaUsuarios,listaPosts, registro)){puntosComprobaciones[13]++;}
+        if(isHayRetroalimentacion(listaCalificadores, registro)){puntosComprobaciones[14]++;}
+        if(isEstaCorregidoATiempo(tareasConNotas,listaUsuarios, registro)){puntosComprobaciones[15]++;}
+        if(isCalificadorMuestraPonderacion(listaCalificadores, registro)){puntosComprobaciones[16]++;}
+        if (!esGeneral) {
+            puntosComprobaciones[17] = porcentajeCuestionariosContestados(quizzes, porcentaje, registro);
+            puntosComprobaciones[18] = porcentajeForos / 100;
+        } else {
+            puntosComprobaciones[17] = 0;
+            puntosComprobaciones[18] = 0;
+        }
+        if(isRespondenFeedbacks(listaAnalisis,listaUsuarios, registro)){puntosComprobaciones[19]++;}
+        if(isUsaSurveys(listaSurveys, registro)){puntosComprobaciones[20]++;}
+
         return puntosComprobaciones;
     }
 
-    public String generarInformeFases(int[] puntos, int nroCursos) {
-        int contadorDiseno=puntos[0]+puntos[1]+puntos[2]+puntos[3]+puntos[4]+puntos[5];
-        int contadorImplementacion=puntos[6]+puntos[7]+puntos[8]+puntos[9]+puntos[10];
-        int contadorRealizacion=puntos[11]+puntos[12]+puntos[13]+puntos[14];
-        int contadorEvaluacion=puntos[15]+puntos[16];
-        int contadorTotal=contadorDiseno+contadorImplementacion+contadorRealizacion+contadorEvaluacion;
-        return camposInformeFases[0]+generarCampoRelativo((float)contadorTotal/nroCursos, CHECKS_TOTAL) +
-                camposInformeFases[1]+generarCampoRelativo((float)contadorDiseno/nroCursos, CHECKS_DISENO) +
-                generarFilas(new int[]{2, 0}, 6, puntos, nroCursos)+
-                camposInformeFases[8]+generarCampoRelativo((float)contadorImplementacion/nroCursos, CHECKS_IMPLEMENTACION) +
-                generarFilas(new int[]{9, 6}, 5, puntos, nroCursos)+
-                camposInformeFases[14]+generarCampoRelativo((float)contadorRealizacion/nroCursos, CHECKS_REALIZACION) +
-                generarFilas(new int[]{15, 11}, 4, puntos, nroCursos)+
-                camposInformeFases[19]+generarCampoRelativo((float)contadorEvaluacion/nroCursos, CHECKS_EVALUACION) +
-                generarFilas(new int[]{20, 15}, 2, puntos, nroCursos)+camposInformeFases[22];
+    public String generarInformeFases(double[] puntos, List<QuizSummary> estadisticasCuestionarios,
+                                    List<EstadisticasForo> estadisticasForos, int nroCursos, boolean esGeneral) {
+        double contadorDiseno=puntos[0]+puntos[1]+puntos[2]+puntos[3]+puntos[4]+puntos[5]+puntos[6]+puntos[7];
+        double contadorImplementacion=puntos[8]+puntos[9]+puntos[10]+puntos[11]+puntos[12];
+        double contadorRealizacion=puntos[13]+puntos[14]+puntos[15]+puntos[16]+puntos[17]+puntos[18];
+        double contadorEvaluacion=puntos[19]+puntos[20];
+        double contadorTotal=contadorDiseno+contadorImplementacion+contadorRealizacion+contadorEvaluacion;
+        StringBuilder tabla= new StringBuilder();
+        tabla.append(camposInformeFases[0]);
+        tabla.append(generarCampoRelativo((float)contadorTotal/nroCursos, esGeneral ? CHECKS_TOTAL - 2 : CHECKS_TOTAL));
+        tabla.append(camposInformeFases[1]);
+        tabla.append(generarCampoRelativo((float)contadorDiseno/nroCursos, CHECKS_DISENO));
+        tabla.append(generarFilas(new int[]{2, 0}, 8, puntos, nroCursos));
+        tabla.append(camposInformeFases[10]);
+        tabla.append(generarCampoRelativo((float)contadorImplementacion/nroCursos, CHECKS_IMPLEMENTACION));
+        tabla.append(generarFilas(new int[]{11, 8}, 5, puntos, nroCursos));
+        tabla.append(camposInformeFases[16]);
+        tabla.append(generarCampoRelativo((float)contadorRealizacion/nroCursos, esGeneral ? CHECKS_REALIZACION - 2 : CHECKS_REALIZACION));
+        tabla.append(generarFilas(new int[]{17, 13}, 4, puntos, nroCursos));
+
+        if (!esGeneral) {
+            // Porcentaje de cuestionarios realizados
+            tabla = generarInformeCuestionario(tabla, puntos, estadisticasCuestionarios); 
+
+            // Porcentaje de alumnos que participan en los foros
+            tabla = generarInformeForos(tabla, puntos, estadisticasForos);
+        }
+        // Evaluación
+        tabla.append(camposInformeFases[21]+generarCampoRelativo((float)contadorEvaluacion/nroCursos, CHECKS_EVALUACION));
+        tabla.append(generarFilas(new int[]{22, 19}, 2, puntos, nroCursos));
+
+        tabla.append(camposInformeFases[24]);
+
+        return tabla.toString();
     }
 
-    private String generarFilas(int[] posiciones, int cantidad, int[] puntos, int nroCursos){
+    public StringBuilder generarInformeCuestionario(StringBuilder tabla, double[] puntos, List<QuizSummary> estadisticasCuestionarios) {
+        tabla.append("</tr><tr onclick=\"openInfo(event, 'estadisticquiz')\" data-bs-toggle=\"tooltip\" title=\"Se comprueba qué porcentaje de alumnos participa en los cuestionarios.\"> <td class=\"tg-ltgr\">Al menos un " + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos responden a los cuestionarios  <button onclick=\"toggleCuestionarios()\">Desplegar</button></td>");
+        tabla.append(generarCampoRelativoCuestionario((float)puntos[17], 1));
+
+        if(estadisticasCuestionarios != null && !estadisticasCuestionarios.isEmpty()){
+            for (QuizSummary quizSummary : estadisticasCuestionarios) {
+                float porcentaje = 0;
+                if (quizSummary.getTotalAlumnos() > 0 && quizSummary.getAlumnosExaminados() > 0)
+                    porcentaje = ((float)(quizSummary.getAlumnosExaminados()*100)/quizSummary.getTotalAlumnos())/100;
+
+                tabla.append("</tr><tr class=\"toggle-cuestionarios\" data-bs-toggle=\"tooltip\"> <td class=\"tg-ltgr\"onclick=\"muestraCuestionario(" + quizSummary.getId() + ")\">Cuestionario " + quizSummary.getNombreCuestionario() + " </td>" + generarCampoRelativoCuestionario(porcentaje, 1));
+            }
+        }
+
+        return tabla;
+    }
+
+    public double porcentajeForosContestados(List<EstadisticasForo> foros) {
+        double porcentaje = 0;
+        if (foros != null && !foros.isEmpty()) {
+            for (EstadisticasForo estadisticasForo : foros) {
+                porcentaje += estadisticasForo.getPorcentajeParticipacion();
+            }
+            porcentaje = porcentaje / foros.size();
+        }
+
+        return porcentaje;
+    }
+
+    public StringBuilder generarInformeForos(StringBuilder tabla, double[] puntos, List<EstadisticasForo> foros) {
+        tabla.append("</tr><tr onclick=\"openInfo(event, 'estadisticforum')\" data-bs-toggle=\"tooltip\" title=\"Se comprueba qué porcentaje de alumnos participa en los foros.\"> <td class=\"tg-ltgr\">Al menos un " + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos participa en los foros  <button onclick=\"toggleForos()\">Desplegar</button></td>");
+        tabla.append(generarCampoRelativoCuestionario((float)puntos[18], 1));
+        // Porcentaje de alumnos que participa en cada foro
+        if (foros != null && !foros.isEmpty()) {
+            for (EstadisticasForo estadisticasForo : foros) {
+                tabla.append("</tr><tr class=\"toggle-foros\" data-bs-toggle=\"tooltip\"> <td class=\"tg-ltgr\" onclick=\"muestraForo(" + estadisticasForo.getIdForo() + ")\">Foro " + estadisticasForo.getNombre() + " </td>" + generarCampoRelativoCuestionario((float)estadisticasForo.getPorcentajeParticipacion()/100, 1));
+            }
+        }
+
+        return tabla;
+    }
+
+    private String generarFilas(int[] posiciones, int cantidad, double[] puntos, int nroCursos){
         StringBuilder filas= new StringBuilder();
         if(nroCursos==1){
             for (int i = 0; i < cantidad; i++) {
@@ -123,10 +230,150 @@ public class ELearningQAFacade {
             }
         }else{
             for (int i = 0; i < cantidad; i++) {
-                filas.append(camposInformeFases[posiciones[0] + i]).append(generarCampoRelativo(puntos[posiciones[1] + i],nroCursos));
+                filas.append(camposInformeFases[posiciones[0] + i]).append(generarCampoRelativo((float)puntos[posiciones[1] + i],nroCursos));
             }
         }
         return filas.toString();
+    }
+
+    public List<QuizSummary> generarListaCuestionarios(String token, long courseid, List<Quiz> quizzes) {
+        ArrayList<QuizSummary> listaCuestionarios = new ArrayList<>();
+
+        for (Quiz quiz : quizzes) {
+            if (quiz.isVisible()) {
+                QuizSummary quizSummary = WebServiceClient.obtenerResumenCuestionario(token, courseid, config.getHost(), quiz);
+                if (quizSummary != null) {
+                    listaCuestionarios.add(quizSummary);
+                }
+            }
+        }
+        return listaCuestionarios;
+    }
+
+    // Obtener la lista de usuarios de un curso
+    public List<User> getListaUsuarios(String token, long courseid) {
+        return WebServiceClient.obtenerUsuarios(token, courseid, config.getHost());
+    }
+
+    // Obtener la lista de posts de un curso
+    public List<Post> getListaPosts(String token, List<Forum> listaForos) {
+        return WebServiceClient.obtenerListaPosts(token, config.getHost(), listaForos);
+    }
+
+    public Map<Integer, String> generarInformesCuestionarios(List<QuizSummary> quizzes) {
+        Map<Integer, String> informes = new HashMap<>();
+        
+        // Por cada cuestionario, generamos su informe
+        for (QuizSummary quiz : quizzes) {
+            String informe = generarInformeCuestionario(quiz);
+            // Creamos una relación entre el id del cuestionario y su informe
+            informes.put(quiz.getId(), informe);
+        }
+
+        return informes;
+    }
+
+    public String generarInformeCuestionario(QuizSummary quizSummary) {
+        String informe = "";
+
+        if (quizSummary != null) {
+            informe += "<div class=\"cuestionario\" id=\"" + quizSummary.getId() + "\">";
+            informe += "<h1><a target=\"_blank\" href=\"" + quizSummary.getURL() + "\">Cuestionario " + quizSummary.getId() + " - " + quizSummary.getNombreCuestionario() + "</a></h1>";
+            informe += "<p>Número de alumnos: " + quizSummary.getTotalAlumnos() + "</p>";
+            informe += "<p>Número de alumnos examinados: " + quizSummary.getAlumnosExaminados() + "</p>";
+            informe += "<p>Total de intentos: " + quizSummary.getTotalIntentos() + "</p>";
+            informe += "<p>Número de preguntas: " + quizSummary.getTotalPreguntas() + "</p>";
+            informe += "<p>Nota máxima: " + ((int)(quizSummary.getNotaMaxima() * 100)) / 100.00 + "</p>";
+            informe += "<p>Nota media del mejor intento (Solo alumnos que han realizado el examen): " + ((int)(quizSummary.getNotaMediaMejorIntentoAlumnosConNota() * 100)) / 100.00 + "</p>";
+            informe += "<p>Nota media del mejor intento (Todos los alumnos): " + ((int)(quizSummary.getNotaMediaMejorIntentoTotalAlumnos() * 100)) / 100.00 + "</p>";
+            informe += "<p>Nota media del último intento (Solo alumnos que han realizado el examen): " + ((int)(quizSummary.getNotaMediaUltimoIntentoAlumnosConNota() * 100)) / 100.00 + "</p>";
+            informe += "<p>Nota media del último intento (Todos los alumnos): " + ((int)(quizSummary.getNotaMediaUltimoIntentoTotalAlumnos() * 100)) / 100.00 + "</p>";
+            if (quizSummary.getAlumnosExaminados() > 3) {
+                DecimalFormat decimalFormat = new DecimalFormat("#.####");
+                informe += "<p>Skewness (para las mejores calificaciones): " + decimalFormat.format(quizSummary.getSkewness()) + "</p>";
+                informe += "<p>Kurtosis (para las mejores calificaciones): " + decimalFormat.format(quizSummary.getKurtosis()) + "</p>";
+            }
+            informe += "</div>";
+
+        }
+        return informe;
+    }
+
+    public Map<Integer, String> generarInformesForos(List<EstadisticasForo> foros) {
+        Map<Integer, String> informes = new HashMap<>();
+        
+        for (EstadisticasForo foro : foros) {
+            String informe = generarInformeForo(foro);
+            informes.put(foro.getIdForo(), informe);
+        }
+
+        return informes;
+    }
+
+    public String generarInformeForo(EstadisticasForo foro) {
+        StringBuilder informe = new StringBuilder();
+        if (foro != null) {
+            informe.append("<div class=\"foro\" id=\"foro").append(foro.getIdForo()).append("\">");
+            informe.append("<h1><a target=\"_blank\" href=\"").append(foro.getURL()).append("\">Foro ").append(foro.getIdForo()).append(" - ").append(foro.getNombre()).append("</a></h1>");
+            informe.append("<p>Número de alumnos que participan: ").append(foro.getUsuariosUnicos()).append("</p>");
+            informe.append("<p class=\"sentimientos\"></p>");
+            if (!foro.getEstadisticasDiscusiones().isEmpty()) {
+                informe.append("<h3>Estadísticas de los hilos</h3>");
+                for (EstadisticasDiscusion discusion : foro.getEstadisticasDiscusiones()) {
+                    informe.append("<div class=\"alert alert-danger p-0 infoline overall foros\">");
+                    informe.append("<p>Hilo: ").append(discusion.getAsunto()).append("</p>");
+                    informe.append("<p>Mensajes totales del hilo: ").append(discusion.getNumeroMensajes()).append("</p>");
+                    informe.append("</div>");
+                }
+            }
+            informe.append("</div>");
+        }
+        return informe.toString();
+    }
+
+    // Método para obtener la relación entre el id de un cuestionario y las preguntas que lo componen
+    public Map<Integer, int[]> generarGraficoPreguntas(String token, List<Quiz> quizzes) {
+        List<EstadisticaNotasPregunta> estadisticas;
+        Map<Integer, int[]> informes = new HashMap<>();
+
+        for (Quiz quiz : quizzes) {
+            if (quiz.isVisible()) {
+                estadisticas = WebServiceClient.obtenerEstadisticasNotasPregunta(config.getHost(), token, quiz);
+                int[] idPreguntas = new int[estadisticas.size()];
+                int i = 0;
+                for (EstadisticaNotasPregunta estadistica : estadisticas) {
+                    idPreguntas[i] = estadistica.getIdPregunta();
+                    i++;
+                }
+                informes.put(quiz.getId(), idPreguntas);
+            }
+        }
+
+        return informes;
+    }
+    
+    // Método para obtener la relación entre el id de un cuestionario y las notas medias por pregunta
+    public Map<Integer, double[]> generarGraficoNotas(String token, List<Quiz> quizzes) {
+        List<EstadisticaNotasPregunta> estadisticas;
+        Map<Integer, double[]> informes = new HashMap<>();
+        for (Quiz quiz : quizzes) {
+            if (quiz.isVisible()) {
+                estadisticas = WebServiceClient.obtenerEstadisticasNotasPregunta(config.getHost(), token, quiz);
+                double[] notaMediaPreguntas = new double[estadisticas.size()];
+                int i = 0;
+                for (EstadisticaNotasPregunta estadistica : estadisticas) {
+                    notaMediaPreguntas[i] = estadistica.getNotaMediaPregunta() * 100;
+                    i++;
+                }
+                informes.put(quiz.getId(), notaMediaPreguntas);
+            }
+        }
+
+        return informes;
+    }
+
+    public List<Forum> getListaForos(String token, long courseid) {
+        return WebServiceClient.obtenerListaForos(token, courseid, config.getHost());
     }
 
 
@@ -180,6 +427,16 @@ public class ELearningQAFacade {
         return WebServiceClient.esNotaMaxConsistente(listaCalificadores, registro);
     }
 
+    // Devuelve true si hay algún cuestionario, sino se devuelve false y se añade un registro de alerta
+    public boolean isHayCuestionarios(List<Quiz> quizzes, AlertLog registro) {
+        return WebServiceClient.hayCuestionarios(quizzes, registro);
+    }
+
+    // Devuelve true si hay algún foro, sino se devuelve false y se añade un registro de alerta
+    public boolean isHayForos(List<Forum> listaForos, AlertLog registro) {
+        return WebServiceClient.hayForos(listaForos, registro);
+    }
+
     public boolean isEstanActualizadosRecursos(List<Resource> listaRecursosDesfasados, AlertLog registro) {
         return WebServiceClient.estanActualizadosRecursos(listaRecursosDesfasados, registro, config);
     }
@@ -204,11 +461,39 @@ public class ELearningQAFacade {
         return WebServiceClient.hayVariedadFormatos(listamodulos, registro, config);
     }
 
+    // Devuelve el porcentaje de cuestionarios contestados, sino se devuelve 0 y se añade un registro de alerta
+    public double porcentajeCuestionariosContestados(List<Quiz> quizzes, double porcentaje, AlertLog registro) {
+        return WebServiceClient.calculaPorcentajeCuestionarios(quizzes, porcentaje, registro, config);
+    }
+
+    // Devuelve el porcentaje de alumnos que participan en los foros, sino se devuelve 0 y se añade un registro de alerta
+    public List<EstadisticasForo> porcentajeAlumnosForos(String token, List<Forum> listaForos, List<User> alumnos, AlertLog registro) {
+        // Eliminar al profesor de la lista de alumnos
+        List<User> alumnosEstudiantes = new ArrayList<>();
+        List<String> usuariosNoAlumnos = new ArrayList<>();
+        for (User alumno : alumnos) {
+            boolean esEstudiante = false;
+            for (Role role : alumno.getRoles()) {
+                if (role.getShortname().equals("student")) {
+                    esEstudiante = true;
+                    break;
+                }
+            }
+            if (esEstudiante) {
+                alumnosEstudiantes.add(alumno);
+            } else {
+                usuariosNoAlumnos.add(alumno.getFullname());
+            }
+        }
+
+        return WebServiceClient.calculaPorcentajeAlumnosForos(token, listaForos, alumnosEstudiantes, usuariosNoAlumnos, registro, config);
+    }
+
     public float porcentajeFraccion(float numerador, float denominador){
         return numerador/denominador*100;
     }
 
-    public String generarCampoAbsoluto(int puntos){
+    public String generarCampoAbsoluto(double puntos){
         if (puntos==0){
             return "<td class=\"tg-pred\"><img src=\"Cross.png\" width=\"16\" height=\"16\" alt=\"No\"></td>";
         }else{
@@ -228,10 +513,20 @@ public class ELearningQAFacade {
         else{return "<td class=\"tg-pgre\">"+campoAMedias;}
     }
 
-    public float[] calcularPorcentajesMatriz(int[] puntos,int numeroCursos){
+    public String generarCampoRelativoCuestionario(float numerador, float denominador){
+        float resultado= numerador/denominador;
+        String campoAMedias="<meter value=\""+numerador+"\" min=\"0\" max=\""+denominador+"\"></meter>"+
+                String.format("%.1f",porcentajeFraccion(numerador, denominador))+"%"+"</td>";
+        if (resultado<config.getMinQuizAnswerPercentage()){return "<td class=\"tg-pred\">"+campoAMedias;}
+        else{return "<td class=\"tg-pgre\">"+campoAMedias;}
+    }
+
+    public float[] calcularPorcentajesMatriz(double[] puntos,int numeroCursos){
         int[][] matrizPuntos=new int[][]{
                 {3,1,0,0,0,0,0,0,0},
                 {3,1,1,3,1,1,0,0,0},
+                {3,1,1,0,0,0,0,0,0},
+                {3,1,1,0,0,0,0,0,0},
                 {3,1,1,0,0,0,0,0,0},
                 {3,1,1,0,0,0,0,0,0},
                 {3,1,1,0,0,0,0,0,0},
@@ -246,10 +541,12 @@ public class ELearningQAFacade {
                 {1,3,1,1,3,1,0,0,0},
                 {1,3,1,1,3,1,0,0,0},
                 {1,1,3,1,1,3,1,1,3},
+                {1,1,3,0,0,0,0,0,0},
+                {1,1,3,0,0,0,0,0,0},
                 {1,1,3,1,1,3,1,1,3}
         };
         float[] porcentajes=new float[9];
-        int[] puntuacionesMax=new int[]{34*numeroCursos,26*numeroCursos,19*numeroCursos,17*numeroCursos,20*numeroCursos,17*numeroCursos,6*numeroCursos,3*numeroCursos,10*numeroCursos};
+        int[] puntuacionesMax=new int[]{42*numeroCursos,30*numeroCursos,27*numeroCursos,17*numeroCursos,20*numeroCursos,17*numeroCursos,6*numeroCursos,3*numeroCursos,10*numeroCursos};
         for(int i=0;i<matrizPuntos.length;i++){
             for(int j=0;j<porcentajes.length;j++){
                 porcentajes[j]+= (float) (matrizPuntos[i][j] * puntos[i]) /puntuacionesMax[j];

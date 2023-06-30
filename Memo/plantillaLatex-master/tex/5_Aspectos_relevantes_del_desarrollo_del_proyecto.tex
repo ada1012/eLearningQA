@@ -1,1 +1,34 @@
 \capitulo{5}{Aspectos relevantes del desarrollo del proyecto}
+\section{Ciclo de vida}
+Este trabajo se ha realizado como se ha comentado previamente con la implementación de sprints de 14 días al principio del trabajo y luego se redujeron las reuniones a un período de 7 días ya que el tiempo jugaba un papel importante y faltaban muchas características por implementar.
+
+Esta segunda versión comenzó con la comprensión del proyecto heredado y el planteamiento de si se iba a mentener la aplicación web programada con Java o si se iba a trasladar a un lenguaje de programación diferente. Gracias a los conocimientos adquiridos previamente en un grado superior de desarrollo de aplicaciones web ya se partía con una experiencia previa en JSP por lo que se mantuvo el proyecto intacto.
+Después se decidió trabajar en la profundización de conocimientos en el área de cuestionarios y foros como indica el título del TFG. En esta especialización, primero se trabajó con el tema de los cuestionarios planteando una interfaz nueva que mostrase estadísticas de los mismos, permitiendo al profesorado conocer la actitud y desempeño del alumnado.
+
+Posteriormente se introdujo Sonar Cloud ya que se había añadido bastante código y hacía falta refactorizarlo.
+
+Por temas de tiempo de carga se planteó investigar procesos de asincronía del framework Spring porque al aumentar la funcionalidad de la aplicación también aumentaba el número de llamadas a los web services de Moodle.
+
+Por último, se trabajó en los foros incorporando un conjunto de estadísticas del mismo y se hizo una investigación de las librerías en Java de análisis de sentimiento para analizar los mensajes de cada foro. En este apartado surgieron varios inconvenientes porque la mayoría de librerías solo daban soporte a textos en inglés. Tras varias búsquedas y reuniones se implementaron una serie de llamadas asíncronas a una API que analizaba textos en español y devolvía una nota estimada para dicho texto.
+
+\section{Proceso de obtención de llamadas a los servicios web}
+El proceso de obtención de datos de la API de Moodle fue más o menos sencillo ya que había una documentación previa gracias a la primera versión de este proyecto ya que la propia documentación de la página web de Moodle no dejaba muy claro cómo realiza dichas llamadas.
+Para la documentación también se eligió utilizar la incluida en la instalación de Moodle ya que es mucho más comprensible.
+
+Para realizar las pruebas de las nuevas llamadas, se utilizó la herramienta Postman. Postman permite enviar solicitudes HTTP a la API y recibir las respuestas correspondientes. Una ventaja significativa de utilizar Postman es que formatea y presenta las respuestas de manera legible, con tabulaciones y estructura clara, a diferencia de la visualización de respuestas en una sola línea que se obtiene al hacer las llamadas directamente desde el navegador. Esto facilita la inspección y comprensión de los datos devueltos por la API durante el proceso de prueba y depuración. Con dichas respuestas en formato JSON (JavaScript Object Notation) se trasladaban a Json2CSharp.com para obtener el código que formaría el nuevo modelo.
+
+Todas estas llamadas se probaron con la página web de pruebas que provee Moodle: Mount Orange School y con un Moodle instalado en local. Este último permitía hacer pruebas más detalladas y comprobar las estadísticas de los cuestionarios que generaba la aplicación con los que mostraba Moodle.\imagen{JSON.png}{Obtención del JSON}
+
+\section{Implementación de GitHub Actions}
+En este apartado se incluyó Sonar Cloud en las acciones de GitHub indicando que cada vez que se haga un push en la rama develop se debe superar la \textit{Quality Gate} indicada en Sonar Cloud. Esta \textit{Quality Gate} se puede dejar la que viene por defecto o programar una propia. En este caso se ha implementado una nueva. \imagen{QualityGate.png}{\label{fig:qualitygate}Quality gate usada en el proyecto}
+Desde la implementación de SonarCloud en el ciclo de integración y despliegue continuo, se ha establecido el hábito de verificar los errores, defectos y vulnerabilidades generados después de cada commit. Este enfoque previene la acumulación de problemas y, al mismo tiempo, facilita el mantenimiento del código. Asimismo, el proceso de abordar los code smells ha resultado en una disminución de su incidencia.
+
+\section{Generación de estadísticas de los cuestionarios}
+Para la generación de estadísticas, Moodle devuelve la información de manera poco eficiente. Para obtener la media de notas de un cuestionario, es necesario realizar una serie de pasos: primero, obtener los cuestionarios del curso; luego, obtener los intentos del cuestionario previamente obtenido; finalmente, calcular las estadísticas necesarias a partir de todos esos intentos, que incluyen tanto la nota global como la nota por pregunta.
+
+Esta forma de obtención de datos resulta poco eficiente, especialmente en casos donde el curso cuenta con un gran número de alumnos. Por ejemplo, en un curso con 50 alumnos que hayan realizado 15 cuestionarios a lo largo del curso, con varios intentos por persona, se requerirían más de 750 llamadas a la API de Moodle solo para generar las estadísticas necesarias.
+
+Esta cantidad de llamadas representa una carga considerable para el sistema, considerando que incluso para clases con un número relativamente bajo de alumnos, resulta una cantidad considerable de solicitudes. Por lo tanto, se hace evidente la necesidad de mejorar el proceso de obtención de estadísticas para optimizar el rendimiento y eficiencia en el manejo de los datos en Moodle.
+
+\section{Cambio de versión de Moodle}
+Como Moodle en este último año ha implementado la versión 4.1 algunas llamadas a la API han variado sus respuestas como es el caso de los campos booleanos, antes estos devolvían un valor entero pero con la nueva versión se devuelve un booleano. Esto implicó una reestructuración de algunos modelos que tuviesen campos como isVisible.

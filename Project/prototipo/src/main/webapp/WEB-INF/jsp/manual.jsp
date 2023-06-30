@@ -29,8 +29,12 @@
                         <li><strong>Gráfico de evolución:</strong> la aplicación almacena estas puntuaciones cada vez que se carga un informe para generar un gráfico interactivo de la evolución de estos valores.</li>
                         <img src="Evolucion.png" class="mx-auto" alt="Página de evolución del rendimiento">
                         <li><strong>Informe de fases:</strong> el informe contiene también una tabla que muestra los resultados en cada una de las comprobaciones del análisis y las agrupa en las distintas fases del diseño instruccional (Diseño, Implementación, Realización, y Evaluación) además de dar una puntuación general.</li>
-                        <li><strong>Lista de mejoras:</strong> por último, el informe muestra una lista de motivos concretos que producen resultados negativos en el análisis para subsanarlos o tenerlos en cuenta de cara al futuro. Haciendo clic en las filas de la tabla se puede filtrar la lista de mejoras.</li>
+                        <li><strong>Lista de mejoras:</strong> el informe muestra una lista de motivos concretos que producen resultados negativos en el análisis para subsanarlos o tenerlos en cuenta de cara al futuro. Haciendo clic en las filas de la tabla se puede filtrar la lista de mejoras.</li>
                         <img src="InformeFases.png" class="mx-auto" alt="Página de informe de fases">
+                        <li><strong>Estadísticas cuestionario:</strong> el informe muestra las principales estadísticas que mostraría la propia plataforma en la que se realiza el cuestionario añadiendo un gráfico del índice de dificultad de las preguntas.</li>
+                        <img src="Cuestionarios.png" class="mx-auto" alt="Informe de cuestionarios">
+                        <li><strong>Estadísticas foros:</strong> el informe muestra un índice de participación del alumnado seguido del análisis de sentimiento de los foros y por último, un informe más detallado del número de mensajes por discusión.</li>
+                        <img src="Foros.png" class="mx-auto" alt="Informe de foros">
                     </ul>
                     <p>El informe especifico muestra los resultados de las comprobaciones en el informe de fases de forma absoluta, es decir, que solo indica si el criterio se cumple o no, sin embargo, en el informe global, se muestra un resultado u otro dependiendo de la cantidad de cursos que satisfacen dicho criterio.</p>
 
@@ -50,6 +54,8 @@
                     <li><strong>El curso tiene actividades grupales:</strong> se comprueba que existan actividades con entrega grupal habilitada en el curso. <u>Responsable:</u> Diseñador <u>Involucrados:</u> Facilitador y Proveedor <u>Perspectivas:</u> Pedagógica</li>
                     <li><strong>Los estudiantes pueden ver las condiciones necesarias para completar una actividad:</strong> se comprueba que esté habilitada la opción de mostrar las condiciones para completar una actividad en el curso. <u>Responsable:</u> Diseñador <u>Involucrados:</u> Facilitador y Proveedor <u>Perspectivas:</u> Pedagógica</li>
                     <li><strong>Todas las actividades tienen la misma nota máxima en el calificador:</strong> se comprueba que exista una consistencia en las notas máximas de los items de calificación (tareas, entregas, cuestionarios) del curso. <u>Responsable:</u> Diseñador <u>Involucrados:</u> Facilitador y Proveedor <u>Perspectivas:</u> Pedagógica</li>
+                    <li><strong>El curso tiene al menos un cuestionario</strong> se comprueba que exista alguna forma de evaluación a través de un cuestionario del curso. <u>Responsable:</u> Diseñador <u>Involucrados:</u> Facilitador y Proveedor <u>Perspectivas:</u> Pedagógica</li>
+                    <li><strong>El curso tiene al menos un foro</strong> se comprueba que exista alguna forma de comunicación a través de un foro en el curso. <u>Responsable:</u> Diseñador <u>Involucrados:</u> Facilitador y Proveedor <u>Perspectivas:</u> Pedagógica</li>
                     </ul>
                     <p><strong>Implementación:</strong></p>
                     <ul>
@@ -65,11 +71,13 @@
                     <li><strong>Se ofrece retroalimentación de las tareas:</strong> se comprueba que el profesor deje comentarios en la mayoría de calificaciones que haga. <u>Responsable:</u> Facilitador <u>Involucrados:</u> Diseñador y Proveedor <u>Perspectivas:</u> Pedagógica y Tecnológica</li>
                     <li><strong>Las tareas están calificadas:</strong> se comprueba que no hayan entregas de alumnos que hayan pasado una semana sin calificación. <u>Responsable:</u> Facilitador <u>Involucrados:</u> Diseñador y Proveedor <u>Perspectivas:</u> Pedagógica y Tecnológica</li>
                     <li><strong>El calificador muestra cómo ponderan las diferentes tareas:</strong> se comprueba que el calificador muestre los pesos de los items de calificación. <u>Responsable:</u> Facilitador <u>Involucrados:</u> Diseñador y Proveedor <u>Perspectivas:</u> Pedagógica y Tecnológica</li>
+                    <li><strong>Al menos un X% de los alumnos responde a los cuestionarios en caso de que existan:</strong> se comprueba el porcentaje de alumnos que ha respondido a los cuestionarios. <u>Responsable:</u> Proveedor <u>Involucrados:</u> Diseñador y Facilitador <u>Perspectivas:</u> Pedagógica, Tecnológica, y Estratégica</li>
+                    <li><strong>Al menos un X% de los alumnos participa en los foros en caso de que existan:</strong> se comprueba el porcentaje de alumnos que ha participado en los foros. <u>Responsable:</u> Proveedor <u>Involucrados:</u> Diseñador y Facilitador <u>Perspectivas:</u> Pedagógica, Tecnológica, y Estratégica</li>
                     </ul>
                     <p><strong>Evaluación:</strong></p>
                     <ul>
                     <li><strong>La mayoría de alumnos responden a los feedbacks:</strong> se comprueba que no hayan muchos alumnos que no respondan a los feedbacks. <u>Responsable:</u> Proveedor <u>Involucrados:</u> Diseñador y Facilitador <u>Perspectivas:</u> Pedagógica, Tecnológica, y Estratégica</li>
-                    <li><strong>Se utilizan encuestas de opinión:</strong> se comprueba que el curso contenga encuestas de opinión. <u>Responsable:</u> Proveedor <u>Involucrados:</u> Diseñador y Facilitador <u>Perspectivas:</u> Pedagógica, Tecnológica, y Estratégica</li></ul>
+                    <li><strong>Se utilizan encuestas de opinión:</strong> se comprueba que el curso contenga encuestas de opinión. <u>Responsable:</u> Proveedor <u>Involucrados:</u> Diseñador y Facilitador <u>Perspectivas:</u> Pedagógica, Tecnológica, y Estratégica</li>
           </div>
     </div>
     <footer class="d-flex justify-content-evenly p-3 bg-dark text-white">

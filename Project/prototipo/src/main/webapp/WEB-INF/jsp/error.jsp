@@ -21,9 +21,9 @@
     <%String curso=(String)session.getAttribute("coursename");%>
     <h1>Ha habido un problema inesperado intentando acceder al curso <%=curso%></h1><br>
     <p>Si sospechas qué ha podido pasar informa del error en el siguiente link:</p>
-    <a class="text-white" href="https://github.com/RobertoArastiBlanco/eLearningQA/issues/new">https://github.com/RobertoArastiBlanco/eLearningQA/issues/new</a>
+    <a class="text-white" href="https://github.com/ada1012/eLearningQA/issues/new">https://github.com/ada1012/eLearningQA/issues/new</a>
     <p><br>También puedes mandar un correo a:</p>
-    <a class="text-white" href="mailto:rab1002@alu.ubu.es">rab1002@alu.ubu.es</a>
+    <a class="text-white" href="mailto:rab1002@alu.ubu.es">ada1012@alu.ubu.es</a>
     </div>
     <footer class="d-flex justify-content-evenly p-3 bg-dark text-white">
       <p><img src="FullLogo.png" width="200" height="32" alt="eLearningQA"></p>

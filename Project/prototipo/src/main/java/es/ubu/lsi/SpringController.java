@@ -48,6 +48,11 @@ public class SpringController{
         return "error";
     }
 
+    @GetMapping("/loading")
+    public String loading() {
+        return "loading";
+    }
+
     @GetMapping(
             value = "/cabecera.jpg",
             produces = MediaType.IMAGE_JPEG_VALUE
@@ -165,6 +170,26 @@ public class SpringController{
     public @ResponseBody byte[] escudoInfor() throws IOException {
         InputStream in = getClass().getClassLoader()
                 .getResourceAsStream("images/escudoInfor.png");
+        return IOUtils.toByteArray(in);
+    }
+
+    @GetMapping(
+            value = "/Cuestionarios.png",
+            produces = MediaType.IMAGE_PNG_VALUE
+    )
+    public @ResponseBody byte[] cuestionariospng() throws IOException {
+        InputStream in = getClass().getClassLoader()
+                .getResourceAsStream("images/Cuestionarios.png");
+        return IOUtils.toByteArray(in);
+    }
+
+    @GetMapping(
+            value = "/Foros.png",
+            produces = MediaType.IMAGE_PNG_VALUE
+    )
+    public @ResponseBody byte[] forospng() throws IOException {
+        InputStream in = getClass().getClassLoader()
+                .getResourceAsStream("images/Foros.png");
         return IOUtils.toByteArray(in);
     }
 }

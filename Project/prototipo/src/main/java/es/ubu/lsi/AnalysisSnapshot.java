@@ -5,11 +5,11 @@ import java.util.Arrays;
 public class AnalysisSnapshot {
     private String nombre;
     private long fecha;
-    private int[] puntoscomprobaciones;
+    private double[] puntoscomprobaciones;
     private float[] porcentajesDesempeno;
     private String errores;
 
-    public AnalysisSnapshot(String nombre, int[] puntoscomprobaciones, float[] porcentajesDesempeno, String errores) {
+    public AnalysisSnapshot(String nombre, double[] puntoscomprobaciones, float[] porcentajesDesempeno, String errores) {
         this.nombre=nombre;
         this.fecha=System.currentTimeMillis();
         this.puntoscomprobaciones=puntoscomprobaciones;
@@ -25,12 +25,12 @@ public class AnalysisSnapshot {
         errores=atributos[4];
     }
 
-    public static int[] leerArrayPuntos(String textoArray){
+    public static double[] leerArrayPuntos(String textoArray){
         String textoLimpio=textoArray.replaceAll("[\\[\\] ]","");
         String[] textoSeparado=textoLimpio.split(",");
-        int[] array=new int[17];
+        double[] array=new double[17];
         for (int i=0;i<array.length;i++){
-            array[i]=Integer.parseInt(textoSeparado[i]);
+            array[i]=Double.parseDouble(textoSeparado[i]);
         }
         return array;
     }
@@ -53,7 +53,7 @@ public class AnalysisSnapshot {
         return fecha;
     }
 
-    public int[] getPuntoscomprobaciones() {
+    public double[] getPuntoscomprobaciones() {
         return puntoscomprobaciones;
     }
 

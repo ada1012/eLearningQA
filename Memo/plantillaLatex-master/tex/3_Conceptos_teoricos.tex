@@ -3,3 +3,165 @@
 
 \section{Definiciones básicas}
 
+En primer lugar, quisiera mencionar que en el trabajo previo \cite{previotfg} existe un desglose de palabras clave que permitirá comprender mejor la aplicación, en esta memoria solo se mencionarán las definiciones nuevas.
+
+\begin{itemize}
+	\item \textbf{Cuestionario:} es un instrumento de evaluación utilizado por los profesores o facilitadores para medir el conocimiento, comprensión y habilidades adquiridas por los estudiantes durante el proceso de aprendizaje \cite{Lissette}.
+	\item \textbf{Asimetría o skewness:} es una medida estadística que describe la asimetría de una distribución de datos. Indica si la distribución de los datos está desplazada hacia la izquierda o hacia la derecha en relación con la distribución normal \cite{skewness}.
+	\item \textbf{Coeficiente de Curtosis:} es una medida estadística que describe la forma de una distribución de datos y su grado de apuntamiento en relación con una distribución normal. La curtosis mide la concentración de los datos alrededor de la media y evalúa la presencia de colas o picos en la distribución \cite{curtosis}. 
+	\item \textbf{Índice de dificultad:} medida que se utiliza para evaluar la dificultad global del cuestionario o de cada ítem individual. Este índice proporciona información sobre el grado de dificultad que los participantes enfrentan al responder las preguntas del cuestionario \cite{indicededificultad}.
+	\item \textbf{Foro:} es una herramienta virtual especialmente diseñada para promover la comunicación y el intercambio de ideas entre los participantes de un curso a distancia, ya sean estudiantes o profesores. Este espacio facilita la discusión y el debate sobre temas específicos relacionados con el curso, permitiendo a los usuarios compartir sus conocimientos, plantear preguntas, brindar respuestas y colaborar de manera colaborativa en el proceso de aprendizaje \cite{CHENG2011253}.
+	\item \textbf{Hilo:} se refiere a una unidad de conversación temática dentro del foro. Representa un tema o pregunta específica planteada por un participante del curso, que genera respuestas y comentarios por parte de otros usuarios. Un hilo comienza con el mensaje inicial del participante, que establece el tema de discusión, y a partir de ahí se desarrolla a medida que otros usuarios responden, aportan sus opiniones y generan una conversación en torno al tema. Cada hilo del foro se caracteriza por estar centrado en un asunto particular y permite un seguimiento y organización más efectivos de las discusiones dentro del curso a distancia \cite{CHENG2011253}.  
+	\item \textbf{Mensaje:} es una unidad de comunicación escrita realizada por un participante del curso dentro de un hilo de discusión específico. Los mensajes son las respuestas, comentarios o aportes que los usuarios del curso hacen en relación al tema planteado en el hilo de discusión \cite{CHENG2011253}.  
+	\item \textbf{Análisis de sentimiento:} el proceso de análisis de sentimiento implica el uso de algoritmos y modelos de procesamiento de lenguaje natural (NLP) para extraer información relevante del texto y determinar la polaridad emocional asociada a cada unidad de texto \cite{sentimentalanalysis}.  
+\end{itemize}
+
+
+\section{Marco de referencia de calidad de MOOQ}
+El Marco de Referencia de Calidad de MOOQ (Massive Open Online Quality) es un conjunto de estándares y directrices que se utilizan para evaluar y promover la calidad de los cursos en línea masivos y abiertos (MOOCs). Fue desarrollado por un consorcio de instituciones educativas y organizaciones dedicadas a la educación en línea \cite{stracke2018quality}.
+
+La calidad, en el contexto del e-learning, se refiere a la capacidad de cumplir con las necesidades educativas del alumno. Esto implica garantizar que el material educativo sea de alta calidad y facilite la comprensión y el aprendizaje.
+
+El marco de referencia se centra en diferentes aspectos de la calidad de los MOOCs y proporciona pautas para diseñar, desarrollar, implementar y evaluar estos cursos.
+
+En esta segunda versión los cambios que se han implementado se encuentran en la fase de diseño y realización, pero se mantendrá el resto del información para comprender todo el proyecto. A continuación, se explicarán las fases (esto es un reflejo de la descripción utilizada en la memoria anterior pero imprescindible para comprender el presente trabajo):
+
+\subsection{Fases}
+\begin{itemize}
+	\item \textbf{Análisis:}
+	en esta fase, se realiza un análisis exhaustivo de los requisitos, objetivos y necesidades del curso MOOC. Se investiga el público objetivo, se identifican los objetivos de aprendizaje y se recopilan datos relevantes para informar el diseño del curso.
+	\item \textbf{Diseño:}
+	en esta etapa, se crea la estructura y el plan detallado del curso MOOC. Se definen los objetivos de aprendizaje, se selecciona y organiza el contenido educativo, y se determinan las estrategias de enseñanza y evaluación. Además, se establecen las interacciones y colaboraciones entre estudiantes e instructores, y se define la apariencia y la navegación de la plataforma del curso. En esta fase es dónde se han incorporado los cambios de la existencia de cuestionarios y foros en la creación del curso.
+	\item \textbf{Implementación:}
+	en esta fase, se lleva a cabo la creación y producción del contenido del curso MOOC, incluyendo la grabación de videos, el desarrollo de materiales interactivos y la preparación de actividades de aprendizaje. También se configura y personaliza la plataforma del curso, se realizan pruebas técnicas y se prepara la infraestructura necesaria para su lanzamiento.
+	\item \textbf{Realización:}
+	esta etapa implica la puesta en marcha del curso MOOC y su disponibilidad para los estudiantes. Se gestionan las inscripciones, se inician las interacciones en línea, se brinda apoyo técnico y pedagógico a los participantes, y se fomenta la participación activa de los estudiantes en el curso. En esta fase se han incorporado las estadísticas y participación de cuestionarios y foros.
+	\item \textbf{Evaluación:}
+	en esta fase final, se realiza una evaluación exhaustiva del curso MOOC para determinar su efectividad y calidad. Se recopilan y analizan datos sobre el desempeño de los estudiantes, se recopilan comentarios y se realizan encuestas de satisfacción. Con base en estos resultados, se realizan ajustes y mejoras al curso para futuras iteraciones.
+\end{itemize}
+
+\imagen{CicloFases.png}{Ciclo de fases según el marco de MOOQ \cite{stracke2018quality}}
+
+\subsection{Roles}
+En el marco de referencia de calidad de MOOQ, se identifican distintas responsabilidades que son asumidas por una o más personas, conocidas como roles. 
+\begin{itemize}
+	\item \textbf{Diseñadores:}
+	el diseñador es responsable de la planificación y creación del curso MOOC. Su función principal es diseñar la estructura y el contenido del curso, estableciendo los objetivos de aprendizaje, seleccionando los materiales y recursos educativos, y diseñando las actividades de aprendizaje. 
+	\item \textbf{Facilitadores:}
+	el facilitador es el encargado de guiar y apoyar a los estudiantes durante el desarrollo del curso MOOC. Su rol es fomentar la participación activa de los estudiantes, animar las discusiones y responder a las preguntas y consultas.
+	\item \textbf{Proveedores:}
+	el proveedor se refiere a la entidad o institución que ofrece el curso MOOC. 
+\end{itemize}
+
+
+\subsection{Perspectivas}
+\begin{itemize}
+	\item \textbf{Pedagógica:}
+	esta perspectiva se centra en los aspectos relacionados con la enseñanza y el aprendizaje. Se enfoca en el diseño instruccional, las estrategias de enseñanza, los objetivos de aprendizaje y la interacción entre estudiantes e instructores. La perspectiva pedagógica busca garantizar que el curso MOOC se base en principios educativos sólidos, promueva la participación activa de los estudiantes, ofrezca oportunidades de aprendizaje significativas y se adapte a las necesidades del público objetivo.
+	\item \textbf{Tecnológica:}
+	esta perspectiva se refiere a los aspectos tecnológicos y de infraestructura del curso MOOC. Considera la selección y uso de herramientas y plataformas tecnológicas, la accesibilidad, la usabilidad y la calidad técnica del curso. La perspectiva tecnológica busca asegurar que la tecnología utilizada en el MOOC facilite el acceso y la participación de los estudiantes, promueva la interactividad y el uso eficiente de los recursos multimedia, y permita un seguimiento y evaluación adecuados del progreso de los estudiantes.
+	\item \textbf{Estratégica:}
+	esta perspectiva aborda los aspectos estratégicos y de gestión del curso MOOC. Considera la alineación del MOOC con los objetivos y la visión institucional, la identificación de las necesidades y expectativas de los estudiantes, la planificación de recursos humanos y financieros, la promoción y difusión del curso, así como la evaluación y mejora continua. La perspectiva estratégica busca asegurar que el MOOC se integre de manera efectiva en la estrategia global de la institución y se lleve a cabo de manera sostenible y exitosa.
+\end{itemize}
+
+\section{Buenas prácticas de la docencia online}
+La docencia en línea, o enseñanza a través de plataformas digitales, requiere la implementación de buenas prácticas para garantizar una experiencia educativa efectiva y de calidad. A continuación, se presentan algunas buenas prácticas de la docencia online, junto con ejemplos que ilustran la aplicación web desarrollada:
+
+\subsection{Diseño instruccional claro y estructurado}
+Es importante que el curso en línea tenga una estructura clara y coherente. Esto implica proporcionar una visión general del curso, establecer objetivos de aprendizaje claros, organizar el contenido en módulos o unidades temáticas y ofrecer una guía clara sobre cómo navegar por el curso. 
+
+\subsection{Retroalimentación oportuna y constructiva}
+Proporcionar retroalimentación efectiva y oportuna es esencial para el crecimiento y desarrollo de los alumnos. El profesor debe ofrecer comentarios constructivos sobre las tareas y actividades de los estudiantes, resaltar sus fortalezas y ofrecer sugerencias para mejorar.
+
+\subsection{Diferentes formas de interactuar en el curso}
+Es muy importante abrir al alumno varias vías para interactuar con un curso específico como pueden ser los foros, tutorías o cuestionarios ya que permiten al alumno sentir cierto dinamismo durante los meses que se encuentre estudiando dicha asignatura o módulo. Esto permite pensar al alumno durante ciertos momentos que se encuentra dentro de un aula dejando de lado la distancia que implica el e-Learning.
+
+\subsection{Conocer la participación}
+Conocer la participación en sectores como los foros puede ayudar a comprender si los alumnos se encuentra motivados en la asignatura o en un tema o si por el contrario es necesario buscar alguna forma de fomentar dicha participación.
+
+\section{Plan de calidad para cursos e-learning}
+En secciones previas hemos presentado un marco de calidad genérico junto con recomendaciones del Centro de Enseñanza Virtual de la Universidad de Burgos junto a la identificación de unas buenas prácticas de enseñanza en cursos en línea.
+
+A partir de esta documentación en este sección definimos de manera concreta unos indicadores cualitativos y cuantitativos de calidad basados en consultas a entidades de cursos en línea.
+
+Para facilitar la comprensión del conjunto de consultas de calidad se agrupan en las fases del marco de referencia de calidad de MOOQ \cite{stracke2018quality}. La Tabla \ref{table:diseño} muestra el  conjunto  de consultas de  fase de diseño, la Tabla \ref{table:implementación} las de la fase de implementación, la Tabla \ref{table:realización} las de la fase de realización y la Tabla \ref{table:evaluación} las de la fase de evaluación.
+En este apartado definiremos qué información intentamos conseguir de cada fase (nos vamos a centrar en las fases de diseño, implementación, realización, y evaluación), rol y perspectiva mediante distintos métodos. La mayoría de consultas provienen de la lista de comprobación del Centro de Enseñanza Virtual de la Universidad de Burgos (UBUCEV) de asignaturas virtuales.
+Los procesos indicados en la última columna de las tablas se refieren a los procesos que se indican a partir de la página 10 del documento del marco de referencia de calidad de MOOC \cite{stracke2018quality}. \\
+Los cambios introducidos en la versión 2 del proyecto se incluirán en azul para distinguirlos en las tablas. Es importante conocer de un vistazo cuáles son las nuevas funcionalidades o conceptos para ser conscientes del crecimiento del proyecto con sus distintas versiones.\\
+
+\label{consultas}
+\begin{table}[H]
+\caption{Consultas de diseño \linebreak Leyenda:
+	\linebreak Responsabilidad: R=Responsable,X=Involucrado
+	\linebreak Perspectivas: P=Pedagógica, T=Tecnológica, E=Estratégica}\label{table:diseño}
+\resizebox{\textwidth}{!}{%
+	\begin{tabular}{|l|l|l|l|l|l|}
+		\hline
+		\textbf{Consulta}                                                                                                                             & \textbf{Perspectivas} & \textbf{Diseñador} & \textbf{Facilitador} & \textbf{Proveedor} & \textbf{Proceso} \\ \hline
+		\begin{tabular}[c]{@{}l@{}}Las opciones\\ de progreso\\ del estudiante\\ están activadas\end{tabular}                                & P            & R         & X           &           & D-5     \\ \hline
+		\begin{tabular}[c]{@{}l@{}}Se proporcionan\\ contenidos en\\ diferentes formatos\end{tabular}                                        & PT           & R         & X           & X         & D-4     \\ \hline
+		\begin{tabular}[c]{@{}l@{}}El curso tiene\\ grupos\end{tabular}                                                                      & P            & R         & X           & X         & D-3     \\ \hline
+		\begin{tabular}[c]{@{}l@{}}El curso tiene\\ actividades\\ grupales\end{tabular}                                                      & P            & R         & X           & X         & D-3     \\ \hline
+		\begin{tabular}[c]{@{}l@{}}\textcolor{blue}{El curso tiene}\\ \textcolor{blue}{cuestionarios}\end{tabular}                                                      & \textcolor{blue}{P}            & \textcolor{blue}{R}         & \textcolor{blue}{X}           & \textcolor{blue}{X}         &      \\ \hline
+		\begin{tabular}[c]{@{}l@{}}\textcolor{blue}{El curso tiene}\\ \textcolor{blue}{foros}\end{tabular}                                                      & \textcolor{blue}{P}            & \textcolor{blue}{R}         & \textcolor{blue}{X}           & \textcolor{blue}{X}         &      \\ \hline
+		\begin{tabular}[c]{@{}l@{}}Los estudiantes\\ pueden ver las\\ condiciones\\ necesarias para\\ completar una\\ actividad\end{tabular} & P            & R         & X           & X         &      \\ \hline
+		\begin{tabular}[c]{@{}l@{}}Todas las\\ actividades tienen\\ la misma nota\\ máxima en el\\ calificador\end{tabular}                  & P            & R         & X           & X         &      \\ \hline
+		\begin{tabular}[c]{@{}l@{}}Las preguntas de\\ los cuestionarios\\ tienen\\ retroalimentación\end{tabular}                                        & P           & R         & X           & X         &      \\ \hline
+		\begin{tabular}[c]{@{}l@{}}Las preguntas de\\ opción multiple\\ puntúan con una\\ calificación aleatoria\\ estimada de cero\end{tabular}                                        & P           & R         & X           & X         &      \\ \hline
+	\end{tabular}%
+}
+\end{table}
+
+\begin{table}[H]
+\caption{Consultas de implementación \linebreak Leyenda:
+	\linebreak Responsabilidad: R=Responsable,X=Involucrado
+	\linebreak Perspectivas: P=Pedagógica, T=Tecnológica, E=Estratégica}\label{table:implementación}
+\resizebox{\textwidth}{!}{%
+	\begin{tabular}{|l|l|l|l|l|l|}
+		\hline
+		\textbf{Consulta}                                                                                                                             & \textbf{Perspectivas} & \textbf{Diseñador} & \textbf{Facilitador} & \textbf{Proveedor} & \textbf{Proceso} \\ \hline
+		\begin{tabular}[c]{@{}l@{}}Los recursos\\ están actualizados\end{tabular}                                  & PT           & R         & X           & X         & I-1     \\ \hline
+		\begin{tabular}[c]{@{}l@{}}Fechas de apertura\\ y cierre de tareas\\ son correctas\end{tabular}            & PT           & X         & R           & X         & R-2     \\ \hline
+		\begin{tabular}[c]{@{}l@{}}Se detallan los\\ criterios de\\ evaluación\\ (rúbricas, ejemplos)\end{tabular} & PT           & R         & X           & X         & R-3     \\ \hline
+		\begin{tabular}[c]{@{}l@{}}El calificador no\\ tiene demasiado\\ anidamiento\end{tabular} & PE           & R         & X           & X         &      \\ \hline
+		\begin{tabular}[c]{@{}l@{}}Los alumnos\\ están divididos\\ en grupos\end{tabular}                          & TE           & X         &             & R         & I-6     \\ \hline
+	\end{tabular}%
+}
+\end{table}
+
+
+\begin{table}[H]
+\caption{Consultas de realización \linebreak Leyenda:
+	\linebreak Responsabilidad: R=Responsable,X=Involucrado
+	\linebreak Perspectivas: P=Pedagógica, T=Tecnológica, E=Estratégica}\label{table:realización}
+\resizebox{\textwidth}{!}{%
+	\begin{tabular}{|l|l|l|l|l|l|}
+		\hline
+		\textbf{Consulta}                                                                                                                             & \textbf{Perspectivas} & \textbf{Diseñador} & \textbf{Facilitador} & \textbf{Proveedor} & \textbf{Proceso} \\ \hline
+		\begin{tabular}[c]{@{}l@{}}El profesor\\ responde en los\\ foros dentro del\\ límite de 48 horas\\ lectivas desde que\\ se plantea la duda\end{tabular} & PT           & X         & R           & X         & R-2     \\ \hline
+		\begin{tabular}[c]{@{}l@{}}Se ofrece\\ retroalimentación\\ de las tareas\end{tabular}                                                                   & PT           & X         & R           & X         & R-2     \\ \hline
+		\begin{tabular}[c]{@{}l@{}}Las tareas están\\ calificadas\end{tabular}                                                                                  & PT           & X         & R           & X         & R-2     \\ \hline
+		\begin{tabular}[c]{@{}l@{}}El calificador\\ muestra cómo\\ ponderan las\\ diferentes tareas\end{tabular}                                                & PT           & X         & R           & X         & R-2     \\ \hline
+		\begin{tabular}[c]{@{}l@{}}El tiempo de\\ los cuestionarios\\ está bien ajustado\end{tabular}                                        & P           & R         & X           & X         &      \\ \hline
+		\begin{tabular}[c]{@{}l@{}}Los cuestionarios\\ tienen una dificultad\\ estimada entre unos \\valores umbrales\end{tabular}                                        & P           & R         & X           & X         &      \\ \hline
+		\begin{tabular}[c]{@{}l@{}}Las preguntas de\\ los cuestionarios\\ son buenas\\ discriminando\cite{discrimination-2021}\end{tabular}                                        & P           & R         & X           & X         &      \\ \hline
+		\begin{tabular}[c]{@{}l@{}}\textcolor{blue}{Un porcentaje}\\ \textcolor{blue}{establecido de}\\ \textcolor{blue}{alumnos participa}\\ \textcolor{blue}{en los cuestionarios}\end{tabular}                                                      & \textcolor{blue}{P}            & \textcolor{blue}{X}         & \textcolor{blue}{X}           & \textcolor{blue}{R}         &      \\ \hline
+		\begin{tabular}[c]{@{}l@{}}\textcolor{blue}{Un porcentaje}\\ \textcolor{blue}{establecido de}\\ \textcolor{blue}{alumnos participa}\\ \textcolor{blue}{en los foros}\end{tabular}                                                      & \textcolor{blue}{P}            & \textcolor{blue}{X}         & \textcolor{blue}{X}           & \textcolor{blue}{R}         &      \\ \hline
+	\end{tabular}%
+}
+\end{table}
+
+\begin{table}[H]
+\caption{Consultas de evaluación \linebreak Leyenda:
+	\linebreak Responsabilidad: R=Responsable,X=Involucrado
+	\linebreak Perspectivas: P=Pedagógica, T=Tecnológica, E=Estratégica}\label{table:evaluación}
+\resizebox{\textwidth}{!}{%
+	\begin{tabular}{|l|l|l|l|l|l|}
+		\hline
+		\textbf{Consulta}                                                                                                                             & \textbf{Perspectivas} & \textbf{Diseñador} & \textbf{Facilitador} & \textbf{Proveedor} & \textbf{Proceso} \\ \hline
+		\begin{tabular}[c]{@{}l@{}}La mayoría de\\ alumnos responden\\ a los feedbacks\end{tabular} & PTE          & X         & X           & R         & E-2     \\ \hline
+		\begin{tabular}[c]{@{}l@{}}Se utilizan encuestas\\ de opinión\end{tabular}                  & PTE          & X         & X           & R         & E-2     \\ \hline
+	\end{tabular}%
+}
+\end{table}
+

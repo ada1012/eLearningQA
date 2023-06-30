@@ -12,7 +12,7 @@ public class MoodleObject {
     private String name;
     private int timemodified;
     private int section;
-    private int visible;
+    private boolean visible;
     private int groupmode;
     private int groupingid;
     private Object overrideby;
@@ -138,15 +138,15 @@ public class MoodleObject {
         this.section = section;
     }
 
-    public int getVisible() {
-        return visible;
-    }
+    public boolean isVisible() {
+		return visible;
+	}
 
-    public void setVisible(int visible) {
-        this.visible = visible;
-    }
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
 
-    public int getGroupmode() {
+	public int getGroupmode() {
         return groupmode;
     }
 
