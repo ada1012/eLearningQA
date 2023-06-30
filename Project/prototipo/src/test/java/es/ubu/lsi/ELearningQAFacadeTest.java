@@ -32,6 +32,8 @@ class ELearningQAFacadeTest {
     private static List<List<Assignment>> listasTareasConNotas=new ArrayList<>();
     private static List<List<ResponseAnalysis>> listasAnalisis=new ArrayList<>();
     private static List<List<Survey>> listasSurveys=new ArrayList<>();
+    private static List<List<Quiz>> listasQuizes=new ArrayList<>();
+    private static List<List<Forum>> listasForos=new ArrayList<>();
     private static AlertLog registro=new AlertLog();
     static long idCurso1=66;
     static long idCurso2=56;
@@ -66,6 +68,8 @@ class ELearningQAFacadeTest {
                 listasTareasConNotas.add(Arrays.asList(mapper.readValue(new File(ruta+"Listatareasconnotas"+id+extension), Assignment[].class)));
                 listasAnalisis.add(Arrays.asList(mapper.readValue(new File(ruta+"Listaanalisis"+id+extension), ResponseAnalysis[].class)));
                 listasSurveys.add(Arrays.asList(mapper.readValue(new File(ruta+"Listasurveys"+id+extension), Survey[].class)));
+                listasQuizes.add(Arrays.asList(mapper.readValue(new File(ruta+"Listaquizes"+id+extension), Quiz[].class)));
+                listasForos.add(Arrays.asList(mapper.readValue(new File(ruta+"Listaforos"+id+extension), Forum[].class)));
             }
         } catch (Exception e) {
             Logger LOGGER = LogManager.getLogger();
@@ -276,6 +280,26 @@ class ELearningQAFacadeTest {
         assertFalse(fachada.isHayVariedadFormatos(listasModulos.get(3), registro));
         assertFalse(fachada.isHayVariedadFormatos(listasModulos.get(4), registro));
         assertTrue(fachada.isHayVariedadFormatos(listasModulos.get(5), registro));
+    }
+
+    @org.junit.jupiter.api.Test
+    void isHayCuestionariosTest() {
+        assertTrue(fachada.isHayCuestionarios(listasQuizes.get(0), registro));
+        assertTrue(fachada.isHayCuestionarios(listasQuizes.get(1), registro));
+        assertTrue(fachada.isHayCuestionarios(listasQuizes.get(2), registro));
+        assertTrue(fachada.isHayCuestionarios(listasQuizes.get(3), registro));
+        assertTrue(fachada.isHayCuestionarios(listasQuizes.get(4), registro));
+        assertTrue(fachada.isHayCuestionarios(listasQuizes.get(5), registro));
+    }
+
+    @org.junit.jupiter.api.Test
+    void isHayForosTest() {
+        assertTrue(fachada.isHayForos(listasForos.get(0), registro));
+        assertTrue(fachada.isHayForos(listasForos.get(1), registro));
+        assertFalse(fachada.isHayForos(listasForos.get(2), registro));
+        assertTrue(fachada.isHayForos(listasForos.get(3), registro));
+        assertTrue(fachada.isHayForos(listasForos.get(4), registro));
+        assertTrue(fachada.isHayForos(listasForos.get(5), registro));
     }
 
     @org.junit.jupiter.api.Test
