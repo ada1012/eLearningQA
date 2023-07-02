@@ -1,12 +1,12 @@
 \apendice{Documentación de usuario}
 
 \section{Introducción}
-En este apéndice se incluyen los detalles de la aplicación que conciernen al usuario, como los requisitos para utilizar la aplicación y un manual de usuario que también existe en formato web y puede ser accedido desde la página de login de la aplicación.
+En este apéndice se presentan los aspectos relevantes de la aplicación que son de interés para el usuario, tales como los requisitos necesarios para utilizar la aplicación y un manual de usuario. Además, se destaca que el manual de usuario está disponible en formato web y puede ser accedido desde la página de inicio de sesión de la aplicación.
 \section{Requisitos de usuarios}
-Para utilizar la aplicación como usuario se necesita:
+Los requisitos como usuario son:
 \begin{itemize}
 	\item Una cuenta en un servidor de Moodle con rol de profesor en los cursos a analizar
-	\item Conexión a internet para acceder al despliegue de la aplicación
+	\item Conexión a internet para acceder al despliegue de la aplicación y para poder obtener información de dichos cursos.
 \end{itemize}
 \section{Instalación}
 Como se ha mencionado en temas anteriores con Java ya instalado el único requisito es ejecutar el archivo WAR que viene en el código fuente de la aplicación.
@@ -14,53 +14,38 @@ Como se ha mencionado en temas anteriores con Java ya instalado el único requis
 
 \subsubsection{Pantallas:}
 
-\textbf{Página de login:} la página de login contiene un formulario de
-inicio de sesión, un link ``Acerca de'', un link ``Manual de usuario'' que
-muestra la versión web de este manual, y un link de contacto.
+\textbf{Página de login:} la página de inicio de sesión de la aplicación incluye un formulario donde los usuarios pueden ingresar sus credenciales para acceder al sistema. Además, se encuentran disponibles enlaces adicionales para facilitar la navegación y brindar información adicional. Estos enlaces incluyen un enlace ``Acerca de'' que proporciona detalles sobre la aplicación, un enlace ``Manual de usuario' que redirige a la versión web del manual de usuario, y un enlace de contacto para comunicarse con el equipo de soporte.
 \imagen{Login.png}{Página de login}
 
-\textbf{Página principal:~}la página principal contiene una cabecera que
-indica el nombre de usuario con el que se ha registrado, un botón para
-desconectarse, un enlace para generar un informe global de todos los
-cursos, y una tabla con una lista de enlaces para generar los informes
-específicos de cada curso con una caja de búsqueda.
+\textbf{Página principal:} la página principal de la aplicación presenta una cabecera que muestra el nombre de usuario registrado, ofreciendo así una experiencia personalizada. Además, incluye un botón para desconectarse y finalizar la sesión del usuario. También se encuentra disponible un enlace que permite generar un informe global que abarca todos los cursos.
+
+En la página principal, se muestra una tabla que contiene una lista de enlaces para generar informes específicos de cada curso. Estos enlaces permiten acceder rápidamente a los informes detallados de cada curso en particular. Además, se incluye una caja de búsqueda que facilita la búsqueda y filtrado de cursos dentro de la tabla. Esto proporciona una manera conveniente de acceder a la información deseada de manera eficiente.
 \imagen{ListaCursos.png}{Página principal}
 
-\textbf{Página de informe:} la página de informe genera el informe
-dependiendo de cómo se haya accedido a esta, ya sea mediante el enlace
-``Generar informe global'' o por medio de los enlaces a informes de cursos
-específicos.~
+\textbf{Página de informe:} la página de informe variará dependiendo de si se ha hecho uso de la opción ``Generar informe global'' o por el contrario si se ha elegido la opción de un curso en específico.~
 
-Los informes contienen los siguientes elementos:
+Los informes están compuestos por los siguientes apartados:
 
 \begin{itemize}
 	\item
-	\textbf{Puntuaciones por rol y perspectiva:} el informe contiene una
-	matriz de roles y perspectivas que da distintas puntuaciones a cada
-	uno de los roles (Diseñador, Facilitador, y Proveedor) en cada una de
-	las tres perspectivas definidas (Pedagógica, Tecnológica, y
-	Estratégica) según los resultados del análisis.
+	\textbf{Puntuaciones por rol y perspectiva:} el informe incluye una matriz que evalúa y asigna puntuaciones a cada uno de los roles (Diseñador, Facilitador y Proveedor) en relación a las tres perspectivas establecidas (Pedagógica, Tecnológica y Estratégica). Esta matriz refleja los resultados del análisis y proporciona una visión comparativa de cómo se desempeñan los roles en cada una de las perspectivas mencionadas. A través de las puntuaciones asignadas, se puede evaluar el grado de cumplimiento y efectividad de cada rol en relación a las diferentes dimensiones pedagógicas, tecnológicas y estratégicas identificadas en el informe.
 	\item
-	\textbf{Gráfico de evolución:} la aplicación almacena estas puntuaciones cada vez que se carga un informe para generar un gráfico interactivo de la evolución de estos valores.
+	\textbf{Gráfico de evolución:} la aplicación guarda las puntuaciones cada vez que se genera un informe, permitiendo así la creación de un gráfico interactivo que muestra la evolución de estos valores a lo largo del tiempo. 
 	\imagen{Evolucion.png}{Página de evolución del rendimiento}
 	\item
-	\textbf{Informe de fases:} el informe contiene también una tabla que
-	muestra los resultados en cada una de las comprobaciones del análisis y
-	las agrupa en las distintas fases del diseño instruccional (Diseño,
-	Implementación, Realización, y Evaluación) además de dar una
-	puntuación general. En el caso de los cuestionarios y foros tendrán cada uno una lista desplegable en el que se podrá ver un desglose de los mismos con el porcentaje de participación de cada uno y el porcenaje de participación general.
+	\textbf{Informe de fases:} en el informe, se incluye una tabla que presenta los resultados de cada una de las comprobaciones realizadas en el análisis. Estas comprobaciones están agrupadas en las diferentes fases del diseño instruccional, que incluyen Diseño, Implementación, Realización y Evaluación. Además, se proporciona una puntuación general que resume el desempeño global del proyecto.
+
+    En el caso específico de los cuestionarios y foros, se presenta una lista desplegable que permite desglosar los resultados de cada uno de ellos. En esta lista, se muestra el porcentaje de participación de cada cuestionario o foro, así como el porcentaje de participación general. Esta información brinda una visión detallada de la contribución de cada componente y su impacto en el conjunto del proyecto, permitiendo una evaluación más precisa y completa.
 	\item
-	\textbf{Lista de mejoras:} el informe muestra una lista de
-	motivos concretos que producen resultados negativos en el análisis
-	para subsanarlos o tenerlos en cuenta de cara al futuro. Haciendo clic en las filas de la tabla se puede filtrar la lista de mejoras.
+	\textbf{Lista de mejoras:} en el informe, se presenta una lista de motivos concretos que han generado resultados negativos en el análisis. Estos motivos son identificados para poder abordarlos y tenerlos en cuenta en futuras acciones. Al hacer clic en las filas de la tabla, se tiene la capacidad de filtrar la lista de mejoras, lo que permite una exploración más específica y focalizada de los aspectos que requieren atención y solución.
 	\item
-	\textbf{Informe de estadísticas:} por último, el informe muestra una sección de estadísticas de los cuestionarios y foros, en el caso de los cuestionarios se mostrará además un gráfico con el índice de dificultad de las preguntas y en el de los foros una lista con los hilos del mismo.
+	\textbf{Informe de estadísticas:} finalmente, el informe presenta una sección dedicada a las estadísticas de los cuestionarios y foros. En el caso de los cuestionarios, se muestra un gráfico que representa el índice de dificultad de las preguntas, lo que proporciona una visión clara sobre la complejidad del contenido evaluado. En cuanto a los foros, se incluye una lista que muestra los distintos hilos de discusión presentes en ellos, brindando una visión general de los temas abordados y fomentando la participación activa de los usuarios en las conversaciones relevantes. Además, en cada foro se muestra un análisis de sentimiento de los mensajes que indicarán si tienen una connotación positiva o negativa.
 	\imagen{InformeFases.png}{Página de informe de fases}
 	\imagen{EstadisticasCuestionario.png}{Estadísticas de un cuestionario}
 	\imagen{EstadisticasForo.png}{Estadísticas de un foro}
 \end{itemize}
 
-El informe especifico muestra los resultados de las comprobaciones en el informe de fases de forma absoluta, es decir, que solo indica si el criterio se cumple o no, sin embargo, en el informe global, se muestra un resultado u otro ~dependiendo de la cantidad de cursos que satisfacen dicho criterio.
+En el informe específico, los resultados de las comprobaciones en el informe de fases se presentan de manera absoluta, es decir, se indican simplemente si el criterio se cumple o no. Sin embargo, en el informe global, se utiliza un enfoque diferente. En lugar de mostrar resultados individuales para cada curso, se evalúa la cantidad de cursos que cumplen cada criterio. De esta manera, se muestra un resultado diferente según el número de cursos que satisfacen dicho criterio.
 
 
 \subsubsection{Acciones del usuario:}
@@ -140,8 +125,10 @@ correspondientes.
 	máximas de los items de calificación (tareas, entregas, cuestionarios)
 	del curso. {Responsable:} Diseñador {Involucrados:}
 	Facilitador y Proveedor {Perspectivas:} Pedagógica
+	\item
 	\textbf{El curso tiene al menos un cuestionario:} se comprueba que exista un cuestionario dentro de la planificación del curso.
     {Responsable:} Diseñador {Involucrados:} Facilitador y Proveedor {Perspectivas:} Pedagógica
+	\item
 	\textbf{El curso tiene al menos un foro:} se comprueba que exista un foro dentro de la planificación del curso.
     {Responsable:} Diseñador {Involucrados:} Facilitador y Proveedor {Perspectivas:} Pedagógica
 \end{itemize}

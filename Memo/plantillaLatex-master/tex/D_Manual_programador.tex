@@ -1,42 +1,40 @@
 \apendice{Documentación técnica de programación}
 
 \section{Introducción}
-En este apéndice se describe una serie de detalles sobre la programación de la aplicación para que sirvan de ayuda a futuros programadores que utilicen el proyecto. Contiene la estructura de directorios del proyecto en la que se explica el contenido de cada uno, un manual del programador que explica ciertos aspectos que puedan ser de ayuda, los detalles sobre la compilación, instalación, y ejecución en un entorno de desarrollo integrado, y por último, qué pruebas del sistema se han realizado.
-En esta segunda versión se dejará el manual tal y como estaba en la primera versión ya que explica correctamente gran parte de la aplicación y se incluirán los cambios oportunos.
+En este apéndice se proporciona una guía detallada destinada a futuros programadores que utilicen el proyecto, con el objetivo de brindarles orientación y ayuda. Se incluye información sobre la estructura de directorios del proyecto, donde se explican en detalle los contenidos de cada uno. Además, se presenta un manual del programador que aborda aspectos relevantes que podrían resultar útiles. También se detallan los pasos necesarios para compilar, instalar y ejecutar el proyecto en un entorno de desarrollo integrado. Por último, se describen las pruebas del sistema que se han llevado a cabo, ofreciendo así una visión completa de las pruebas realizadas.
 \section{Estructura de directorios}
-El repositorio está organizado de la siguiente manera:
+La estructura del repositorio se detalla a continuación:
 \begin{itemize}
-	\item \textbf{/}: Contiene el README y un .gitignore que evita que se suban los archivos de configuración del IDE al repositorio.
-	\item \textbf{/.github/workflows}: Contiene el archivo que establece las tareas de integración continua.
-	Las tareas son: instalar Java en la maquina que realiza las tareas, almacenar paquetes de SonarCloud en la caché, almacenar paquetes de Maven en la caché, montar (compilar, ejecutar tests y empaquetar) con maven y analizar con SonarCloud.
-	\item \textbf{/Memo/plantillaLatex-master}: Contiene la memoria y los anexos.
-	\item \textbf{/Memo/plantillaLatex-master/img}: Contiene las imágenes a usar en memoria y anexos.
-	\item \textbf{/Memo/plantillaLatex-master/tex}: Contiene los apartados en formato \LaTeX usados de la memoria y anexos.
-	\item \textbf{/Project/prototipo}: Contiene el proyecto de la aplicación web.
-	\item \textbf{/Project/prototipo/configurations}: Contiene los archivos de propiedades.
-	\item \textbf{/Project/prototipo/src}: Contiene el código fuente de la aplicación.
-	\item \textbf{/Project/prototipo/src/main}: Contiene el código, los test, y los recursos que utiliza la aplicación.
-	\item \textbf{/Project/prototipo/src/main/java/es/ubu/lsi}: Contiene las clases necesarias para el funcionamiento de la aplicación.
-	\item \textbf{/Project/prototipo/src/main/java/es/ubu/lsi/model}: Contiene clases Java Bean para poder deserializar los datos extraídos por medio de servicios web. Junto con otras clases de Java que se han utilizado como modelos para poder trabajar con los datos manipulados previamente obtenidos de los servicios web.
-	\item \textbf{/Project/prototipo/src/main/resources}: Contiene el archivo de propiedades de la aplicación web y otros recursos.
-	\item \textbf{/Project/prototipo/src/main/resources/images}: Contiene las imágenes a mostrar en la aplicación web.
-	\item \textbf{/Project/prototipo/src/main/resources/json}: Contiene información de cursos en formato json para usarla en los tests.
-	\item \textbf{/Project/prototipo/src/main/resources/json/informe}: Contiene los textos estáticos de la tabla del informe de fases en formato json.
-	\item \textbf{/Project/prototipo/src/main/resources/static/js}: Contiene las librerías JavaScript que utiliza la aplicación.
-	\item \textbf{/Project/prototipo/src/main/webapp/WEB-INF/jsp}: Contiene las páginas de la aplicación en formato jsp.
-	\item \textbf{/Project/prototipo/src/test/java/es/ubu/lsi}: Contiene los test sobre las consultas que realiza la aplicación en los cursos.
-	\item \textbf{/Project/prototipo/target}: Es el directorio donde Maven deposita los resultados, como las clases compiladas y la aplicación compilada en formato WAR.
+	\item \textbf{/}: contiene en archivo README que hace una breve explicación del funcionamiento de la aplicación y las carpetas contenedoras de la aplicación y los ficheros de la memoria.
+	\item \textbf{/.github/workflows}: dirección de los actions que serán ejecutados en GitHub, en este caso será un archivo maven.yml. Este archivo indica que cada vez que se haga un push a la rama develop se realizará un análisis de los últimos cambios en SonarCloud.
+	\item \textbf{/Memo/plantillaLatex-master}: dirección de la memoria, anexos y archivos en formato \LaTeX para la configuración de los distintos PDFs.
+	\item \textbf{/Memo/plantillaLatex-master/img}: carpeta dónde se alojan las imágenes que utilizarán la memoria y los anexos.
+	\item \textbf{/Memo/plantillaLatex-master/tex}: ficheros en formato \LaTeX que sirven para generar los PDFs de la memoria y anexos.
+	\item \textbf{/Project/prototipo}: carpeta que contiene la aplicación completa.
+	\item \textbf{/Project/prototipo/configurations}: Carpeta con los archivos que asignan las propiedades del proyecto.
+	\item \textbf{/Project/prototipo/src}: código fuente de la aplicación Java.
+	\item \textbf{/Project/prototipo/src/main}: este directorio abarca el código fuente de la aplicación, los casos de prueba y los recursos empleados en su funcionamiento. 
+	\item \textbf{/Project/prototipo/src/main/java/es/ubu/lsi}: Dirección de las clases que permiten el correcto funcionamiento de la aplicación web.
+	\item \textbf{/Project/prototipo/src/main/java/es/ubu/lsi/model}: dentro de este directorio se encuentran las clases Java Bean necesarias para la deserialización de los datos obtenidos a través de servicios web. Estas clases permiten transformar los datos extraídos en objetos que pueden ser fácilmente manipulados y utilizados en el desarrollo de la aplicación.
+	\item \textbf{/Project/prototipo/src/main/resources}: contiene el archivo de propiedades de la aplicación web, el cual contiene configuraciones y ajustes específicos para su correcto funcionamiento.
+	\item \textbf{/Project/prototipo/src/main/resources/images}: ubicación de las imágenes desplegadas en la web.
+	\item \textbf{/Project/prototipo/src/main/resources/json}: información de los cursos que se utilizarán en los casos de pruebas.
+	\item \textbf{/Project/prototipo/src/main/resources/json/informe}: ubicación donde se encuentran los textos estáticos utilizados en la tabla del informe de fases, los cuales están almacenados en formato JSON.
+	\item \textbf{/Project/prototipo/src/main/resources/static/js}: librerías JavaScript que utiliza la aplicación.
+	\item \textbf{/Project/prototipo/src/main/webapp/WEB-INF/jsp}: contiene las páginas de la aplicación en formato jsp.
+	\item \textbf{/Project/prototipo/src/test/java/es/ubu/lsi}: contiene los casos de pruebas sobre las consultas que realiza la aplicación en los cursos.
+	\item \textbf{/Project/prototipo/target}: es el directorio donde Maven deposita los resultados, como las clases compiladas y la aplicación compilada en formato WAR.
 	
 \end{itemize}
 \section{Manual del programador}
 \subsection{Entorno}
-Para trabajar en el proyecto se necesita:
+Requisitos del proyecto:
 \begin{itemize}
 	\item Java JDK 8
 	\item Un IDE como puede ser Eclipse, NetBeans o IntelliJ IDEA
 \end{itemize}
 
-JDK 8 se puede descargar desde \url{https://www.oracle.com/java/technologies/downloads/#java8} si se está en posesión de una cuenta de Oracle.
+Para descargar el JDK 8 empleado en la aplicación es necesaria una cuenta de Oracle y posteriormente obtener el JDK en el siguiente enlace \url{https://www.oracle.com/java/technologies/downloads/#java8}.
 
 En este caso como se ha trabajado con eclipse adjunto el enlace de la descarga \url{https://www.eclipse.org/downloads/}
 
@@ -45,28 +43,30 @@ Para obtener el código fuente de la aplicación web solo vamos a necesitar clon
 \imagen{GitVSCode.png}{Manejo de Git con Visual Studio Code}
 \subsection{Propósito de las clases principales}
 \begin{itemize}
-	\item \textbf{Application:} es la clase principal de la aplicación, arranca la aplicación web.
+	\item \textbf{Application:} clase principal de la aplicación desde la que se arranca la aplicación web.
 	\item \textbf{SpringController:} indica mediante anotaciones y funciones qué devolver cuando el usuario accede a cada página. En este caso solo devuelve páginas jsp e imágenes, pero se podrían devolver otros tipos de recurso, como archivos de audio o documentos.
 	\item \textbf{ELearningQAFacade:} hace de intermediario entre el usuario y la clase WebServiceClient.También contiene funciones para generar tablas y sus contenidos a partir de la información obtenida. 
 	\item \textbf{WebServiceClient:} contiene el código de las comprobaciones y realiza las llamadas REST al servidor de Moodle para obtener la información necesaria. También trabajará con los datos obtenidos de Moodle para adaptarlos a las estadísticas de cuestionarios y foros.
-	\item \textbf{FacadeConfig:} almacena la configuración elegida por el usuario junto con el host de Moodle y se guarda como atributo de la fachada para poder pasarlo a las funciones de WebServiceClient y que pueda cambiar su comportamiento según la configuración.
-	\item \textbf{AlertLog:} genera y almacena mensajes de alerta, se pasa como parámetro a las funciones de WebServiceClient para que puedan almacenar los mensajes para la lista de mejoras del informe.
-	\item \textbf{RegistryIO:} se encarga de almacenar y acceder a la información guardada en csv utilizada para generar los gráficos. También contiene una función que genera un gráfico a partir de los datos de un csv.
-	\item \textbf{AnalysisSnapshot:} la clase que representa el conjunto de datos almacenado en cada línea de los archivos csv, facilita el trabajo de almacenamiento de datos y generación de gráficos.
+	\item \textbf{FacadeConfig:} almacena la configuración elegida por el usuario, junto con el host de Moodle, se almacena como atributo en la fachada para poder pasarlo a las funciones del WebServiceClient y así permitir que este último modifique su comportamiento de acuerdo a la configuración establecida.
+	\item \textbf{AlertLog:} la clase AlertLog se encarga de generar y almacenar mensajes de alerta. Estos mensajes se pasan como parámetro a las funciones del WebServiceClient con el fin de que puedan ser almacenados en la lista de mejoras del informe.
+	\item \textbf{RegistryIO:} se encarga de almacenar y acceder a la información guardada en archivos CSV que se utilizan para generar los gráficos. Además, proporciona una función que permite generar un gráfico utilizando los datos contenidos en un archivo CSV.
+	\item \textbf{AnalysisSnapshot:} representa un conjunto de datos almacenados en cada línea de los archivos CSV. Esta clase proporciona funcionalidades que facilitan el almacenamiento y la manipulación de los datos, así como la generación de gráficos a partir de ellos.
 \end{itemize}
 \subsection{Integración continua}
-El proyecto contiene un archivo llamado \texttt{maven.yml} en \texttt{/.github/workflows} en el que se indica los pasos a seguir tras realizar un \textit{push} a la rama develop del repositorio. Vamos a explicarlos brevemente. \imagen{MavenYML.png}{Trabajos de integración continua}
-Lo primero que se puede apreciar es que la máquina virtual que se encarga de la integración continua utiliza la versión más reciente de Ubuntu. Después, se instala JDK 11 (antes se utilizaba JDK 8 para la integración continua, pero tras añadir SonarCloud al proceso, JDK 11 pasó a ser necesario), luego se almacenan en la memoria caché de la máquina virtual los paquetes de SonarCloud y Maven. Finalmente, se construye y analiza el proyecto, se indica la ubicación del archivo \texttt{pom.xml} debido a que el directorio raíz del proyecto no coincide con el del repositorio (después veremos otro problema causado por esto).
+Dentro del proyecto se encuentra un archivo denominado \texttt{maven.yml}, ubicado en la ruta \texttt{/.github/workflows}. Este archivo contiene una serie de instrucciones que se ejecutan automáticamente cuando se realiza un push a la rama develop del repositorio. A continuación, proporcionaremos una breve explicación de dichas instrucciones. \imagen{MavenYML.png}{Trabajos de integración continua}
+En primer lugar, es notable que la máquina virtual utilizada para la integración continua se basa en la versión más actualizada de Ubuntu. Posteriormente, se procede a la instalación de JDK 11, ya que se ha determinado que es necesario para el proceso de integración continua después de la incorporación de SonarCloud. Además, se realiza el almacenamiento en caché de los paquetes de SonarCloud y Maven en la memoria de la máquina virtual.
+
+Por último, se lleva a cabo la construcción y análisis del proyecto, indicando explícitamente la ubicación del archivo \texttt{pom.xml}. Esta especificación se debe a que el directorio raíz del proyecto difiere del directorio raíz del repositorio, lo cual ha ocasionado algunos inconvenientes que abordaremos posteriormente.
 \subsection{Herramienta de calidad de código}
 Para analizar la calidad del código del proyecto se ha utilizado SonarCloud como se hizo en el trabajo anterior.
 
-La página principal resume el estado del proyecto respecto a errores, \textit{code smells}, seguridad, y cantidad de código duplicado. También muestra el estado del proyecto según el \textit{Quality Gate}, que indica si se cumple una serie de condiciones establecidas.
+La página principal brinda un resumen conciso del estado actual del proyecto en términos de errores, defectos de código, aspectos de seguridad y la cantidad de código duplicado presente. Además, proporciona información sobre el estado del proyecto con respecto al Quality Gate, que evalúa si se cumplen una serie de condiciones predefinidas.
 \imagen{SonarCloud.png}{Página del proyecto en SonarCloud en \url{https://sonarcloud.io/project/overview?id=ada1012_eLearningQA}}
 Con esta herramienta se consigue una refactorización inmediata ya que cada vez que se suba un fragmento de código al proyecto esta aplicación resumirá los distintos fallos encontrados, haciendo distinción entre los ya existentes y los nuevos.
 
 \section{Compilación, instalación y ejecución del proyecto}
 \subsection{Ejecución en local}
-Para ejecutar la aplicación en local solo es necesario ejecutar la clase principal: Application, los IDEs mencionados previamente los ejecutarán sin problema al ejecutar la opción "Run" y se podrá acceder a dicha aplicación s través de la url: \url{http://localhost:8080/}.
+Para ejecutar la aplicación en local solo es necesario ejecutar la clase principal: Application, los IDEs mencionados previamente los ejecutarán sin problema al ejecutar la opción \texttt{Run} y se podrá acceder a dicha aplicación a través de la url: \url{http://localhost:8080/}.
 \imagen{EjecucionLocalhost.png}{Ejecución en local}
 
 \section{Pruebas del sistema}
