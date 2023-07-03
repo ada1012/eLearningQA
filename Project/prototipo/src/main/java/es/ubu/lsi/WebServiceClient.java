@@ -388,7 +388,7 @@ public class WebServiceClient {
     }
 
     public static boolean calificadorMuestraPonderacion(List<Table> listaCalificadores, AlertLog registro){
-        if (listaCalificadores.isEmpty()){
+        if (listaCalificadores == null || listaCalificadores.isEmpty()){
             registro.guardarAlerta("realization weightsshown","El calificador no muestra los pesos de los elementos calificables");
             return false;
         }
@@ -406,7 +406,7 @@ public class WebServiceClient {
         GradeTableField feedback;
         final String category = "realization assignmentfeedback";
     
-        if (listaCalificadores.isEmpty()) {
+        if (listaCalificadores == null || listaCalificadores.isEmpty()) {
             registro.guardarAlerta(category, "No hay calificadores que comprobar");
             return false;
         }
