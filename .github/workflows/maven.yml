@@ -1,4 +1,4 @@
-name: SonarCloud
+name: Jav CI with Maven
 on:
   push:
     branches:
