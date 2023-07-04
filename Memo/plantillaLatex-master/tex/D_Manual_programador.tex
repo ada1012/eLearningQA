@@ -6,22 +6,22 @@ En este apéndice se proporciona una guía detallada destinada a futuros program
 La estructura del repositorio se detalla a continuación:
 \begin{itemize}
 	\item \textbf{/}: contiene en archivo README que hace una breve explicación del funcionamiento de la aplicación y las carpetas contenedoras de la aplicación y los ficheros de la memoria.
-	\item \textbf{/.github/workflows}: dirección de los actions que serán ejecutados en GitHub, en este caso será un archivo maven.yml. Este archivo indica que cada vez que se haga un push a la rama develop se realizará un análisis de los últimos cambios en SonarCloud.
+	\item \textbf{/.github/workflows}: dirección de los \textit{actions} que serán ejecutados en GitHub, en este caso será un archivo \texttt{maven.yml}. Este archivo indica que cada vez que se haga un push a la rama \textit{develop} se realizará un análisis de los últimos cambios en SonarCloud.
 	\item \textbf{/Memo/plantillaLatex-master}: dirección de la memoria, anexos y archivos en formato \LaTeX para la configuración de los distintos PDFs.
-	\item \textbf{/Memo/plantillaLatex-master/img}: carpeta dónde se alojan las imágenes que utilizarán la memoria y los anexos.
+	\item \textbf{/Memo/plantillaLatex-master/img}: carpeta donde se alojan las imágenes que utilizarán la memoria y los anexos.
 	\item \textbf{/Memo/plantillaLatex-master/tex}: ficheros en formato \LaTeX que sirven para generar los PDFs de la memoria y anexos.
 	\item \textbf{/Project/prototipo}: carpeta que contiene la aplicación completa.
-	\item \textbf{/Project/prototipo/configurations}: Carpeta con los archivos que asignan las propiedades del proyecto.
+	\item \textbf{/Project/prototipo/configurations}: carpeta con los archivos que asignan las propiedades del proyecto.
 	\item \textbf{/Project/prototipo/src}: código fuente de la aplicación Java.
 	\item \textbf{/Project/prototipo/src/main}: este directorio abarca el código fuente de la aplicación, los casos de prueba y los recursos empleados en su funcionamiento. 
 	\item \textbf{/Project/prototipo/src/main/java/es/ubu/lsi}: Dirección de las clases que permiten el correcto funcionamiento de la aplicación web.
-	\item \textbf{/Project/prototipo/src/main/java/es/ubu/lsi/model}: dentro de este directorio se encuentran las clases Java Bean necesarias para la deserialización de los datos obtenidos a través de servicios web. Estas clases permiten transformar los datos extraídos en objetos que pueden ser fácilmente manipulados y utilizados en el desarrollo de la aplicación.
+	\item \textbf{/Project/prototipo/src/main/java/es/ubu/lsi/model}: dentro de este directorio se encuentran las clases \textit{Java Bean} necesarias para la deserialización de los datos obtenidos a través de servicios web. Estas clases permiten transformar los datos extraídos en objetos que pueden ser fácilmente manipulados y utilizados en el desarrollo de la aplicación.
 	\item \textbf{/Project/prototipo/src/main/resources}: contiene el archivo de propiedades de la aplicación web, el cual contiene configuraciones y ajustes específicos para su correcto funcionamiento.
 	\item \textbf{/Project/prototipo/src/main/resources/images}: ubicación de las imágenes desplegadas en la web.
 	\item \textbf{/Project/prototipo/src/main/resources/json}: información de los cursos que se utilizarán en los casos de pruebas.
 	\item \textbf{/Project/prototipo/src/main/resources/json/informe}: ubicación donde se encuentran los textos estáticos utilizados en la tabla del informe de fases, los cuales están almacenados en formato JSON.
 	\item \textbf{/Project/prototipo/src/main/resources/static/js}: librerías JavaScript que utiliza la aplicación.
-	\item \textbf{/Project/prototipo/src/main/webapp/WEB-INF/jsp}: contiene las páginas de la aplicación en formato jsp.
+	\item \textbf{/Project/prototipo/src/main/webapp/WEB-INF/jsp}: contiene las páginas de la aplicación en formato JSP.
 	\item \textbf{/Project/prototipo/src/test/java/es/ubu/lsi}: contiene los casos de pruebas sobre las consultas que realiza la aplicación en los cursos.
 	\item \textbf{/Project/prototipo/target}: es el directorio donde Maven deposita los resultados, como las clases compiladas y la aplicación compilada en formato WAR.
 	
@@ -30,17 +30,21 @@ La estructura del repositorio se detalla a continuación:
 \subsection{Entorno}
 Requisitos del proyecto:
 \begin{itemize}
-	\item Java JDK 8
+	\item Java JDK 11
 	\item Un IDE como puede ser Eclipse, NetBeans o IntelliJ IDEA
 \end{itemize}
 
-Para descargar el JDK 8 empleado en la aplicación es necesaria una cuenta de Oracle y posteriormente obtener el JDK en el siguiente enlace \url{https://www.oracle.com/java/technologies/downloads/#java8}.
+Para descargar el JDK 8 empleado en la aplicación es necesaria una cuenta de Oracle y posteriormente obtener el JDK en el siguiente enlace \url{https://www.oracle.com/java/technologies/downloads/#java11}.
 
 En este caso como se ha trabajado con eclipse adjunto el enlace de la descarga \url{https://www.eclipse.org/downloads/}
 
 \subsection{Obtención del código fuente}
-Para obtener el código fuente de la aplicación web solo vamos a necesitar clonar el proyecto en nuestro equipo o en el caso de eclipse dentro del propio IDE en la versión importar proyecto Git. El enlace al proyecto es \url{https://github.com/ada1012/eLearningQA}. Si tenemos intención de hacer cambios en la aplicación, antes de clonar el proyecto deberemos hacer un fork para así tener una copia en nuestro perfil de dicho proyecto. En mi caso al manejar git con la extensión de Visual Studio Code puedo manejar los pull, push y commits desde la interfaz gráfica.
+Para obtener el código fuente de la aplicación web solo vamos a necesitar clonar el proyecto en nuestro equipo o en el caso de eclipse dentro del propio IDE en la versión importar proyecto Git. El enlace al proyecto es \url{https://github.com/ada1012/eLearningQA}. Si tenemos intención de hacer cambios en la aplicación, antes de clonar el proyecto deberemos hacer un \textit{fork} para así tener una copia en nuestro perfil de dicho proyecto. En mi caso al manejar git con la extensión de Visual Studio Code se pueden manejar los \textit{pull}, \textit{push} y \textit{commits} desde la interfaz gráfica, en la siguiente figura se puede apreciar el estado de las ramas del repositorio.
 \imagen{GitVSCode.png}{Manejo de Git con Visual Studio Code}
+
+\subsection{Importar el proyecto en eclipse}
+Para clonar el proyecto de GitHub en Eclipse debemos copiar la URL del repositorio de GitHub que contiene el proyecto. En Eclipse, seleccionaremos \textit{File} en el menú y seguidamente la opción \textit{Import}, en la lista de opciones, expande la carpeta \textit{Git} y selecciona \textit{Projects from Git}. Posteriormente, seleccionamos \textit{Clone URI} y pegamos la URL del repositiorio de GitHub. En la siguiente pantalla, seleccionamos \textit{Import as general project} con la casilla del proyecto Maven seleccionada y ya estaría el repositorio listo en el IDE de Eclipse.
+
 \subsection{Propósito de las clases principales}
 \begin{itemize}
 	\item \textbf{Application:} clase principal de la aplicación desde la que se arranca la aplicación web.
@@ -54,7 +58,7 @@ Para obtener el código fuente de la aplicación web solo vamos a necesitar clon
 \end{itemize}
 \subsection{Integración continua}
 Dentro del proyecto se encuentra un archivo denominado \texttt{maven.yml}, ubicado en la ruta \texttt{/.github/workflows}. Este archivo contiene una serie de instrucciones que se ejecutan automáticamente cuando se realiza un push a la rama develop del repositorio. A continuación, proporcionaremos una breve explicación de dichas instrucciones. \imagen{MavenYML.png}{Trabajos de integración continua}
-En primer lugar, es notable que la máquina virtual utilizada para la integración continua se basa en la versión más actualizada de Ubuntu. Posteriormente, se procede a la instalación de JDK 11, ya que se ha determinado que es necesario para el proceso de integración continua después de la incorporación de SonarCloud. Además, se realiza el almacenamiento en caché de los paquetes de SonarCloud y Maven en la memoria de la máquina virtual.
+En primer lugar, se destaca que la máquina virtual utilizada para la integración continua se basa en la versión más actualizada de Ubuntu. La máquina virtual se refiere al entorno de ejecución en el que se ejecuta el flujo de trabajo de GitHub Actions. Posteriormente, se procede a la instalación de JDK 11. Además, se realiza el almacenamiento en caché de los paquetes de SonarCloud y Maven en la memoria de la máquina virtual.
 
 Por último, se lleva a cabo la construcción y análisis del proyecto, indicando explícitamente la ubicación del archivo \texttt{pom.xml}. Esta especificación se debe a que el directorio raíz del proyecto difiere del directorio raíz del repositorio, lo cual ha ocasionado algunos inconvenientes que abordaremos posteriormente.
 \subsection{Herramienta de calidad de código}
@@ -62,7 +66,7 @@ Para analizar la calidad del código del proyecto se ha utilizado SonarCloud com
 
 La página principal brinda un resumen conciso del estado actual del proyecto en términos de errores, defectos de código, aspectos de seguridad y la cantidad de código duplicado presente. Además, proporciona información sobre el estado del proyecto con respecto al Quality Gate, que evalúa si se cumplen una serie de condiciones predefinidas.
 \imagen{SonarCloud.png}{Página del proyecto en SonarCloud en \url{https://sonarcloud.io/project/overview?id=ada1012_eLearningQA}}
-Con esta herramienta se consigue una refactorización inmediata ya que cada vez que se suba un fragmento de código al proyecto esta aplicación resumirá los distintos fallos encontrados, haciendo distinción entre los ya existentes y los nuevos.
+Con esta herramienta se consigue una ayuda a la refactorización inmediata ya que cada vez que se suba un fragmento de código al proyecto esta aplicación resumirá los distintos fallos encontrados, haciendo distinción entre los ya existentes y los nuevos.
 
 \section{Compilación, instalación y ejecución del proyecto}
 \subsection{Ejecución en local}
@@ -70,4 +74,4 @@ Para ejecutar la aplicación en local solo es necesario ejecutar la clase princi
 \imagen{EjecucionLocalhost.png}{Ejecución en local}
 
 \section{Pruebas del sistema}
-Los test se realizan con JUnit y se han mantenido con respecto a la versión anterior ejecutándose a través del archivo ELearningQAFacadeTest y yendo contra unos archivos estáticos en formato JSON los cuales se encuentran en la ruta "resources/json". Ante las nuevas funcionalidades solo habría que modificar el archivo ELearningQAFacadeTest y asignar unos datos estáticos en el archivo JSON. La opción de obtener los datos de prueba de un servidor de momento es una opción poco viable por el tema del tiempo de carga y el aumento de llamadas en el futuro.
+Los test se realizan con JUnit y se han mantenido con respecto a la versión anterior ejecutándose a través del archivo ELearningQAFacadeTest y yendo contra unos archivos estáticos en formato JSON los cuales se encuentran en la ruta \textit{resources/json}. Ante las nuevas funcionalidades habría que modificar el archivo ELearningQAFacadeTest incorporando los test de los métodos que queramos comprobar y asignar unos datos estáticos en el archivo JSON. La opción de obtener los datos de prueba de un servidor de momento es una opción poco viable por el tema del tiempo de carga y el aumento de llamadas en el futuro.

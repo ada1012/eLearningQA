@@ -13,14 +13,14 @@ A continuación se listarán los objetivos generales de la nueva versión del pr
 	Acceder a una vista más detallada con la información más importante de dichos cuestionarios y foros.
 \end{itemize}
 
-\section{Catalogo de requisitos}
+\section{Catálogo de requisitos}
 Después de hablar de los objetivos generales, se listarán los requisitos del sistema:
 \begin{itemize}
-	\item R-01: la aplicación mostrará en el apartado de diseño una cruz o un tick por cuestionarios y otro por foros dependiendo de si estos existen en dicho curso.
-	\item R-02: la aplicación implementará en la sección de realización una fila desplegable indicando el porcentaje de alumnos que interactua con los cuestionarios. Si se despliega se mostrará una nueva fila por cada cuestionario del curso con el porcentaje de participación de cada uno.
-	\item R-03: la aplicación implementará en la sección de realización una fila desplegable indicando el porcentaje de alumnos que interactua con los foros. Si se despliega se mostrará una nueva fila por cada foro del curso con el porcentaje de participación de cada uno.
-	\item R-04: al hacer click en alguno de los cuestionarios desplegados se mostrarán una serie de estadísticas junto con un grafo.
-	\item R-05: al hacer click en alguno de los foros desplegados se mostrarán una serie de estadísticas.
+	\item R-01 - Comprobación de participación en foros y cuestionarios: la aplicación mostrará en el apartado de diseño una cruz o un tick por cuestionarios y otro por foros dependiendo de si estos existen en dicho curso.
+	\item R-02 - Trazabilidad de participación en cuestionarios: la aplicación implementará en la sección de realización una fila desplegable indicando el porcentaje de alumnos que interactua con los cuestionarios. Si se despliega se mostrará una nueva fila por cada cuestionario del curso con el porcentaje de participación de cada uno.
+	\item R-03 - Trazabilidad de participación en foros: la aplicación implementará en la sección de realización una fila desplegable indicando el porcentaje de alumnos que interactua con los foros. Si se despliega se mostrará una nueva fila por cada foro del curso con el porcentaje de participación de cada uno.
+	\item R-04 - Análisis del cuestionario: al hacer click en alguno de los cuestionarios desplegados se mostrarán una serie de estadísticas junto con un grafo.
+	\item R-05 - Análisis del foro: al hacer click en alguno de los foros desplegados se mostrarán una serie de estadísticas.
 \end{itemize}
 
 \section{Especificación de requisitos}
@@ -48,7 +48,7 @@ Para comprender estos requisitos se procederá a crear un diagrama de casos de u
    \resizebox{\textwidth}{!}{%
 	   \begin{tabular}{cl}
 		   \hline
-		   \textbf{CU-05}       & \textbf{Realizar comprobaciones}                                   \\ \hline
+		   \textbf{CU-02}       & \textbf{Realizar comprobaciones}                                   \\ \hline
 		   \textbf{Descripción}          & Se realizan las comprobaciones necesarias para evaluar la calidad de los cursos    \\
 		   \textbf{Requisitos asociados} & R-02                                                   \\
 		   \textbf{Precondiciones}       & El usuario está logueado en la aplicación y se ha debido generar un token           \\
@@ -64,11 +64,11 @@ Para comprender estos requisitos se procederá a crear un diagrama de casos de u
    \resizebox{\textwidth}{!}{%
 	   \begin{tabular}{cl}
 		   \hline
-		   \textbf{CU-05}       & \textbf{Calcular estadísticas cuestionarios}                                   \\ \hline
+		   \textbf{CU-03}       & \textbf{Calcular estadísticas cuestionarios}                                   \\ \hline
 		   \textbf{Descripción}          & Obtiene los intentos de los cuestionarios y calcula las estadísticas    \\
 		   \textbf{Requisitos asociados} & R-03                                                  \\
 		   \textbf{Precondiciones}       & El usuario está logueado en la aplicación y se ha debido generar un token           \\
-		   \textbf{Ejecución}            &\begin{tabular}[l]{@{}l@{}}1.El usuario accede al informe del curso.\\ 2.Se obtienen los intentos de los cuestionarios.\\ 3.Se calculan las estadísticas de los cuestionarios.\\ 4.Se muestra una comprobación con el porcentaje de participación en los foros del curso.\\ 5.La comprobación tendrá un botón "Desplegar" que desplegará una fila por cada cuestionario del curso.\\ 6.Al hacer click en un cuestionario se mostrarán las estadísticas del cuestionario correspondiente.\end{tabular}                                                \\
+		   \textbf{Ejecución}            &\begin{tabular}[l]{@{}l@{}}1.El usuario accede al informe del curso.\\ 2.Se obtienen los intentos de los cuestionarios.\\ 3.Se calculan las estadísticas de los cuestionarios.\\ 4.Se muestra una comprobación con el porcentaje de participación en los cuestionarios del curso.\\ 5.La comprobación tendrá un botón "Desplegar" que desplegará una fila por cada cuestionario del curso.\\ 6.Al hacer click en un cuestionario se mostrarán las estadísticas del cuestionario correspondiente.\end{tabular}                                                \\
 		   \textbf{Postcondiciones}      &                                                        \\
 		   \textbf{Excepciones}          & 
 	   \end{tabular}%
@@ -80,7 +80,7 @@ Para comprender estos requisitos se procederá a crear un diagrama de casos de u
    \resizebox{\textwidth}{!}{%
 	   \begin{tabular}{cl}
 		   \hline
-		   \textbf{CU-05}       & \textbf{Calcular estadísticas foros}                                   \\ \hline
+		   \textbf{CU-04}       & \textbf{Calcular estadísticas foros}                                   \\ \hline
 		   \textbf{Descripción}          & Obtiene el porcentaje de participación y mensajes en los foros de un curso    \\
 		   \textbf{Requisitos asociados} & R-04                                                  \\
 		   \textbf{Precondiciones}       & El usuario está logueado en la aplicación y se ha debido generar un token           \\

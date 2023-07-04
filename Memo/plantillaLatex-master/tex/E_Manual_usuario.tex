@@ -9,7 +9,20 @@ Los requisitos como usuario son:
 	\item Conexión a internet para acceder al despliegue de la aplicación y para poder obtener información de dichos cursos.
 \end{itemize}
 \section{Instalación}
-Como se ha mencionado en temas anteriores con Java ya instalado el único requisito es ejecutar el archivo WAR que viene en el código fuente de la aplicación.
+Como se ha mencionado en temas anteriores con Java ya instalado el único requisito es ejecutar el archivo WAR que se genera a partir del código fuente de la aplicación.
+
+Para ejecutar un archivo WAR sin tener el IDE de Eclipse, puedes seguir los siguientes pasos:
+
+\begin{enumerate}
+  \item Asegúrate de tener instalado Java Development Kit (JDK) en tu sistema. Puedes verificarlo ejecutando el comando \texttt{java -version} en tu terminal o símbolo del sistema.
+  \item Abre una terminal o símbolo del sistema y navega hasta el directorio donde se encuentra el archivo WAR.
+  \item Ejecuta el siguiente comando para iniciar el servidor web embebido Tomcat:
+
+  \texttt{java -jar prototipo-0.8-SNAPSHOT.war}
+  
+  \item El servidor Tomcat iniciará y desplegará la aplicación. Verás un mensaje en la terminal indicando la URL en la que puedes acceder a la aplicación (\texttt{http://localhost:8080/}). Abre un navegador web y visita esa URL para acceder a la aplicación.
+\end{enumerate}
+
 \section{Manual del usuario}
 
 \subsubsection{Pantallas:}
@@ -126,10 +139,10 @@ correspondientes.
 	del curso. {Responsable:} Diseñador {Involucrados:}
 	Facilitador y Proveedor {Perspectivas:} Pedagógica
 	\item
-	\textbf{El curso tiene al menos un cuestionario:} se comprueba que exista un cuestionario dentro de la planificación del curso.
+	\textbf{\textit{Segunda versión} - El curso tiene al menos un cuestionario:} se comprueba que exista un cuestionario dentro de la planificación del curso. Esta comprobación es esencial para garantizar que los estudiantes tengan la oportunidad de evaluar su comprensión y aplicar los conocimientos adquiridos durante el curso.
     {Responsable:} Diseñador {Involucrados:} Facilitador y Proveedor {Perspectivas:} Pedagógica
 	\item
-	\textbf{El curso tiene al menos un foro:} se comprueba que exista un foro dentro de la planificación del curso.
+	\textbf{\textit{Segunda versión} - El curso tiene al menos un foro:} se comprueba que exista un foro dentro de la planificación del curso. Esta comprobación es fundamental para fomentar la participación activa de los estudiantes y promover la colaboración y el intercambio de ideas entre ellos.
     {Responsable:} Diseñador {Involucrados:} Facilitador y Proveedor {Perspectivas:} Pedagógica
 \end{itemize}
 
@@ -191,12 +204,12 @@ correspondientes.
 	calificación. {Responsable:} Facilitador {Involucrados:}
 	Diseñador y Proveedor {Perspectivas:} Pedagógica y Tecnológica
 	\item
-	\textbf{Al menos un X \% de los alumnos responden a los cuesionarios:}
-	se comprueba que hay un mínimo de alumnos que interactúan con los cuestionarios propuestos para el desarrollo del curso. {Responsable:} Proveedor {Involucrados:}
+	\textbf{\textit{Segunda versión} - Al menos un X \% de los alumnos responden a los cuestionarios:}
+	se comprueba que hay un mínimo de alumnos que interactúan con los cuestionarios propuestos para el desarrollo del curso. Realizando una comprobación general media de todos los cuestionarios y una comprobación más específica por cada uno de los cuestionarios del curso. {Responsable:} Proveedor {Involucrados:}
 	Diseñador y Facilitador {Perspectivas:} Pedagógica
 	\item
-	\textbf{Al menos un X \% de los alumnos participa en los foros:}
-	se comprueba que hay un mínimo de alumnos que interactúan con los foros propuestos para el desarrollo del curso. {Responsable:} Proveedor {Involucrados:}
+	\textbf{\textit{Segunda versión} - Al menos un X \% de los alumnos participa en los foros:}
+	se comprueba que hay un mínimo de alumnos que interactúan con los foros propuestos para el desarrollo del curso. Realizando una comprobación general media de todos los foros y una comprobación más específica por cada uno de los foros del curso. {Responsable:} Proveedor {Involucrados:}
 	Diseñador y Facilitador {Perspectivas:} Pedagógica
 \end{itemize}
 
