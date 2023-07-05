@@ -227,29 +227,34 @@
                 <% if (estadisticasForo.getTexto() != "") { %>
                   <script>
                     query({ "inputs": "<%= estadisticasForo.getTexto() %>"}).then((response) => {
-                      const firstLabel = response[0][0].label;
-                      const estrellas = parseInt(firstLabel, 10);
+                      
                       let mensaje = "";
+                      for (let i = 0; i < response[0].length; i++) {
+                        const firstLabel = response[0][i].label;
+                        const estrellas = parseInt(firstLabel, 10);
+                        const numero = response[0][i].score;
+                        const porcentaje = (numero * 100).toFixed(2) + "%";
 
-                      switch (estrellas) {
-                        case 1:
-                          mensaje = "La mayoría de mensajes son negativos";
-                          break;
-                        case 2:
-                          mensaje = "Parte de los mensajes son negativos";
-                          break;
-                        case 3:
-                          mensaje = "Hay un lenguaje equilibrado";
-                          break;
-                        case 4:
-                          mensaje = "Parte de los mensajes son positivos";
-                          break;
-                        case 5:
-                          mensaje = "La mayoría de mensajes son positivos";
-                          break;
-                        default:
-                          mensaje = "No se ha podido analizar el foro";
-                          break;
+                        switch (estrellas) {
+                          case 1:
+                            mensaje += "Un " + porcentaje + " del contenido de los mensajes son muy negativos<br>";
+                            break;
+                          case 2:
+                            mensaje += "Un " + porcentaje + " del contenido de los mensajes son negativos<br>";
+                            break;
+                          case 3:
+                            mensaje += "Un " + porcentaje + " del contenido de los mensajes son neutrales<br>";
+                            break;
+                          case 4:
+                            mensaje += "Un " + porcentaje + " del contenido de los mensajes son positivos<br>";
+                            break;
+                          case 5:
+                            mensaje += "Un " + porcentaje + " del contenido de los mensajes son muy positivos<br>";
+                            break;
+                          default:
+                            mensaje += "No se ha podido analizar el foro";
+                            break;
+                        }
                       }
 
                       const foro = document.getElementById("foro<%=estadisticasForo.getIdForo()%>");
