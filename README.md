@@ -2,6 +2,11 @@
 
 [![](https://github.com/ada1012/eLearningQA/actions/workflows/maven.yml/badge.svg)](https://github.com/ada1012/eLearningQA/actions/workflows/maven.yml)
 [![](https://sonarcloud.io/api/project_badges/measure?project=ada1012_eLearningQA&metric=alert_status)](https://sonarcloud.io/summary/overall?id=ada1012_eLearningQA)
+
+## Heroku deployment
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://elearningqaquizandforums-bfe6b3c5090f.herokuapp.com/)
+
 ## Description
 
 eLearningQA is a web app that uses Moodle's web service 
