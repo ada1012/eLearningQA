@@ -972,7 +972,8 @@ public class WebServiceClient {
             }
             if (notasAuxiliar.size() > 1) {
                 // Se almacenan las notas del intento con mayor nota
-                for (int idPregunta : notasAuxiliar.keySet()) {
+                for (Map.Entry<Integer, Double> entry : notasAuxiliar.entrySet()) {
+                    int idPregunta = entry.getKey();
                     notas.put(idPregunta, notasAuxiliar.get(idPregunta) + notas.getOrDefault(idPregunta, 0.0));
                 }
                 intentos++;
@@ -980,7 +981,8 @@ public class WebServiceClient {
             attempts.clear();
         }
         
-        for (int idPregunta : notas.keySet()) {
+        for (Map.Entry<Integer, Double> entry : notas.entrySet()) {
+            int idPregunta = entry.getKey();
             double notaMediaPregunta = intentos > 0 ? notas.get(idPregunta) / intentos : 0;
             double puntuacionMaxima = notasMaximas.get(idPregunta);
             EstadisticaNotasPregunta estadisticaNotasPregunta = new EstadisticaNotasPregunta();
