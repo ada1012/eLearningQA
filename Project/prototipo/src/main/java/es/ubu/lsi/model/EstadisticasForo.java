@@ -5,16 +5,16 @@ import java.util.List;
 public class EstadisticasForo {
     private int idForo;
     private String nombre;
-    private String URL;
+    private String url;
     private List<EstadisticasDiscusion> estadisticasDiscusiones;
     private int usuariosUnicos;
     private double porcentajeParticipacion;
     private String texto;
 
-    public EstadisticasForo(int idForo, String nombre, String URL, List<EstadisticasDiscusion> estadisticasDiscusiones, int usuariosUnicos, double porcentajeParticipacion, String texto) {
+    public EstadisticasForo(int idForo, String nombre, String url, List<EstadisticasDiscusion> estadisticasDiscusiones, int usuariosUnicos, double porcentajeParticipacion, String texto) {
         this.idForo = idForo;
         this.nombre = nombre;
-        this.URL = URL;
+        this.url = url;
         this.estadisticasDiscusiones = estadisticasDiscusiones;
         this.usuariosUnicos = usuariosUnicos;
         this.porcentajeParticipacion = porcentajeParticipacion;
@@ -32,12 +32,12 @@ public class EstadisticasForo {
         return nombre;
     }
 
-    public String getURL() {
-        return URL;
+    public String getUrl() {
+        return url;
     }
 
-    public void setURL(String URL) {
-        this.URL = URL;
+    public void setUrl(String url) {
+        this.url = url;
     }
     
     public List<EstadisticasDiscusion> getEstadisticasDiscusiones() {

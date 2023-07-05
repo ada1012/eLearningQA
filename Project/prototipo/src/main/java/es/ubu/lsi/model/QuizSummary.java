@@ -3,7 +3,7 @@ package es.ubu.lsi.model;
 public class QuizSummary {
     private int id;
     private String nombreCuestionario;
-	private String URL;
+	private String url;
     private int totalAlumnos;
     private int alumnosExaminados;
     private int totalPreguntas;
@@ -17,10 +17,10 @@ public class QuizSummary {
 	private double skewness;
 	private double kurtosis;
 
-	public QuizSummary(int id, String nombreCuestionario, String URL, int totalAlumnos, int alumnosExaminados, int totalPreguntas, double notaMaxima, double notaMediaMejorIntentoAlumnosConNota, double notaMediaMejorIntentoTotalAlumnos, double notaMediaUltimoIntentoAlumnosConNota, double notaMediaUltimoIntentoTotalAlumnos, int maxIntentos, int totalIntentos, double skewness, double kurtosis) {
+	public QuizSummary(int id, String nombreCuestionario, String url, int totalAlumnos, int alumnosExaminados, int totalPreguntas, double notaMaxima, double notaMediaMejorIntentoAlumnosConNota, double notaMediaMejorIntentoTotalAlumnos, double notaMediaUltimoIntentoAlumnosConNota, double notaMediaUltimoIntentoTotalAlumnos, int maxIntentos, int totalIntentos, double skewness, double kurtosis) {
 		this.id = id;
 		this.nombreCuestionario = nombreCuestionario;
-		this.URL = URL;
+		this.url = url;
 		this.totalAlumnos = totalAlumnos;
 		this.alumnosExaminados = alumnosExaminados;
 		this.totalPreguntas = totalPreguntas;
@@ -50,11 +50,11 @@ public class QuizSummary {
 	public void setNombreCuestionario(String nombreCuestionario) {
 		this.nombreCuestionario = nombreCuestionario;
 	}
-	public String getURL() {
-		return URL;
+	public String getUrl() {
+		return url;
 	}
-	public void setURL(String URL) {
-		this.URL = URL;
+	public void setUrl(String url) {
+		this.url = url;
 	}
 	public int getTotalAlumnos() {
 		return totalAlumnos;

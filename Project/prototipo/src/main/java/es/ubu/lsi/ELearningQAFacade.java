@@ -21,6 +21,7 @@ public class ELearningQAFacade {
     private static final int CHECKS_TOTAL = CHECKS_DISENO + CHECKS_IMPLEMENTACION + CHECKS_REALIZACION + CHECKS_EVALUACION;
     protected static String[] camposInformeFases;
     private final FacadeConfig config;
+    private static final String CLOSING_DIV_TAG = "</div>";
 
     static {
         String sep= File.separator;
@@ -278,7 +279,7 @@ public class ELearningQAFacade {
 
         if (quizSummary != null) {
             informe += "<div class=\"cuestionario\" id=\"" + quizSummary.getId() + "\">";
-            informe += "<h1><a target=\"_blank\" href=\"" + quizSummary.getURL() + "\">Cuestionario " + quizSummary.getId() + " - " + quizSummary.getNombreCuestionario() + "</a></h1>";
+            informe += "<h1><a target=\"_blank\" href=\"" + quizSummary.getUrl() + "\">Cuestionario " + quizSummary.getId() + " - " + quizSummary.getNombreCuestionario() + "</a></h1>";
             informe += "<p>Número de alumnos: " + quizSummary.getTotalAlumnos() + "</p>";
             informe += "<p>Número de alumnos examinados: " + quizSummary.getAlumnosExaminados() + "</p>";
             informe += "<p>Total de intentos: " + quizSummary.getTotalIntentos() + "</p>";
@@ -293,7 +294,7 @@ public class ELearningQAFacade {
                 informe += "<p>Skewness (para las mejores calificaciones): " + decimalFormat.format(quizSummary.getSkewness()) + "</p>";
                 informe += "<p>Kurtosis (para las mejores calificaciones): " + decimalFormat.format(quizSummary.getKurtosis()) + "</p>";
             }
-            informe += "</div>";
+            informe += CLOSING_DIV_TAG;
 
         }
         return informe;
@@ -314,7 +315,7 @@ public class ELearningQAFacade {
         StringBuilder informe = new StringBuilder();
         if (foro != null) {
             informe.append("<div class=\"foro\" id=\"foro").append(foro.getIdForo()).append("\">");
-            informe.append("<h1><a target=\"_blank\" href=\"").append(foro.getURL()).append("\">Foro ").append(foro.getIdForo()).append(" - ").append(foro.getNombre()).append("</a></h1>");
+            informe.append("<h1><a target=\"_blank\" href=\"").append(foro.getUrl()).append("\">Foro ").append(foro.getIdForo()).append(" - ").append(foro.getNombre()).append("</a></h1>");
             informe.append("<p>Número de alumnos que participan: ").append(foro.getUsuariosUnicos()).append("</p>");
             informe.append("<p class=\"sentimientos\">Cargando análisis de sentimiento del foro...</p>");
             if (!foro.getEstadisticasDiscusiones().isEmpty()) {
@@ -323,10 +324,10 @@ public class ELearningQAFacade {
                     informe.append("<div class=\"alert alert-danger p-0 infoline overall foros\">");
                     informe.append("<p>Hilo: ").append(discusion.getAsunto()).append("</p>");
                     informe.append("<p>Mensajes totales del hilo: ").append(discusion.getNumeroMensajes()).append("</p>");
-                    informe.append("</div>");
+                    informe.append(CLOSING_DIV_TAG);
                 }
             }
-            informe.append("</div>");
+            informe.append(CLOSING_DIV_TAG);
         }
         return informe.toString();
     }

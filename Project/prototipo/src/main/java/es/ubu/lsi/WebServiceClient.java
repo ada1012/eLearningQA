@@ -168,7 +168,7 @@ public class WebServiceClient {
                     nota.setGradeValue("-1.00000");
                 }
 
-                detalles = generarDetalles(tarea, nota, config, detalles, listaUsuarios);
+                generarDetalles(tarea, nota, config, detalles, listaUsuarios);
             }
         }
     
@@ -835,7 +835,7 @@ public class WebServiceClient {
     
         quizSummary.setId(quiz.getId());
         quizSummary.setNombreCuestionario(quiz.getName());
-        quizSummary.setURL(host + "/mod/quiz/view.php?id=" + quiz.getCoursemodule());
+        quizSummary.setUrl(host + "/mod/quiz/view.php?id=" + quiz.getCoursemodule());
         quizSummary.setNotaMaxima(quiz.getGrade());
         quizSummary.setMaxIntentos(quiz.getAttempts());
         
@@ -1021,7 +1021,7 @@ public class WebServiceClient {
         for (Forum foro : listaForos) {
             estadisticasForo.setIdForo(foro.getId());
             estadisticasForo.setNombre(foro.getName());
-            estadisticasForo.setURL(config.getHost() + "/mod/forum/view.php?id=" + foro.getCmid());
+            estadisticasForo.setUrl(config.getHost() + "/mod/forum/view.php?id=" + foro.getCmid());
 
             // Mensajes del foro
             StringBuilder texto = new StringBuilder();
