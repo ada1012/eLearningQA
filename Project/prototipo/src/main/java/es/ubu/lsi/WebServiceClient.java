@@ -1032,17 +1032,20 @@ public class WebServiceClient {
                         listaAlumnos.add(post.getAuthor().getId());
                         usuariosUnicos++;
                     }
-                    texto += post.getMessage();
+                    texto += post.getMessage() + " ";
                 }
                 estadisticasDiscusion.setNumeroMensajes(mensajes);
                 estadisticasDiscusiones.add(estadisticasDiscusion);
                 mensajes = 0;
                 estadisticasDiscusion = new EstadisticasDiscusion();
             }
+
+            texto = comprobarFormatoDiscusion(listaDiscusiones, texto);
+
             estadisticasForo.setUsuariosUnicos(usuariosUnicos);
             estadisticasForo.setPorcentajeParticipacion(((double) usuariosUnicos / alumnos.size()) * 100);
             estadisticasForo.setEstadisticasDiscusiones(estadisticasDiscusiones);
-            estadisticasForo.setTexto(parseHtmlToString(texto));
+            estadisticasForo.setTexto(texto);
             estadisticasForos.add(estadisticasForo);
 
             usuariosUnicos = 0;
@@ -1057,6 +1060,16 @@ public class WebServiceClient {
             registro.guardarAlerta("realization estadisticforum","Menos de un " + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos participa en los foros");
         
         return estadisticasForos;
+    }
+
+    public static String comprobarFormatoDiscusion (List<Discussion> listaDiscusiones, String texto) {
+        if (listaDiscusiones != null && !listaDiscusiones.isEmpty()) {
+            if (listaDiscusiones.get(0).getMessageformat() == 1) {
+                return parseHtmlToString(texto);
+            }
+        }
+
+        return texto;
     }
 
     public static String parseHtmlToString (String html) {

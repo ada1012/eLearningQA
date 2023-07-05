@@ -226,7 +226,7 @@
               <div class="foro" id="foro<%=estadisticasForo.getIdForo()%>">
                 <% if (estadisticasForo.getTexto() != "") { %>
                   <script>
-                    query({ "inputs": "<%= estadisticasForo.getTexto() %>"}).then((response) => {
+                    query({ "inputs": '<%= estadisticasForo.getTexto() %>'}).then((response) => {
                       
                       let mensaje = "";
                       for (let i = 0; i < response[0].length; i++) {
