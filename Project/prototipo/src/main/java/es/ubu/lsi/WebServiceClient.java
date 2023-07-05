@@ -17,6 +17,7 @@ public class WebServiceClient {
 
     private static final String COURSEID = "&courseid=";
     private static final String COURSEIDS_0 = "&courseids[0]=";
+    private static final String MENOS_DE_UN = "Menos de un ";
 
 
     private WebServiceClient() {
@@ -166,16 +167,8 @@ public class WebServiceClient {
                 if (Objects.equals(nota.getGradeValue(), "")) {
                     nota.setGradeValue("-1.00000");
                 }
-    
-                if (tieneRelevancia(tarea.getDuedate(), nota.getTimemodified(), config.getAssignmentGradingTime(), config.getAssignmentRelevancePeriod())
-                        || (System.currentTimeMillis() / 1000L) - tarea.getDuedate() > config.getAssignmentGradingTime()
-                        && Float.parseFloat(nota.getGradeValue()) < 0) {
-                    detalles.append("La entrega en ").append(tarea.getName()).append(" por ")
-                            .append((obtenerUsuarioPorId(listaUsuarios, nota.getUserid()).getFullname() != null
-                                    ? obtenerUsuarioPorId(listaUsuarios, nota.getUserid()).getFullname()
-                                    : "Alumno desmatriculado"))
-                            .append("<br>");
-                }
+
+                detalles = generarDetalles(tarea, nota, config, detalles, listaUsuarios);
             }
         }
     
@@ -186,6 +179,20 @@ public class WebServiceClient {
         }
     
         return true;
+    }
+
+    public static StringBuilder generarDetalles(Assignment tarea, Grade nota, FacadeConfig config, StringBuilder detalles, List<User> listaUsuarios) {
+        if (tieneRelevancia(tarea.getDuedate(), nota.getTimemodified(), config.getAssignmentGradingTime(), config.getAssignmentRelevancePeriod())
+                || (System.currentTimeMillis() / 1000L) - tarea.getDuedate() > config.getAssignmentGradingTime()
+                && Float.parseFloat(nota.getGradeValue()) < 0) {
+            detalles.append("La entrega en ").append(tarea.getName()).append(" por ")
+                    .append((obtenerUsuarioPorId(listaUsuarios, nota.getUserid()).getFullname() != null
+                            ? obtenerUsuarioPorId(listaUsuarios, nota.getUserid()).getFullname()
+                            : "Alumno desmatriculado"))
+                    .append("<br>");
+        }
+
+        return detalles;
     }
 
 
@@ -696,7 +703,7 @@ public class WebServiceClient {
         if (quizzes.isEmpty()) return 0;
         
         if  (porcentaje < (config.getMinQuizAnswerPercentage() * 100))
-            registro.guardarAlerta("realization estadisticquiz","Menos de un " + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos no realiza los cuestionarios");
+            registro.guardarAlerta("realization estadisticquiz",MENOS_DE_UN + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos no realiza los cuestionarios");
         
         return porcentaje/100;
     }
@@ -1006,7 +1013,7 @@ public class WebServiceClient {
 
         // Si no hay foros no hay participación
         if (listaForos.isEmpty()) {
-            registro.guardarAlerta("realization estadisticforum","Menos de un " + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos participa en los foros");
+            registro.guardarAlerta("realization estadisticforum",MENOS_DE_UN + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos participa en los foros");
             return estadisticasForos;
         }
 
@@ -1017,7 +1024,7 @@ public class WebServiceClient {
             estadisticasForo.setURL(config.getHost() + "/mod/forum/view.php?id=" + foro.getCmid());
 
             // Mensajes del foro
-            String texto = "";
+            StringBuilder texto = new StringBuilder();
 
             List<Discussion> listaDiscusiones = obtenerListaDebates(token, foro, config.getHost());
 
@@ -1032,7 +1039,7 @@ public class WebServiceClient {
                         listaAlumnos.add(post.getAuthor().getId());
                         usuariosUnicos++;
                     }
-                    texto += post.getMessage() + " ";
+                    texto.append(post.getMessage()).append(" ");
                 }
                 estadisticasDiscusion.setNumeroMensajes(mensajes);
                 estadisticasDiscusiones.add(estadisticasDiscusion);
@@ -1040,12 +1047,13 @@ public class WebServiceClient {
                 estadisticasDiscusion = new EstadisticasDiscusion();
             }
 
-            texto = comprobarFormatoDiscusion(listaDiscusiones, texto);
+            String textoFinal = texto.toString();
+            textoFinal = comprobarFormatoDiscusion(listaDiscusiones, textoFinal);
 
             estadisticasForo.setUsuariosUnicos(usuariosUnicos);
             estadisticasForo.setPorcentajeParticipacion(((double) usuariosUnicos / alumnos.size()) * 100);
             estadisticasForo.setEstadisticasDiscusiones(estadisticasDiscusiones);
-            estadisticasForo.setTexto(texto);
+            estadisticasForo.setTexto(textoFinal);
             estadisticasForos.add(estadisticasForo);
 
             usuariosUnicos = 0;
@@ -1057,16 +1065,14 @@ public class WebServiceClient {
 
         // Si el porcentaje de alumnos que han participado en los foros es menor que el porcentaje mínimo, se guarda la alerta
         if ((porcentaje / listaForos.size()) < (config.getMinQuizAnswerPercentage() * 100))
-            registro.guardarAlerta("realization estadisticforum","Menos de un " + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos participa en los foros");
+            registro.guardarAlerta("realization estadisticforum",MENOS_DE_UN + (int) (config.getMinQuizAnswerPercentage() * 100) + "% de los alumnos participa en los foros");
         
         return estadisticasForos;
     }
 
     public static String comprobarFormatoDiscusion (List<Discussion> listaDiscusiones, String texto) {
-        if (listaDiscusiones != null && !listaDiscusiones.isEmpty()) {
-            if (listaDiscusiones.get(0).getMessageformat() == 1) {
-                return parseHtmlToString(texto);
-            }
+        if (listaDiscusiones != null && !listaDiscusiones.isEmpty() && listaDiscusiones.get(0).getMessageformat() == 1) {
+            return parseHtmlToString(texto);
         }
 
         return texto;
@@ -1086,9 +1092,7 @@ public class WebServiceClient {
             textoCompleto.append(texto).append(" ");
         }
         
-        String textoFinal = textoCompleto.toString().trim();
-
-        return textoFinal;
+        return textoCompleto.toString().trim();
     }
     
 }
