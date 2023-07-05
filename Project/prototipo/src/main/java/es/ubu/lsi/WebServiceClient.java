@@ -120,6 +120,7 @@ public class WebServiceClient {
 
     public static StatusList obtenerListaEstados(String token, long courseid, List<User> listaUsuarios, String host) {
         RestTemplate restTemplate = new RestTemplate();
+        if (listaUsuarios == null || listaUsuarios.isEmpty()){return new StatusList();}
         int idProfesor=listaUsuarios.get(0).getId();
         for (User usuario:listaUsuarios) {
             if(esProfesor(listaUsuarios,usuario.getId())){
