@@ -1041,7 +1041,7 @@ public class WebServiceClient {
                         listaAlumnos.add(post.getAuthor().getId());
                         usuariosUnicos++;
                     }
-                    texto.append(post.getMessage()).append(" ");
+                    texto.append(post.getMessage().replaceAll("\"", "\\\\\"")).append(" ");
                 }
                 estadisticasDiscusion.setNumeroMensajes(mensajes);
                 estadisticasDiscusiones.add(estadisticasDiscusion);

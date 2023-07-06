@@ -226,8 +226,8 @@
               <div class="foro" id="foro<%=estadisticasForo.getIdForo()%>">
                 <% if (estadisticasForo.getTexto() != "") { %>
                   <script>
-                    query({ "inputs": '<%= estadisticasForo.getTexto() %>'}).then((response) => {
-                      
+                    // Posibles problemas: Si el texto es muy largo, la petición no se realiza correctamente
+                    query({ "inputs": "<%= estadisticasForo.getTexto() %>"}).then((response) => {                      
                       let mensaje = "";
                       for (let i = 0; i < response[0].length; i++) {
                         const firstLabel = response[0][i].label;
