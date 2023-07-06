@@ -73,5 +73,15 @@ Con esta herramienta se consigue una ayuda a la refactorización inmediata ya qu
 Para ejecutar la aplicación en local solo es necesario ejecutar la clase principal: Application, los IDEs mencionados previamente los ejecutarán sin problema al ejecutar la opción \texttt{Run} y se podrá acceder a dicha aplicación a través de la url: \url{http://localhost:8080/}.
 \imagen{EjecucionLocalhost.png}{Ejecución en local}
 
+\subsection{Despliegue en Heroku}
+Respecto al despliegue de la aplicación en Heroku es necesario seguir una serie de pasos. En primer lugar, lo podremos hacer a través de la linea de comandos con el plugin de \texttt{heroku-maven-plugin}, este permite hacer un deploy manual con el comando \textit{mvn clean heroku:deploy}.
+
+Por otro lado, podemos realizar la integración continua a través de GitHub, lo que tendremos que hacer es conectar el proyecto de Heroku con el repositorio GitHub. Después, será necesario crear un archivo \texttt{Procfile} con las indicaciones que da Heroku con el comando ``web: java -jar -Dserver.port=\$PORT target/prototipo-0.9-SNAPSHOT.war''. 
+
+Dado que la estructura de directorios en Heroku puede diferir de la del repositorio, será necesario utilizar un \textit{buildpack} específico, que es un script que se ejecuta durante el despliegue para configurar el entorno de ejecución de la aplicación en Heroku.
+
+Además, es necesario especificar la ruta del directorio principal de la aplicación en las variables de configuración, utilizando la clave \texttt{PROJECT\_PATH}. También se deberán agregar los \textit{buildpacks} necesarios, \texttt{\url{https://github.com/timanovsky/subdir-heroku-buildpack.git}} y \texttt{heroku/java}.
+\imagen{Buildpack.png}{Configuración necesaria para el despliegue}
+
 \section{Pruebas del sistema}
 Los test se realizan con JUnit y se han mantenido con respecto a la versión anterior ejecutándose a través del archivo ELearningQAFacadeTest y yendo contra unos archivos estáticos en formato JSON los cuales se encuentran en la ruta \textit{resources/json}. Ante las nuevas funcionalidades habría que modificar el archivo ELearningQAFacadeTest incorporando los test de los métodos que queramos comprobar y asignar unos datos estáticos en el archivo JSON. La opción de obtener los datos de prueba de un servidor de momento es una opción poco viable por el tema del tiempo de carga y el aumento de llamadas en el futuro.
